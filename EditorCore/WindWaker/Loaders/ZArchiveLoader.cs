@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EditorCore.WindWaker.MapEntities;
+using System;
 using System.IO;
 namespace EditorCore.WindWaker.Loaders
 {
@@ -40,7 +41,8 @@ namespace EditorCore.WindWaker.Loaders
                         /* Room and Stage Entity Data */
                         case ".dzr":
                         case ".dzs":
-                            resource = new UnsupportedFileResource(fileName, folderName, archive);
+                            resource = new MapEntityObject(fileName, folderName, archive);
+                            MapEntityLoader.Load((MapEntityObject) resource, file.FullName);
                             break;
 
                         /* 3D Model Formats */

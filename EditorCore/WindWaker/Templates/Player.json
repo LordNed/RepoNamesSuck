@@ -1,0 +1,17 @@
+﻿{
+	"FourCC" : "PLYR",
+	"Properties" :
+	[
+		{"Name" : "Spawn Name", "Type" : "string"},
+		{"Name" : "Event Index", "Type" : "byte"},
+		{"Name" : "Unknown 1", "Type" : "byte"},
+		{"Name" : "Spawn Type", "Type" : "enum", "EnumType" : "SpawnRoomEntranceTypes"},
+		{"Name" : "Room", "Type" : "objectReference", "ReferenceType" : "Room"},
+		{"Name" : "Position", "Type" : "vector3"},
+		{"Name" : "Unknown 2", "Type" : "short"},
+		{"Name" : "Y Rotation", "Type" : "short"},
+		{"Name" : "Unknown 3", "Type" : "byte"},
+		{"Name" : "Spawn Index", "Type" : "byte"},
+		{"Name" : "Unknown 4", "Type" : "short"}
+	]
+}

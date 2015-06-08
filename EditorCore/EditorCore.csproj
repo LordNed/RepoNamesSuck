@@ -49,15 +49,21 @@
     <Compile Include="EditorCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WindWaker\BaseFileResource.cs" />
+    <Compile Include="WindWaker\Loaders\MapEntityLoader.cs" />
     <Compile Include="WindWaker\Loaders\MapLoader.cs" />
     <Compile Include="WindWaker\Loaders\ZArchiveLoader.cs" />
     <Compile Include="WindWaker\Map.cs" />
+    <Compile Include="WindWaker\MapEntities\MapEntityObject.cs" />
+    <Compile Include="WindWaker\Templates\ItemTemplate.cs" />
     <Compile Include="WindWaker\ZArchive.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="WindWaker\Templates\Player.json" />
+    <None Include="WindWaker\Templates\Player.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
