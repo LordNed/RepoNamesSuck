@@ -16,7 +16,7 @@ namespace CLIInterface
             foreach(var room in map.Rooms)
             {
                 foreach (var file in room.Files)
-                    Console.WriteLine("File Name: " + file.FileName + " Type: " + file.FolderName);
+                    Console.WriteLine("File: " + file.ToString());
             }
         }
     }

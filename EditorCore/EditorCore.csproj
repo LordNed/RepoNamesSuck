@@ -33,6 +33,9 @@
     <Reference Include="GameFormatReader">
       <HintPath>..\GameFormatReader.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -50,6 +53,10 @@
     <Compile Include="WindWaker\Loaders\ZArchiveLoader.cs" />
     <Compile Include="WindWaker\Map.cs" />
     <Compile Include="WindWaker\ZArchive.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="WindWaker\Templates\Player.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -67,6 +67,7 @@ namespace EditorCore.WindWaker.Loaders
                         default:
                             Console.WriteLine("Unknown folder type {0} found ({1}).", folderName, fileName);
                             resource = new UnsupportedFileResource(fileName, folderName, archive);
+                            UnsupportedFileResourceLoader.Load((UnsupportedFileResource)resource, file.FullName);
                             break;
                     }
 

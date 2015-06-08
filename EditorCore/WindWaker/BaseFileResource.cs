@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using GameFormatReader.Common;
+using System;
+using System.ComponentModel;
+using System.IO;
 namespace EditorCore.WindWaker
 {
     public enum FileResourceType
@@ -73,6 +76,28 @@ namespace EditorCore.WindWaker
         public UnsupportedFileResource(string fileName, string folderName, ZArchive parentArchive) : base(fileName, folderName, parentArchive)
         {
 
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[UnsupportedFileResource] {0}", base.ToString());
+        }
+    }
+
+    public static class UnsupportedFileResourceLoader
+    {
+        public static void Load(UnsupportedFileResource resource, string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentException("filePath null or empty");
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("filePath not found ensure");
+
+            // Simply load the contents of the data into the Data array and preserve it for now.
+            using(EndianBinaryReader reader = new EndianBinaryReader(File.Open(filePath, FileMode.Open), Endian.Big))
+            {
+                resource.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+            }
         }
     }
 }
