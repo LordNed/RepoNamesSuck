@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace EditorCore.WindWaker.Loaders
@@ -25,8 +26,8 @@ namespace EditorCore.WindWaker.Loaders
             newMap.Name = mapName;
             newMap.ProjectFilePath = Path.GetDirectoryName(folderDirectory);
 
+            var archiveFolderMap = new Dictionary<ZArchive,string>();
 
-            
             // Scan the folders in this directory and construct ZArchives out of each one. Determine the ZArchive type based on the folder name.
             foreach (var dirInfo in rootFolderInfo.GetDirectories())
             {
@@ -48,10 +49,18 @@ namespace EditorCore.WindWaker.Loaders
                     newMap.Rooms.Add(archive);
                 }
 
-                if(archive != null)
-                {
-                    ZArchiveLoader.Load(archive, dirInfo.FullName);
-                }
+                archiveFolderMap[archive] = dirInfo.FullName;
+            }
+
+            // Now that we've loaded and created ZArchives for all stage/rooms, we can load the Stage entities, then Room entities.
+            if(newMap.Stage != null)
+            {
+                ZArchiveLoader.Load(newMap, newMap.Stage, archiveFolderMap[newMap.Stage]);
+            }
+
+            foreach(var room in newMap.Rooms)
+            {
+                ZArchiveLoader.Load(newMap, room, archiveFolderMap[room]);
             }
 
             return newMap;

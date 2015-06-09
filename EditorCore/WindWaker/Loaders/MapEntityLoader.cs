@@ -21,7 +21,7 @@ namespace EditorCore.WindWaker.Loaders
             public int ChunkOffset;
         }
 
-        public static void Load(MapEntities.MapEntityResource resource, string filePath)
+        public static void Load(MapEntities.MapEntityResource resource, Map map, string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentException("filePath null or empty");
@@ -68,11 +68,11 @@ namespace EditorCore.WindWaker.Loaders
 
                     for(int k = 0; k < chunk.ElementCount; k++)
                     {
-                        MapEntityObject entity = LoadFromStreamIntoObjectUsingTemplate(chunk.FourCC, reader, template);
+                        MapEntityObject entity = LoadFromStreamIntoObjectUsingTemplate(chunk.FourCC, reader, template, map);
                         Console.WriteLine("===== PLYR ===== ");
                         for(int l = 0; l < entity.Properties.Count; l++)
                         {
-                            Console.WriteLine("{2} : {0} - {1}", entity.Properties[l].Name, entity.Properties[l].Value, entity.Properties[l].Type);
+                            Console.WriteLine("[{0}] ({1}): {2}", entity.Properties[l].Name, entity.Properties[l].Type,  entity.Properties[l].Value.ToString());
                         }
                     }
                 }
@@ -96,7 +96,7 @@ namespace EditorCore.WindWaker.Loaders
             return itemTemplates;
         }
 
-        private static MapEntityObject LoadFromStreamIntoObjectUsingTemplate(string FourCC, EndianBinaryReader reader, ItemTemplate template)
+        private static MapEntityObject LoadFromStreamIntoObjectUsingTemplate(string FourCC, EndianBinaryReader reader, ItemTemplate template, Map map)
         {
             MapEntityObject obj = new MapEntityObject(FourCC);
 
@@ -164,7 +164,7 @@ namespace EditorCore.WindWaker.Loaders
 
                         // ToDo: Resolve the object reference.
                         byte refByte = reader.ReadByte();
-                        value = refByte;
+                        value = ResolveObjectReference(templateProperty, refByte, map);
                         break;
                 }
 
@@ -173,6 +173,17 @@ namespace EditorCore.WindWaker.Loaders
             }
 
             return obj;
+        }
+
+        private static object ResolveObjectReference(ItemTemplateProperty templateProperty, int index, Map map)
+        {
+            switch(templateProperty.ReferenceType)
+            {
+                case "Room":
+                    return map.Rooms[index];
+            }
+
+            return null;
         }
     }
 }

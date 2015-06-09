@@ -21,5 +21,11 @@ namespace EditorCore.WindWaker
             Type = type;
             Files = new BindingList<BaseFileResource>();
         }
+
+        public override string ToString()
+        {
+            //return string.Format("{0} FileCount: {1}", Type, Files.Count);
+            return base.ToString();
+        }
     }
 }

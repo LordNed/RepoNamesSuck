@@ -10,7 +10,7 @@ namespace EditorCore.WindWaker.Loaders
         /// </summary>
         /// <param name="archive">ZArchive to put the loaded files in.</param>
         /// <param name="folderDirectory">Absolute path to folder on disk which contains sub-folders of the names above.</param>
-        public static void Load(ZArchive archive, string folderDirectory)
+        public static void Load(Map map, ZArchive archive, string folderDirectory)
         {
             if (string.IsNullOrEmpty(folderDirectory))
                 throw new ArgumentException("folderDirectory null or empty");
@@ -42,7 +42,7 @@ namespace EditorCore.WindWaker.Loaders
                         case ".dzr":
                         case ".dzs":
                             resource = new MapEntityResource(fileName, folderName, archive);
-                            MapEntityLoader.Load((MapEntityResource) resource, file.FullName);
+                            MapEntityLoader.Load((MapEntityResource) resource, map, file.FullName);
                             break;
 
                         /* 3D Model Formats */
