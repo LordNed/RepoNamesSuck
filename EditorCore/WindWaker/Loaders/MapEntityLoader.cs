@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using EditorCore.WindWaker.MapEntities;
 using OpenTK;
+using EditorCore.Common;
 
 namespace EditorCore.WindWaker.Loaders
 {
@@ -56,7 +57,7 @@ namespace EditorCore.WindWaker.Loaders
                     ChunkHeader chunk = chunks[i];
 
                     // Find the appropriate JSON template that describes this chunk.
-                    ItemTemplate template = templates.Find(x => string.Compare(x.FourCC, chunk.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    ItemJsonTemplate template = templates.Find(x => string.Compare(x.FourCC, chunk.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
 
                     if(template == null)
                     {
@@ -79,31 +80,31 @@ namespace EditorCore.WindWaker.Loaders
             }
         }
 
-        private static List<ItemTemplate> LoadItemTemplates()
+        private static List<ItemJsonTemplate> LoadItemTemplates()
         {
             string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             executionPath += "/WindWaker/Templates/";
 
             DirectoryInfo dI = new DirectoryInfo(executionPath);
-            List<ItemTemplate> itemTemplates = new List<ItemTemplate>();
+            List<ItemJsonTemplate> itemTemplates = new List<ItemJsonTemplate>();
 
             foreach(var file in dI.GetFiles())
             {
-                var template = JsonConvert.DeserializeObject<ItemTemplate>(File.ReadAllText(file.FullName));
+                var template = JsonConvert.DeserializeObject<ItemJsonTemplate>(File.ReadAllText(file.FullName));
                 itemTemplates.Add(template);
             }
 
             return itemTemplates;
         }
 
-        private static MapEntityObject LoadFromStreamIntoObjectUsingTemplate(string FourCC, EndianBinaryReader reader, ItemTemplate template, Map map)
+        private static MapEntityObject LoadFromStreamIntoObjectUsingTemplate(string FourCC, EndianBinaryReader reader, ItemJsonTemplate template, Map map)
         {
             MapEntityObject obj = new MapEntityObject(FourCC);
 
             // We're going to examine the Template's properties and load based on the current template type.
             for(int i = 0; i < template.Properties.Count; i++)
             {
-                ItemTemplateProperty templateProperty = template.Properties[i];
+                ItemJsonTemplate.Property templateProperty = template.Properties[i];
                 string propertyName = templateProperty.Name;
                 PropertyType type = PropertyType.None;
                 object value = null;
@@ -175,7 +176,7 @@ namespace EditorCore.WindWaker.Loaders
             return obj;
         }
 
-        private static object ResolveObjectReference(ItemTemplateProperty templateProperty, int index, Map map)
+        private static object ResolveObjectReference(ItemJsonTemplate.Property templateProperty, int index, Map map)
         {
             switch(templateProperty.ReferenceType)
             {
