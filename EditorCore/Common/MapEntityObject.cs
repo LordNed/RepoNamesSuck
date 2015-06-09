@@ -15,6 +15,8 @@ namespace EditorCore.Common
         Vector3,
         Enum,
         ObjectReference,
+        XYRotation,
+        XYZRotation,
     }
 
     public class MapEntityObject

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace EditorCore.WindWaker.Templates
+namespace EditorCore.WindWaker
 {
     public class ItemJsonTemplate
     {
@@ -19,6 +19,9 @@ namespace EditorCore.WindWaker.Templates
 
             /// <summary> Used if Type is set to a fixed length type variable. </summary>
             public int Length;
+
+            /// <summary> Used if ReferenceType is set to "FourCC" </summary>
+            public string ReferenceFourCCType;
         }
 
         [JsonProperty("FourCC")]

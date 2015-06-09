@@ -1,0 +1,15 @@
+﻿{
+	"FourCC" : "ACTR",
+	"Properties" :
+	[
+		{"Name" : "Name", "Type" : "fixedLengthString", "Length" : 8},
+		{"Name" : "Parameter 1", "Type" : "byte"},
+		{"Name" : "Parameter 2", "Type" : "byte"},
+		{"Name" : "Parameter 3", "Type" : "byte"},
+		{"Name" : "Parameter 4", "Type" : "byte"},
+		{"Name" : "Position", "Type" : "vector3"},
+		{"Name" : "Rotation", "Type" : "xyRotation"},
+		{"Name" : "Flag To Set", "Type" : "short"},
+		{"Name" : "Enemy Number", "Type" : "short"},
+	]
+}
