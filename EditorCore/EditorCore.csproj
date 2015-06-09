@@ -36,6 +36,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK">
+      <HintPath>..\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -53,7 +56,7 @@
     <Compile Include="WindWaker\Loaders\MapLoader.cs" />
     <Compile Include="WindWaker\Loaders\ZArchiveLoader.cs" />
     <Compile Include="WindWaker\Map.cs" />
-    <Compile Include="WindWaker\MapEntities\MapEntityObject.cs" />
+    <Compile Include="WindWaker\MapEntities\MapEntityResource.cs" />
     <Compile Include="WindWaker\Templates\ItemTemplate.cs" />
     <Compile Include="WindWaker\ZArchive.cs" />
   </ItemGroup>

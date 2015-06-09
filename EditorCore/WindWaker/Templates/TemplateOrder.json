@@ -1,0 +1,38 @@
+﻿{
+	"Order" :
+	[
+		"MEMA",
+		"MECO",
+		"MULT",
+		"PLYR",
+		"CAMR",
+		"RCAM",
+		"ACTR",
+		"TGOB",
+		"TRES",
+		"RTBL",
+		"AROB",
+		"RARO",
+		"2DMA",
+		"2Dma",
+		"Pale",
+		"Virt",
+		"SCLS",
+		"TGSC",
+		"LGHT",
+		"PPNT",
+		"PATH",
+		"RPPN",
+		"RPAT",
+		"SOND",
+		"SCOB",
+		"EVNT",
+		"EnvR",
+		"FILI",
+		"DOOR",
+		"LGTV",
+		"FLOR",
+		"TGDR",
+		"DMAP"
+	]
+}

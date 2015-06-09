@@ -41,8 +41,8 @@ namespace EditorCore.WindWaker.Loaders
                         /* Room and Stage Entity Data */
                         case ".dzr":
                         case ".dzs":
-                            resource = new MapEntityObject(fileName, folderName, archive);
-                            MapEntityLoader.Load((MapEntityObject) resource, file.FullName);
+                            resource = new MapEntityResource(fileName, folderName, archive);
+                            MapEntityLoader.Load((MapEntityResource) resource, file.FullName);
                             break;
 
                         /* 3D Model Formats */

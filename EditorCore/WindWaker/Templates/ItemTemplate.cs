@@ -22,5 +22,8 @@ namespace EditorCore.WindWaker.Templates
 
         /// <summary> Used if Type is set to "objectReference" </summary>
         public string ReferenceType;
+
+        /// <summary> Used if Type is set to a fixed length type variable. </summary>
+        public int Length;
     }
 }
