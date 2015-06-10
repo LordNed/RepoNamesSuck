@@ -25,7 +25,7 @@
             <TreeView ItemsSource="{Binding Path=Rooms}" x:Name="m_projectTree" Margin="10,10,0,0" ItemTemplate="{StaticResource EmployeeTemplate}"/>
         </GroupBox>
         <GroupBox Header="Properties" Margin="300,0,629,22" MinWidth="175">
-            <TreeView ItemsSource="{Binding Path=Waffles}" DataContext="{Binding ElementName=m_projectTree, Path=SelectedItem}" x:Name="m_hierarchy" Margin="10,10,0,0" ItemTemplate="{StaticResource Hierarchy}"/>
+            <TreeView ItemsSource="{Binding Path=Objects}" DataContext="{Binding ElementName=m_projectTree, Path=SelectedItem}" x:Name="m_hierarchy" Margin="10,10,0,0" ItemTemplate="{StaticResource Hierarchy}"/>
         </GroupBox>
     </Grid>
 </Window>
