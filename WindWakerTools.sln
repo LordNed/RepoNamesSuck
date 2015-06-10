@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorCore", "EditorCore\Ed
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLIInterface", "CLIInterface\CLIInterface.csproj", "{619A065B-78F6-4C23-A0DD-FFD00B01987D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF Interface", "WPF Interface\WPF Interface.csproj", "{B11C7C9B-AA01-4E24-BB1D-88FEC53DEC49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{619A065B-78F6-4C23-A0DD-FFD00B01987D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{619A065B-78F6-4C23-A0DD-FFD00B01987D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{619A065B-78F6-4C23-A0DD-FFD00B01987D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B11C7C9B-AA01-4E24-BB1D-88FEC53DEC49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B11C7C9B-AA01-4E24-BB1D-88FEC53DEC49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B11C7C9B-AA01-4E24-BB1D-88FEC53DEC49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B11C7C9B-AA01-4E24-BB1D-88FEC53DEC49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
