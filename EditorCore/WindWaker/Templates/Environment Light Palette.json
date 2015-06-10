@@ -1,0 +1,22 @@
+﻿{
+	"FourCC" : "Pale",
+	"Properties" :
+	[
+		{"Name" : "Actor Ambient", "Type" : "color24"},
+		{"Name" : "Shadow", "Type" : "color24"},
+		{"Name" : "Fill Light", "Type" : "color24"},
+		{"Name" : "Room Ambient", "Type" : "color24"},
+		{"Name" : "Wave", "Type" : "color24"},
+		{"Name" : "Ocean", "Type" : "color24"},
+		{"Name" : "Unknown White 1", "Type" : "color24"},
+		{"Name" : "Unknown White 2", "Type" : "color24"},
+		{"Name" : "Door Backfill", "Type" : "color24"},
+		{"Name" : "Unknown 3", "Type" : "color24"},
+		{"Name" : "Fog", "Type" : "color24"},
+		{"Name" : "Skybox Colors", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Virt"},
+		{"Name" : "Padding 1", "Type" : "byte"},
+		{"Name" : "Padding 2", "Type" : "byte"},
+		{"Name" : "Ocean Horizon", "Type" : "color32"},
+		{"Name" : "Shore Edge", "Type" : "color32"}
+	]
+}

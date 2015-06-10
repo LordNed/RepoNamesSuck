@@ -1,0 +1,9 @@
+﻿{
+	"FourCC" : "FLOR",
+	"Properties" :
+	[
+		{"Name" : "Lower Boundary (Y Height)", "Type" : "float"},
+		{"Name" : "Floor Number", "Type" : "byte"},
+		{"Name" : "Included Rooms", "Type" : "objectReferenceArray", "ReferenceType" : "Room", "Length" : 15}
+	]
+}

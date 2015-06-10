@@ -1,0 +1,11 @@
+﻿{
+	"FourCC" : "SCLS",
+	"Properties" :
+	[
+		{"Name" : "Map Name", "Type" : "fixedLengthString" , "Length" : 8},
+		{ "Name" : "Spawn Index", "Type" : "byte"},
+		{ "Name" : "Room Index", "Type" : "byte"},
+		{ "Name" : "Fade Out Type", "Type" : "byte"},
+		{ "Name" : "Padding", "Type" : "byte"}
+	]
+}

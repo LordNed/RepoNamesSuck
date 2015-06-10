@@ -1,0 +1,9 @@
+﻿{
+	"FourCC" : "LGHT",
+	"Properties" :
+	[
+		{"Name" : "Position", "Type" : "vector3"},
+		{"Name" : "Scale", "Type" : "vector3"},
+		{"Name" : "Color", "Type" : "color32"}
+	]
+}

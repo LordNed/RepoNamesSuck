@@ -1,5 +1,5 @@
 ﻿{
-	"FourCC" : "AROB",
+	"FourCC" : "CAMR",
 	"Properties" :
 	[
 		{"Name" : "Camera Type", "Type" : "fixedLengthString" , "Length" : 10},

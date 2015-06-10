@@ -1,0 +1,16 @@
+﻿{
+	"FourCC" : "EVNT",
+	"Properties" :
+	[
+		{"Name" : "Unknown 1", "Type" : "byte"},
+		{"Name" : "Name", "Type" : "fixedLengthString", "Length" : 15},
+		{"Name" : "Unknown 2", "Type" : "byte"},
+		{"Name" : "Unknown 3", "Type" : "byte"},
+		{"Name" : "Unknown 4", "Type" : "byte"},
+		{"Name" : "Unknown 5", "Type" : "byte"},
+		{"Name" : "Room Number", "Type" : "byte"},
+		{"Name" : "Padding 1", "Type" : "byte"},
+		{"Name" : "Padding 2", "Type" : "byte"},
+		{"Name" : "Padding 3", "Type" : "byte"}
+	]
+}

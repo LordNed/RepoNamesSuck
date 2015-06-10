@@ -201,10 +201,14 @@ namespace EditorCore.WindWaker.Loaders
 
                     case "objectReference":
                         type = PropertyType.ObjectReference;
-
-                        // ToDo: Resolve the object reference.
                         byte refByte = reader.ReadByte();
                         value = ResolveObjectReference(templateProperty, refByte, map, resource);
+                        break;
+
+                    case "objectReferenceShort":
+                        type = PropertyType.ObjectReference;
+                        ushort refShort = reader.ReadUInt16();
+                        value = ResolveObjectReference(templateProperty, refShort, map, resource);
                         break;
 
                     case "xyRotation":
@@ -215,6 +219,11 @@ namespace EditorCore.WindWaker.Loaders
                     case "xyzRotation":
                         type = PropertyType.XYZRotation;
                         value = new XYZRotation(reader.ReadUInt16(), reader.ReadUInt16(), reader.ReadUInt16());
+                        break;
+
+                    case "color32":
+                        type = PropertyType.Color32;
+                        value = new Color32(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                         break;
                 }
 

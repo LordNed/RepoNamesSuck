@@ -1,0 +1,16 @@
+﻿{
+	"FourCC" : "Virt",
+	"Properties" :
+	[
+		{"Name" : "Unknown 1", "Type" : "int"},
+		{"Name" : "Unknown 2", "Type" : "int"},
+		{"Name" : "Unknown 3", "Type" : "int"},
+		{"Name" : "Unknown 4", "Type" : "int"},
+		{"Name" : "Horizon Cloud Color", "Type" : "color32"},
+		{"Name" : "Center Cloud Color", "Type" : "color32"},
+		{"Name" : "Center Sky Color", "Type" : "color24"},
+		{"Name" : "Horizon Color", "Type" : "color24"},
+		{"Name" : "Sky Fade To", "Type" : "color24"},
+		{"Name" : "Padding", "Type" : "color24"},
+	]
+}
