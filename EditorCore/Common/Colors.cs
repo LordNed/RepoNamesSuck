@@ -22,6 +22,11 @@ namespace EditorCore.Common
             B = b;
             A = a;
         }
+
+        public override string ToString()
+        {
+            return string.Format("[Color32] (r: {0} g: {1} b: {2} a: {3})", R, G, B, A);
+        }
     }
 
     public class Color24
@@ -38,6 +43,11 @@ namespace EditorCore.Common
             R = r;
             G = g;
             B = b;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[Color24] (r: {0} g: {1} b: {2})", R, G, B);            
         }
     }
 }

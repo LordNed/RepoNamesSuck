@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 
 namespace EditorCore.WindWaker.Loaders
@@ -86,6 +87,8 @@ namespace EditorCore.WindWaker.Loaders
                         {
                             Console.WriteLine("[{0}] ({1}): {2}", entity.Properties[l].Name, entity.Properties[l].Type,  entity.Properties[l].Value.ToString());
                         }
+
+                        Console.WriteLine("====");
                     }
                 }
             }
@@ -211,6 +214,18 @@ namespace EditorCore.WindWaker.Loaders
                         value = ResolveObjectReference(templateProperty, refShort, map, resource);
                         break;
 
+                    case "objectReferenceArray":
+                        type = PropertyType.ObjectReference;
+                        var refList = new BindingList<object>();
+                        for(int refArray = 0; refArray < templateProperty.Length; refArray++)
+                        {
+                            byte refByteArray = reader.ReadByte();
+                            refList.Add(ResolveObjectReference(templateProperty, refByteArray, map, resource));
+                        }
+
+                        value = refList;
+                        break;
+
                     case "xyRotation":
                         type = PropertyType.XYRotation;
                         value = new XYRotation(reader.ReadUInt16(), reader.ReadUInt16());
@@ -224,6 +239,16 @@ namespace EditorCore.WindWaker.Loaders
                     case "color32":
                         type = PropertyType.Color32;
                         value = new Color32(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
+                        break;
+
+                    case "color24":
+                        type = PropertyType.Color24;
+                        value = new Color24(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
+                        break;
+
+                    case "vector3byte":
+                        type = PropertyType.Vector3Byte;
+                        value = new Vector3(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                         break;
                 }
 
@@ -239,6 +264,10 @@ namespace EditorCore.WindWaker.Loaders
             switch(templateProperty.ReferenceType)
             {
                 case "Room":
+                    // Some things will specify a Room index of 255 for "This isn't Used", so we're going to special-case handle that.
+                    if (index == 0xFF)
+                        return null;
+
                     return map.Rooms[index];
 
                 case "FourCC":

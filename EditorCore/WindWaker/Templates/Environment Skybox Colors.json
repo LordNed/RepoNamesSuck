@@ -2,10 +2,10 @@
 	"FourCC" : "Virt",
 	"Properties" :
 	[
-		{"Name" : "Unknown 1", "Type" : "int"},
-		{"Name" : "Unknown 2", "Type" : "int"},
-		{"Name" : "Unknown 3", "Type" : "int"},
-		{"Name" : "Unknown 4", "Type" : "int"},
+		{"Name" : "Unknown 1", "Type" : "color32"},
+		{"Name" : "Unknown 2", "Type" : "color32"},
+		{"Name" : "Unknown 3", "Type" : "color32"},
+		{"Name" : "Unknown 4", "Type" : "color32"},
 		{"Name" : "Horizon Cloud Color", "Type" : "color32"},
 		{"Name" : "Center Cloud Color", "Type" : "color32"},
 		{"Name" : "Center Sky Color", "Type" : "color24"},

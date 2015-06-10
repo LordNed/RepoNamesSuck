@@ -18,7 +18,8 @@ namespace EditorCore.Common
         XYRotation,
         XYZRotation,
         Color24,
-        Color32
+        Color32,
+        Vector3Byte
     }
 
     public class MapEntityObject
