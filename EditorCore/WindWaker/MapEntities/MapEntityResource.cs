@@ -7,7 +7,7 @@ namespace EditorCore.WindWaker.MapEntities
 {
     public class MapEntityResource : BaseFileResource
     {
-        public BindingList<MapEntityObject> Objects;
+        public BindingList<MapEntityObject> Objects { get; private set; }
 
         public MapEntityResource(string fileName, string folderName, ZArchive parentArchive) : base (fileName, folderName, parentArchive)
         {

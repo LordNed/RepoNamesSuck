@@ -1,8 +1,31 @@
 ﻿<Window x:Class="WPF_Interface.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
+        xmlns:custom="clr-namespace:EditorCore.WindWaker.MapEntities;assembly=EditorCore"
+        Title="MainWindow" Height="605.7" Width="1227" Loaded="Window_Loaded">
+    <Window.Resources>
+        <HierarchicalDataTemplate x:Key="ChildTemplate">
+            <TextBlock Text="{Binding Path=FileName}"/>
+        </HierarchicalDataTemplate>
+
+        <HierarchicalDataTemplate x:Key="EmployeeTemplate" ItemsSource="{Binding Path=Files}" ItemTemplate="{StaticResource ChildTemplate}">
+            <TextBlock Text="{Binding Path=Type}"/>
+        </HierarchicalDataTemplate>
+
         
+        <HierarchicalDataTemplate x:Key="EntityInstance">
+            
+        </HierarchicalDataTemplate>
+        <HierarchicalDataTemplate x:Key="Hierarchy" ItemTemplate="{StaticResource EntityInstance}">
+            <TextBlock Text="{Binding Path=FourCC}"/>
+        </HierarchicalDataTemplate>
+    </Window.Resources>
+    <Grid DataContext="{Binding Path=Map}">
+        <GroupBox Header="Project View" Margin="10,0,919,22" MinWidth="175">
+            <TreeView ItemsSource="{Binding Path=Rooms}" x:Name="m_projectTree" Margin="10,10,0,0" ItemTemplate="{StaticResource EmployeeTemplate}"/>
+        </GroupBox>
+        <GroupBox Header="Properties" Margin="300,0,629,22" MinWidth="175">
+            <TreeView ItemsSource="{Binding Path=Waffles}" DataContext="{Binding ElementName=m_projectTree, Path=SelectedItem}" x:Name="m_hierarchy" Margin="10,10,0,0" ItemTemplate="{StaticResource Hierarchy}"/>
+        </GroupBox>
     </Grid>
 </Window>

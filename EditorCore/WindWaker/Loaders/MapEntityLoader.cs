@@ -82,13 +82,13 @@ namespace EditorCore.WindWaker.Loaders
                         MapEntityObject entity = LoadFromStreamIntoObjectUsingTemplate(chunk.FourCC, reader, template, map, resource);
                         resource.Objects.Add(entity);
 
-                        Console.WriteLine("===== {0} =====", entity.FourCC);
+                        /*Console.WriteLine("===== {0} =====", entity.FourCC);
                         for(int l = 0; l < entity.Properties.Count; l++)
                         {
                             Console.WriteLine("[{0}] ({1}): {2}", entity.Properties[l].Name, entity.Properties[l].Type,  entity.Properties[l].Value.ToString());
                         }
 
-                        Console.WriteLine("====");
+                        Console.WriteLine("====");*/
                     }
                 }
             }
