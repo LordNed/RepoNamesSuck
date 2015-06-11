@@ -10,6 +10,7 @@ namespace EditorCore.Common
         Short,
         Int32,
         Float,
+        Bool,
         String,
         Vector2,
         Vector3,
@@ -27,7 +28,7 @@ namespace EditorCore.Common
         public class Property
         {
             public string Name { get; private set; }
-            public object Value;
+            public object Value { get; set; }
             public PropertyType Type { get; private set; }
 
             public Property(string name, PropertyType type, object defaultValue = null)
@@ -39,7 +40,7 @@ namespace EditorCore.Common
         }
 
         public string FourCC { get; private set; }
-        public BindingList<Property> Properties;
+        public BindingList<Property> Properties { get; private set; }
 
         public MapEntityObject(string fourCC)
         {
