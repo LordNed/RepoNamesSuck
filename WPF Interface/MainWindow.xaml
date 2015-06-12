@@ -6,11 +6,16 @@
         xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         Title="MainWindow" Height="605.7" Width="1227" Loaded="Window_Loaded">
     <Window.Resources>
+        <local:ProjectViewConverter x:Key="projectViewConverter"/>
+
+        
         <HierarchicalDataTemplate x:Key="ChildTemplate">
             <TextBlock Text="{Binding Path=FileName}"/>
         </HierarchicalDataTemplate>
+        
         <HierarchicalDataTemplate x:Key="ProjectViewTemplate" ItemsSource="{Binding Path=Files}" ItemTemplate="{StaticResource ChildTemplate}">
             <TextBlock Text="{Binding Path=Type}"/>
+            
         </HierarchicalDataTemplate>       
         <HierarchicalDataTemplate x:Key="EntityInstance">            
         </HierarchicalDataTemplate>
@@ -21,7 +26,14 @@
     </Window.Resources>
     <Grid DataContext="{Binding Path=Map}">
         <GroupBox Header="Project View" Margin="10,0,919,22" MinWidth="175">
-            <TreeView ItemsSource="{Binding Path=Rooms}" x:Name="m_projectTree" Margin="10,10,0,0" ItemTemplate="{StaticResource ProjectViewTemplate}"/>
+            <TreeView x:Name="m_projectTree" Margin="10,10,0,0" ItemTemplate="{StaticResource ProjectViewTemplate}">
+                <TreeView.ItemsSource>
+                    <MultiBinding Converter="{StaticResource projectViewConverter}">
+                        <Binding Path="Rooms"/>
+                        <Binding Path="Stage"/>
+                    </MultiBinding>
+                </TreeView.ItemsSource>
+            </TreeView>
         </GroupBox>
         <GroupBox Header="Hierarchy" Margin="300,0,629,22" MinWidth="175">
             <TreeView ItemsSource="{Binding Path=Objects}" DataContext="{Binding ElementName=m_projectTree, Path=SelectedItem}" x:Name="m_hierarchy" Margin="10,10,0,0" ItemTemplate="{StaticResource Hierarchy}"/>
