@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Xceed.Wpf.Toolkit;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace WPF_Interface
 {
@@ -13,13 +14,13 @@ namespace WPF_Interface
     {
         private void OnObjectReferenceButtonClicked(object sender, RoutedEventArgs e)
         {
-            Controls.ObjectReferenceSelector ors = new Controls.ObjectReferenceSelector();
-            Button btn = (Button)sender;
-            Grid grid = btn.Parent as Grid;
-            if(grid != null)
-            {
-                grid.Children.Add(ors);
-            }
+           Controls.ObjectReferenceSelector ors = new Controls.ObjectReferenceSelector();
+            Popup popup = new Popup();
+            popup.Child = ors;
+            popup.Placement = PlacementMode.Bottom;
+            popup.StaysOpen = false;
+            popup.PlacementTarget = (Button)sender;
+            popup.IsOpen = true;
         }
 		
 		void OnObjectFieldDragEnter(object sender, System.Windows.DragEventArgs e)

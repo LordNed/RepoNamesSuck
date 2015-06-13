@@ -27,34 +27,49 @@ namespace WPF_Interface
             switch (property.Type)
             {
                 case PropertyType.Byte:
+                    return base.SelectTemplate(item, container);
                     return ByteTemplate;
                 case PropertyType.Short:
+                    return base.SelectTemplate(item, container);
                     return ShortTemplate;
                 case PropertyType.Int32:
+                    return base.SelectTemplate(item, container);
                     return IntTemplate;
                 case PropertyType.Float:
+                    return base.SelectTemplate(item, container);
                     return FloatTemplate;
                 case PropertyType.Bool:
+                    return base.SelectTemplate(item, container);
                     return BoolTemplate;
                 case PropertyType.String:
+                    return base.SelectTemplate(item, container);
                     return StringTemplate;
                 case PropertyType.Vector2:
+                    return base.SelectTemplate(item, container);
                     return Vector2Template;
                 case PropertyType.Vector3:
+                    return base.SelectTemplate(item, container);
                     return Vector3Template;
                 case PropertyType.Enum:
+                    return base.SelectTemplate(item, container);
                     return EnumTemplate;
                 case PropertyType.ObjectReference:
+                    //return base.SelectTemplate(item, container);
                     return ObjectReferenceTemplate;
                 case PropertyType.XYRotation:
+                    return base.SelectTemplate(item, container);
                     return Vector2Template;
                 case PropertyType.XYZRotation:
+                    return base.SelectTemplate(item, container);
                     return Vector3Template;
                 case PropertyType.Color24:
+                    return base.SelectTemplate(item, container);
                     return Color24Template;
                 case PropertyType.Color32:
+                    return base.SelectTemplate(item, container);
                     return Color32Template;
                 case PropertyType.Vector3Byte:
+                    return base.SelectTemplate(item, container);
                     return Vector3ByteTemplate;
 
                 case PropertyType.None:

@@ -71,7 +71,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\ObjectReferenceSelector.xaml">
+    <Page Include="Controls\ObjectReferenceSelectorPopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -87,14 +87,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\ObjectReferenceControl.cs" />
     <Compile Include="EntityPropertyTemplates.xaml.cs">
       <DependentUpon>EntityPropertyTemplates.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ObjectReferenceSelector.xaml.cs">
-      <DependentUpon>ObjectReferenceSelector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EntityPropertyTemplates.xaml.cs">
-      <DependentUpon>EntityPropertyTemplates.xaml</DependentUpon>
+    <Compile Include="Controls\ObjectReferenceSelectorPopup.xaml.cs">
+      <DependentUpon>ObjectReferenceSelectorPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityPropertyTemplateSelector.cs" />
     <Compile Include="MainWindow.xaml.cs">

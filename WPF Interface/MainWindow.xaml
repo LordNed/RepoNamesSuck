@@ -4,6 +4,7 @@
         xmlns:custom="clr-namespace:EditorCore.WindWaker.MapEntities;assembly=EditorCore"
         xmlns:local="clr-namespace:WPF_Interface"
         xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+        xmlns:Controls="clr-namespace:WPF_Interface.Controls"
         x:Class="WPF_Interface.MainWindow"
         Title="MainWindow" Height="605" Width="1227" Loaded="Window_Loaded">
     <Window.Resources>
@@ -16,7 +17,7 @@
 
         <HierarchicalDataTemplate x:Key="ProjectViewTemplate" ItemsSource="{Binding Files}" ItemTemplate="{StaticResource ChildTemplate}">
             <TextBlock Text="{Binding Type}"/>
-            
+
         </HierarchicalDataTemplate>
         <HierarchicalDataTemplate x:Key="EntityInstance"/>
 
@@ -26,7 +27,7 @@
     </Window.Resources>
     <Grid DataContext="{Binding Map}">
         <GroupBox Header="Project View" Margin="10,0,919,22" MinWidth="175">
-            <TreeView x:Name="m_projectTree" Margin="10,10,0,0" ItemTemplate="{StaticResource ProjectViewTemplate}" PreviewMouseLeftButtonDown="m_projectTree_PreviewMouseLeftButtonDown" PreviewMouseMove="m_projectTree_PreviewMouseMove">
+            <TreeView x:Name="m_projectTree" Margin="10,10,0,0" ItemTemplate="{StaticResource ProjectViewTemplate}" >
                 <TreeView.ItemsSource>
                     <MultiBinding Converter="{StaticResource projectViewConverter}">
                         <Binding Path="Rooms"/>
@@ -41,5 +42,7 @@
         <GroupBox Header="Inspector" Margin="590,0,339,22" MinWidth="175" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox ItemTemplateSelector="{StaticResource entityPropertyTemplateSelector}" ItemsSource="{Binding Properties}" DataContext="{Binding SelectedItem, ElementName=m_hierarchy}" x:Name="m_inspector" Margin="10" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.CanContentScroll="True"/>
         </GroupBox>
+
+        <Controls:ObjectReferenceControl HorizontalAlignment="Left" Height="100" Margin="960,147,0,0" VerticalAlignment="Top" Width="100"/>
     </Grid>
 </Window>

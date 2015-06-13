@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:WPF_Interface"
                     xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+                    xmlns:controls="clr-namespace:WPF_Interface.Controls"
                     x:Class="WPF_Interface.EntityPropertyTemplates">
     <!-- BYTE TEMPLATE -->
     <DataTemplate x:Key="byteTemplate">
@@ -146,8 +147,13 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
-            <wpfToolkit:AutoSelectTextBox Grid.Column="1" Text="{Binding Path=Value, Mode=TwoWay}"/>
-            <Button Grid.Column="2" Click="OnObjectReferenceButtonClicked"/>
+            <TextBlock Grid.Column="1" Text="{Binding Path=Value, Mode=TwoWay}">
+                <!-- <Popup x:Name="objRefSelector" IsOpen="True" PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom">
+                    <controls:ObjectReferenceSelector/>
+                </Popup> -->
+            </TextBlock>
+            <Button Grid.Column="2" Click="OnObjectReferenceButtonClicked" HorizontalAlignment="Right"/>
+
         </Grid>
     </DataTemplate>
     
