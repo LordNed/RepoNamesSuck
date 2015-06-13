@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:WPF_Interface"
-                    xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit">
+                    xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+                    x:Class="WPF_Interface.EntityPropertyTemplates">
     <!-- BYTE TEMPLATE -->
     <DataTemplate x:Key="byteTemplate">
         <Grid>
@@ -141,10 +142,12 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
-            <wpfToolkit:AutoSelectTextBox Grid.Column="1" Text="{Binding Path=Value, Mode=TwoWay}"/>
+            <TextBlock Grid.Column="1" Text="{Binding Path=Value, Mode=TwoWay}"/>
+            <Button Grid.Column="2" Click="OnObjectReferenceButtonClicked"/>
         </Grid>
     </DataTemplate>
     

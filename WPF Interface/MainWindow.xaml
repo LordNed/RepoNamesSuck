@@ -4,8 +4,8 @@
         xmlns:custom="clr-namespace:EditorCore.WindWaker.MapEntities;assembly=EditorCore"
         xmlns:local="clr-namespace:WPF_Interface"
         xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
-        xmlns:Controls="clr-namespace:WPF_Interface.Controls" x:Class="WPF_Interface.MainWindow"
-        Title="MainWindow" Height="605.7" Width="1227" Loaded="Window_Loaded">
+        x:Class="WPF_Interface.MainWindow"
+        Title="MainWindow" Height="605" Width="1227" Loaded="Window_Loaded">
     <Window.Resources>
         <local:ProjectViewConverter x:Key="projectViewConverter"/>
 
@@ -41,6 +41,5 @@
         <GroupBox Header="Inspector" Margin="590,0,339,22" MinWidth="175" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox ItemTemplateSelector="{StaticResource entityPropertyTemplateSelector}" ItemsSource="{Binding Properties}" DataContext="{Binding SelectedItem, ElementName=m_hierarchy}" x:Name="m_inspector" Margin="10" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.CanContentScroll="True"/>
         </GroupBox>
-        <Controls:ObjectReferenceSelector HorizontalAlignment="Left" Margin="899,160,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>

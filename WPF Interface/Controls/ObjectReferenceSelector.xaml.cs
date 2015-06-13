@@ -24,8 +24,8 @@ namespace WPF_Interface.Controls
         {
             InitializeComponent();
 
-            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(m_browseListBox.ItemsSource);
-            view.Filter = UserFilter;
+            //CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(m_browseListBox.ItemsSource);
+            //view.Filter = UserFilter;
         }
 
         private bool UserFilter(object item)

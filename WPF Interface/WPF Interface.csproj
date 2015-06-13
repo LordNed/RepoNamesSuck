@@ -87,6 +87,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="EntityPropertyTemplates.xaml.cs">
+      <DependentUpon>EntityPropertyTemplates.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ObjectReferenceSelector.xaml.cs">
       <DependentUpon>ObjectReferenceSelector.xaml</DependentUpon>
     </Compile>
