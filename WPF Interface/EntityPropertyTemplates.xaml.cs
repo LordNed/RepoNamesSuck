@@ -5,12 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Xceed.Wpf.Toolkit;
+using System.Windows.Controls;
 
 namespace WPF_Interface
 {
-    public partial class EntityPropertyTemplates : ResourceDictionary
+    partial class EntityPropertyTemplates : ResourceDictionary
     {
-        void OnObjectFieldDragEnter(object sender, System.Windows.DragEventArgs e)
+        private void OnObjectReferenceButtonClicked(object sender, RoutedEventArgs e)
+        {
+            Controls.ObjectReferenceSelector ors = new Controls.ObjectReferenceSelector();
+            Button btn = (Button)sender;
+            Grid grid = btn.Parent as Grid;
+            if(grid != null)
+            {
+                grid.Children.Add(ors);
+            }
+        }
+		
+		void OnObjectFieldDragEnter(object sender, System.Windows.DragEventArgs e)
         {
             if(e.Data.GetDataPresent("objectReferenceFormat") || sender == e.Source)
             {

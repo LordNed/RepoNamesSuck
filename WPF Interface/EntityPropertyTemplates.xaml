@@ -142,10 +142,12 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
-            <wpfToolkit:AutoSelectTextBox Grid.Column="1" Text="{Binding Path=Value, Mode=TwoWay}" AllowDrop="True" DragEnter="OnObjectFieldDragEnter" Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
+            <wpfToolkit:AutoSelectTextBox Grid.Column="1" Text="{Binding Path=Value, Mode=TwoWay}"/>
+            <Button Grid.Column="2" Click="OnObjectReferenceButtonClicked"/>
         </Grid>
     </DataTemplate>
     
