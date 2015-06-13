@@ -83,6 +83,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="EntityPropertyTemplates.xaml.cs">
+      <DependentUpon>EntityPropertyTemplates.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EntityPropertyTemplateSelector.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

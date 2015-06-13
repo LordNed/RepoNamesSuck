@@ -15,7 +15,6 @@
         
         <HierarchicalDataTemplate x:Key="ProjectViewTemplate" ItemsSource="{Binding Path=Files}" ItemTemplate="{StaticResource ChildTemplate}">
             <TextBlock Text="{Binding Path=Type}"/>
-            
         </HierarchicalDataTemplate>       
         <HierarchicalDataTemplate x:Key="EntityInstance">            
         </HierarchicalDataTemplate>
@@ -26,7 +25,7 @@
     </Window.Resources>
     <Grid DataContext="{Binding Path=Map}">
         <GroupBox Header="Project View" Margin="10,0,919,22" MinWidth="175">
-            <TreeView x:Name="m_projectTree" Margin="10,10,0,0" ItemTemplate="{StaticResource ProjectViewTemplate}">
+            <TreeView x:Name="m_projectTree" Margin="10,10,0,0" ItemTemplate="{StaticResource ProjectViewTemplate}" PreviewMouseLeftButtonDown="m_projectTree_PreviewMouseLeftButtonDown" PreviewMouseMove="m_projectTree_PreviewMouseMove">
                 <TreeView.ItemsSource>
                     <MultiBinding Converter="{StaticResource projectViewConverter}">
                         <Binding Path="Rooms"/>
