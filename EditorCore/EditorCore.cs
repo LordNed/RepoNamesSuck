@@ -1,5 +1,4 @@
-﻿using SharpGL;
-using System;
+﻿using System;
 using System.Diagnostics;
 using WEditor.Rendering;
 

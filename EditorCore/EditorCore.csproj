@@ -40,12 +40,6 @@
       <HintPath>..\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
-    <Reference Include="SharpGL">
-      <HintPath>..\packages\SharpGL.2.4.0.0\lib\net40\SharpGL.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpGL.SceneGraph">
-      <HintPath>..\packages\SharpGL.2.4.0.0\lib\net40\SharpGL.SceneGraph.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -70,8 +64,7 @@
     <Compile Include="RenderSystem\Camera.cs" />
     <Compile Include="RenderSystem\Mesh.cs" />
     <Compile Include="RenderSystem\RenderSystem.cs" />
-    <Compile Include="RenderSystem\Shader.cs" />
-    <Compile Include="RenderSystem\Shaders\ShaderProgram.cs" />
+    <Compile Include="RenderSystem\ShaderProgram.cs" />
     <Compile Include="RenderSystem\VertexDescription.cs" />
     <Compile Include="WindWaker\BaseFileResource.cs" />
     <Compile Include="WindWaker\Loaders\MapEntityLoader.cs" />

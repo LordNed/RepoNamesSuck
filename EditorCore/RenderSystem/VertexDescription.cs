@@ -1,11 +1,10 @@
-﻿using SharpGL;
-using System;
+﻿using System;
 
 namespace WEditor.Rendering
 {
     public class VertexDescription
     {
-        [Flags]
+        /*[Flags]
         public enum VertexTypes
         {
             Position = 1,
@@ -116,5 +115,6 @@ namespace WEditor.Rendering
                 m_context.BufferData(OpenGL.GL_ARRAY_BUFFER, elementSize * elementCount, data, OpenGL.GL_STATIC_DRAW);
             }
         }
+        */
     }
 }
