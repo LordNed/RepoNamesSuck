@@ -24,6 +24,8 @@ namespace WEditor.Rendering
 
             Camera leftCamera = new Camera();
             leftCamera.ClearColor = new Color(1f, 0.5f, 0, 1f);
+            leftCamera.ViewportRect = new Rect(0f, 0f, 0.5f, 1f);
+
 
             Camera rightCamera = new Camera();
             rightCamera.ViewportRect = new Rect(0.5f, 0f, 0.5f, 1f);
@@ -105,10 +107,6 @@ namespace WEditor.Rendering
                 // Start using our Shader program
                 GL.UseProgram(m_shader.ProgramId);
 
-                GL.Enable(EnableCap.DepthTest);
-
-                Matrix4 viewMatrix = Matrix4.LookAt(new Vector3(25, 15, 25), Vector3.Zero, Vector3.UnitY);
-                Matrix4 projMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(65), 1.6f, 10, 1000);
                 Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
 
                 Matrix4 viewProjMatrix = camera.ViewMatrix * camera.ProjectionMatrix;

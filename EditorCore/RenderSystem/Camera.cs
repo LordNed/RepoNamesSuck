@@ -65,7 +65,7 @@ namespace WEditor.Rendering
         }
 
         /// <summary> Viewport width/height. Read only. </summary>
-        public float AspectRatio { get { return PixelWidth / PixelHeight; } }
+        public float AspectRatio { get { return (PixelWidth*m_viewportRect.Width) / (PixelHeight*m_viewportRect.Height); } }
 
         /// <summary> Color to clear the backbuffer with. </summary>
         public Color ClearColor;
