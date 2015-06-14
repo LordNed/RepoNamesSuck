@@ -52,5 +52,10 @@ namespace WEditor
 
             return value;
         }
+
+        public static float ClampNormalized(float value)
+        {
+            return Clamp(value, 0f, 1f);
+        }
     }
 }

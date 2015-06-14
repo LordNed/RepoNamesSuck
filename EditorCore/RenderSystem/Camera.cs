@@ -1,27 +1,77 @@
 ﻿using OpenTK;
+using System;
 using WEditor.Common;
 
-namespace WEditor.RenderSystem
+namespace WEditor.Rendering
 {
     public class Camera
     {
         /// <summary> The near clipping plane distance. </summary>
-        public float NearClipPlane = 0.1f;
+        public float NearClipPlane
+        {
+            get { return m_nearClipPlane; }
+            set
+            {
+                m_nearClipPlane = value;
+                CalculateProjectionMatrix();
+            }
+        }
 
         /// <summary> The far clipping plane distance. </summary>
-        public float FarClipPlane = 100f;
+        public float FarClipPlane
+        {
+            get { return m_farClipPlane; }
+            set
+            {
+                m_farClipPlane = value;
+                CalculateProjectionMatrix();
+            }
+        }
 
         /// <summary> Vertical field of view in degrees. </summary>
-        public float FieldOfView = 45f;
+        public float FieldOfView
+        {
+            get { return m_fieldOfView; }
+            set
+            {
+                m_fieldOfView = value;
+                CalculateProjectionMatrix();
+            }
+        }
+
+        /// <summary> Width of the camera output in Pixels. </summary>
+        public float PixelWidth
+        {
+            get { return m_pixelWidth; }
+            internal set
+            {
+                m_pixelWidth = value;
+                CalculateProjectionMatrix();
+                CalculatePixelRect();
+            }
+        }
+
+        /// <summary> Height of the camera output in Pixels. </summary>
+        public float PixelHeight
+        {
+            get { return m_pixelHeight; }
+
+            internal set
+            {
+                m_pixelHeight = value;
+                CalculateProjectionMatrix();
+                CalculatePixelRect();
+            }
+        }
 
         /// <summary> Viewport width/height. Read only. </summary>
-        public float AspectRatio { get { return ViewportRect.Width / ViewportRect.Height; } }
+        public float AspectRatio { get { return PixelWidth / PixelHeight; } }
 
         /// <summary> Color to clear the backbuffer with. </summary>
-        public Color24 ClearColor;
+        public Color ClearColor;
 
-        /// <summary> Current Projection Matrix of camera. Updated when <see cref="ViewportRect"/> is modified. </summary>
-        public Matrix4 ProjectionMatrix { get { return m_projectionMatrix; } private set; }
+        /// <summary> Current Projection Matrix of camera. </summary>
+        public Matrix4 ProjectionMatrix { get { return m_projectionMatrix; } }
         
         /// <summary> Rectangle (in normalized viewport/output target coordinates) this camera draws onto. </summary>
         public Rect ViewportRect
@@ -29,15 +79,22 @@ namespace WEditor.RenderSystem
             get { return m_viewportRect; }
             set
             {
-                m_viewportRect.Width = MathE.Clamp(value.Width, 0f, 1f);
-                m_viewportRect.Height = MathE.Clamp(value.Height, 0f, 1f);
-                m_viewportRect.X = MathE.Clamp(value.X, 0f, 1f);
-                m_viewportRect.Y = MathE.Clamp(value.Y, 0f, 1f);
+                m_viewportRect.Width = MathE.ClampNormalized(value.Width);
+                m_viewportRect.Height = MathE.ClampNormalized(value.Height);
+                m_viewportRect.X = MathE.ClampNormalized(value.X);
+                m_viewportRect.Y = MathE.ClampNormalized(value.Y);
 
                 CalculateProjectionMatrix();
+                CalculatePixelRect();
             }
         }
 
+        public Rect PixelRect
+        {
+            get { return m_pixelRect; }
+        }
+
+        /// <summary> View Matrix of the Camera. Calculated every frame as there's no way to see when a Transform has been dirtied. </summary>
         public Matrix4 ViewMatrix
         {
             get
@@ -47,12 +104,26 @@ namespace WEditor.RenderSystem
             }
         }
 
-        private Rect m_viewportRect;
+        private float m_nearClipPlane = 0.1f;
+        private float m_farClipPlane = 100f;
+        private float m_fieldOfView = 45f;
+        private float m_pixelWidth;
+        private float m_pixelHeight;
         private Matrix4 m_projectionMatrix;
+        private Rect m_viewportRect;
+        private Rect m_pixelRect;
 
         private void CalculateProjectionMatrix()
         {
-            ProjectionMatrix = Matrix4.CreateScale(-1f, 1f, 1f) * Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FieldOfView), AspectRatio, NearClipPlane, FarClipPlane);
+            m_projectionMatrix = Matrix4.CreateScale(-1f, 1f, 1f) * Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FieldOfView), AspectRatio, NearClipPlane, FarClipPlane);
+        }
+
+        private void CalculatePixelRect()
+        {
+            m_pixelRect.X = ViewportRect.X * PixelWidth;
+            m_pixelRect.Y = ViewportRect.Y * PixelHeight;
+            m_pixelRect.Width = ViewportRect.Width * PixelWidth;
+            m_pixelRect.Height = ViewportRect.Height * PixelHeight;
         }
 
         public Ray ViewportPointToRay(Vector3 mousePos)
@@ -61,8 +132,8 @@ namespace WEditor.RenderSystem
             Vector3 mousePosB = new Vector3(mousePos.X, mousePos.Y, 1f);
 
 
-            Vector4 nearUnproj = UnProject(ProjMatrix, ViewMatrix, mousePosA);
-            Vector4 farUnproj = UnProject(ProjMatrix, ViewMatrix, mousePosB);
+            Vector4 nearUnproj = UnProject(ProjectionMatrix, ViewMatrix, mousePosA);
+            Vector4 farUnproj = UnProject(ProjectionMatrix, ViewMatrix, mousePosB);
 
             Vector3 dir = farUnproj.Xyz - nearUnproj.Xyz;
             dir.Normalize();
@@ -70,9 +141,11 @@ namespace WEditor.RenderSystem
             return new Ray(nearUnproj.Xyz, dir);
         }
 
+
         public Vector4 UnProject(Matrix4 projection, Matrix4 view, Vector3 mouse)
         {
-            Vector4 vec;
+            throw new NotImplementedException();
+            /*Vector4 vec = new Vector4();
 
             vec.X = 2.0f * mouse.X / PixelWidth - 1;
             vec.Y = -(2.0f * mouse.Y / PixelHeight - 1);
@@ -92,7 +165,7 @@ namespace WEditor.RenderSystem
                 vec.Z /= vec.W;
             }
 
-            return vec;
+            return vec;*/
         }
     }
 }
