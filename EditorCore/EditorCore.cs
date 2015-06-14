@@ -16,7 +16,6 @@ namespace WEditor
 
         public EditorCore()
         {
-            m_renderSystem = new RenderSystem();
 
             m_dtStopwatch = new Stopwatch();
             Console.WriteLine("[EditorCore] Initialized.");
@@ -30,9 +29,14 @@ namespace WEditor
             Time.Internal_UpdateTime(m_dtStopwatch.ElapsedMilliseconds / 1000f);
             m_dtStopwatch.Restart();
 
-            m_renderSystem.RenderFrame();
+            m_renderSystem.RenderFrame();          
+        }
 
-           
+        public void OnGraphicsContextInitialized()
+        {
+            Console.WriteLine("[EditorCore] Initializing RenderSystem.");
+            m_renderSystem = new RenderSystem();
+            Console.WriteLine("[EditorCore] RenderSystem Initialized.");
         }
 
         public void SetGraphicsContext(OpenGL context)

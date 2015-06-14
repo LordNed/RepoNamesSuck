@@ -11,6 +11,7 @@ namespace WEditor.Rendering
     {
         private OpenGL m_GLContext;
         private List<Camera> m_cameraList;
+        private ShaderProgram m_shader;
 
 
         float rotatePyramid = 0;
@@ -19,6 +20,7 @@ namespace WEditor.Rendering
         public RenderSystem()
         {
             m_cameraList = new List<Camera>();
+            m_shader = new ShaderProgram("RenderSystem/Shaders/vert.glsl", "RenderSystem/Shaders/frag.glsl");
 
             // Create a Default camera
             //Camera editorCamera = new Camera();
@@ -223,6 +225,7 @@ namespace WEditor.Rendering
 
             // Load the modelview.
             GL.MatrixMode(MatrixMode.Modelview);
+
         }
     }
 }

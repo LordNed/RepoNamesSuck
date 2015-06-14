@@ -33,7 +33,7 @@ namespace SharpGLExample
         internal void OnGraphicsContextInitialized(GLControl context)
         {
             m_control = context;
-            //m_editorCore.SetGraphicsContext(context);
+            m_editorCore.OnGraphicsContextInitialized();
         }
 
         internal void OnOutputResized(float width, float height)
