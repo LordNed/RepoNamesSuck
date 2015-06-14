@@ -1,5 +1,5 @@
-﻿using EditorCore.WindWaker;
-using EditorCore.WindWaker.Loaders;
+﻿using WEditor.WindWaker;
+using WEditor.WindWaker.Loaders;
 using System;
 using System.ComponentModel;
 using System.Windows;

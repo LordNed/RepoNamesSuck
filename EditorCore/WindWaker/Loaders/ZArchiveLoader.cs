@@ -1,7 +1,7 @@
-﻿using EditorCore.WindWaker.MapEntities;
+﻿using WEditor.WindWaker.MapEntities;
 using System;
 using System.IO;
-namespace EditorCore.WindWaker.Loaders
+namespace WEditor.WindWaker.Loaders
 {
     public static class ZArchiveLoader
     {

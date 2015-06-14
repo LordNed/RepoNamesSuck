@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLIInterface", "CLIInterfac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF Interface", "WPF Interface\WPF Interface.csproj", "{B11C7C9B-AA01-4E24-BB1D-88FEC53DEC49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpGLExample", "SharpGLExample\SharpGLExample.csproj", "{F820E1F9-79BA-4EAD-8D9E-1A8CCA2A688C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B11C7C9B-AA01-4E24-BB1D-88FEC53DEC49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B11C7C9B-AA01-4E24-BB1D-88FEC53DEC49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B11C7C9B-AA01-4E24-BB1D-88FEC53DEC49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F820E1F9-79BA-4EAD-8D9E-1A8CCA2A688C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F820E1F9-79BA-4EAD-8D9E-1A8CCA2A688C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F820E1F9-79BA-4EAD-8D9E-1A8CCA2A688C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F820E1F9-79BA-4EAD-8D9E-1A8CCA2A688C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

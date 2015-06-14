@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace EditorCore.Common
+namespace WEditor.Common
 {
     public enum PropertyType
     {

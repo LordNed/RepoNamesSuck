@@ -1,9 +1,9 @@
-﻿using EditorCore.Common;
+﻿using WEditor.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace EditorCore.WindWaker.MapEntities
+namespace WEditor.WindWaker.MapEntities
 {
     public class MapEntityResource : BaseFileResource
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace EditorCore.WindWaker
+namespace WEditor.WindWaker
 {
     /// <summary>
     /// A map is a collection of rooms and an associated stage.

@@ -1,0 +1,9 @@
+﻿<Window x:Class="SharpGLExample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sharpGL="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF"
+        Title="MainWindow" Height="350" Width="525" MouseMove="Window_MouseMove">
+    <Grid>
+        <sharpGL:OpenGLControl x:Name="glControl" OpenGLInitialized="OpenGLControl_OpenGLInitialized" Resized="OpenGLControl_Resized" DrawFPS="True" FrameRate="60" OpenGLVersion="OpenGL3_0" MouseDown="glControl_MouseDown" MouseUp="glControl_MouseUp" KeyDown="glControl_KeyDown" KeyUp="glControl_KeyUp" OpenGLDraw="glControl_OpenGLDraw"/>
+    </Grid>
+</Window>

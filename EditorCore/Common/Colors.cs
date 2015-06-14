@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EditorCore.Common
+namespace WEditor.Common
 {
     public class Color32
     {

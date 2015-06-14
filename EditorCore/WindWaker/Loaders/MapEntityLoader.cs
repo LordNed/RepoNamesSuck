@@ -1,5 +1,5 @@
-﻿using EditorCore.Common;
-using EditorCore.WindWaker.MapEntities;
+﻿using WEditor.Common;
+using WEditor.WindWaker.MapEntities;
 using GameFormatReader.Common;
 using Newtonsoft.Json;
 using OpenTK;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
-namespace EditorCore.WindWaker.Loaders
+namespace WEditor.WindWaker.Loaders
 {
     public static class MapEntityLoader
     {

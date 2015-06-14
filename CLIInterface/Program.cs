@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EditorCore.WindWaker;
-using EditorCore.WindWaker.Loaders;
+using WEditor.WindWaker;
+using WEditor.WindWaker.Loaders;
 
 namespace CLIInterface
 {

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace EditorCore.WindWaker
+namespace WEditor.WindWaker
 {
     public class ItemJsonTemplate
     {

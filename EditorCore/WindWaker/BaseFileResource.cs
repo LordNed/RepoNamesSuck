@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-namespace EditorCore.WindWaker
+namespace WEditor.WindWaker
 {
     //public enum FileResourceType
     //{

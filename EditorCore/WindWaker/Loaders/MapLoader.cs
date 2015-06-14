@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace EditorCore.WindWaker.Loaders
+namespace WEditor.WindWaker.Loaders
 {
     public static class MapLoader
     {

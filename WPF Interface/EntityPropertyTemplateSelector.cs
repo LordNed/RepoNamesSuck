@@ -1,4 +1,4 @@
-﻿using EditorCore.Common;
+﻿using WEditor.Common;
 using System;
 using System.Windows;
 using System.Windows.Controls;

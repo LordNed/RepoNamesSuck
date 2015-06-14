@@ -1,7 +1,7 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:custom="clr-namespace:EditorCore.WindWaker.MapEntities;assembly=EditorCore"
+        xmlns:custom="clr-namespace:WEditor.WindWaker.MapEntities;assembly=EditorCore"
         xmlns:local="clr-namespace:WPF_Interface"
         xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         xmlns:Controls="clr-namespace:WPF_Interface.Controls"

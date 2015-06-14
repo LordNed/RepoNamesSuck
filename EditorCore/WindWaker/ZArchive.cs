@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-namespace EditorCore.WindWaker
+namespace WEditor.WindWaker
 {
     public enum ArchiveType 
     {
