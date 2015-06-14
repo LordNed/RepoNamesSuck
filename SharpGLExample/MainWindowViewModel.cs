@@ -1,4 +1,4 @@
-﻿using SharpGL;
+﻿using OpenTK;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -12,7 +12,7 @@ namespace SharpGLExample
 
         private EditorCore m_editorCore;
         private Timer m_intervalTimer;
-
+        private GLControl m_control;
 
 
         public MainWindowViewModel()
@@ -25,17 +25,20 @@ namespace SharpGLExample
             { 
                 Input.SetMousePosition(new OpenTK.Vector2((float)MousePosition.X, (float)MousePosition.Y));
                 m_editorCore.Tick();
+                if (m_control != null)
+                    m_control.SwapBuffers();
             };
         }
 
-        internal void OnGraphicsContextInitialized(SharpGL.OpenGL context)
+        internal void OnGraphicsContextInitialized(GLControl context)
         {
-            m_editorCore.SetGraphicsContext(context);
+            m_control = context;
+            //m_editorCore.SetGraphicsContext(context);
         }
 
-        internal void OnOutputResized(SharpGL.OpenGL context, float width, float height)
+        internal void OnOutputResized(float width, float height)
         {
-            m_editorCore.OnOutputResized(context, width, height);
+            m_editorCore.OnOutputResized(width, height);
         }
 
         internal void SetMouseState(MouseButton mouseButton, bool down)

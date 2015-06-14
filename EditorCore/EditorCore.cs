@@ -41,9 +41,9 @@ namespace WEditor
             m_renderSystem.SetGraphicsContext(context);
         }
 
-        public void OnOutputResized(OpenGL context, float width, float height)
+        public void OnOutputResized(float width, float height)
         {
-            m_renderSystem.SetOutputSize(context, width, height);
+            m_renderSystem.SetOutputSize(width, height);
         }
     }
 }
