@@ -39,14 +39,11 @@ namespace WEditor
             Console.WriteLine("[EditorCore] RenderSystem Initialized.");
         }
 
-        public void SetGraphicsContext(OpenGL context)
-        {
-            m_context = context;
-            m_renderSystem.SetGraphicsContext(context);
-        }
-
         public void OnOutputResized(float width, float height)
         {
+            if (m_renderSystem == null)
+                return;
+
             m_renderSystem.SetOutputSize(width, height);
         }
     }
