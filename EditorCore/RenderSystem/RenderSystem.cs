@@ -30,7 +30,7 @@ namespace WEditor.Rendering
             rightCamera.ClearColor = new Color(0.5f, 0, 1f, 1f);
 
             m_cameraList.Add(leftCamera);
-            //m_cameraList.Add(rightCamera);
+            m_cameraList.Add(rightCamera);
 
             /* Create a default cube */
             m_testMesh = new Mesh();
@@ -72,6 +72,11 @@ namespace WEditor.Rendering
 
             m_testMesh.Vertices = meshVerts;
             m_testMesh.Indexes = meshIndexes;
+
+            Color[] colors = new Color[meshVerts.Length];
+            for(int i = 0; i < meshVerts.Length; i++)
+                colors[i] = new Color(meshVerts[i].X, meshVerts[i].Y, meshVerts[i].Z, 1f);
+            m_testMesh.Color0 = colors;
         }
 
         internal void RenderFrame()
@@ -109,21 +114,18 @@ namespace WEditor.Rendering
                 Matrix4 viewProjMatrix = camera.ViewMatrix * camera.ProjectionMatrix;
                 Matrix4 finalMatrix = modelMatrix * viewProjMatrix;
 
-
-
                 // Bind the Mesh objects
                 GL.BindBuffer(BufferTarget.ArrayBuffer, m_testMesh.VBO);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_testMesh.EBO);
-
-                // Set the layout and enable attributes.
                 GL.EnableVertexAttribArray((int)ShaderAttributeIds.Position);
-                GL.VertexAttribPointer((int)ShaderAttributeIds.Position, 3, VertexAttribPointerType.Float, false, Vector3.SizeInBytes, 0);
+                GL.VertexAttribPointer((int)ShaderAttributeIds.Position, 3, VertexAttribPointerType.Float, false, 4 * 3, 0);
 
+                GL.BindBuffer(BufferTarget.ArrayBuffer, m_testMesh.glColor0);
+                GL.EnableVertexAttribArray((int)ShaderAttributeIds.Color);
+                GL.VertexAttribPointer((int)ShaderAttributeIds.Color, 4, VertexAttribPointerType.Float, false, 4 * 4, 0);
+                
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_testMesh.EBO);
+                
                 // Upload the MVP to the GPU
-                //GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
-                //GL.Uniform3(m_shader.UniformColor, new Vector3(1f, 0f, 0f));
-
-                //Matrix4 finalMatrix = modelMatrix * viewMatrix * projMatrix;
                 GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
 
                 // Draw it

@@ -33,7 +33,18 @@ namespace WEditor.Rendering
                 GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(m_indexes.Length * 4 * 3), m_indexes, BufferUsageHint.StaticDraw);
             }
         }
-        public Color[] Color0;
+
+        public Color[] Color0
+        {
+            get { return m_color0; }
+            set
+            {
+                m_color0 = value;
+                GL.GenBuffers(1, out glColor0);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, glColor0);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(m_color0.Length * 4 * 4), m_color0, BufferUsageHint.StaticDraw);
+            }
+        }
 
         public VertexDescription VertexDescription;
 
@@ -43,6 +54,7 @@ namespace WEditor.Rendering
 
         public int VBO;
         public int EBO;
+        public int glColor0;
 
         public Mesh()
         {

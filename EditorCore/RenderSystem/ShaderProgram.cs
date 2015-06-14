@@ -5,7 +5,8 @@ namespace WEditor.Rendering
 {
     public enum ShaderAttributeIds
     {
-        Position = 0,
+        None = 0,
+        Position = 1,
         Color = 2,
         TexCoord = 3,
     }
@@ -20,23 +21,17 @@ namespace WEditor.Rendering
         {
             ProgramId = GL.CreateProgram();
 
-            int vertShaderId, fragShaderId;
-            LoadShader(vertexShaderPath, ShaderType.VertexShader, ProgramId, out vertShaderId);
-            LoadShader(fragmentShaderPath, ShaderType.FragmentShader, ProgramId, out fragShaderId);
-
-            // Once the shaders have been created and linked to the program (via LoadShader) we no
-            // longer need the reference to the shader as the program will refcount it for us, so
-            // we free it here.
-            GL.DeleteShader(vertShaderId);
-            GL.DeleteShader(fragShaderId);
+            LoadShader(vertexShaderPath, ShaderType.VertexShader, ProgramId);
+            LoadShader(fragmentShaderPath, ShaderType.FragmentShader, ProgramId);
 
             GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.Position, "vertexPos");
+            GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.Color, "color");
 
             GL.LinkProgram(ProgramId);
 
             if(GL.GetError() != ErrorCode.NoError)
             {
-                Console.WriteLine("[WEditor.Core] Error linking shader. Result: {0}", GL.GetProgramInfoLog(ProgramId));
+                Console.WriteLine("[EditorCore.Rendering] Error linking shader. Result: {0}", GL.GetProgramInfoLog(ProgramId));
             }
 
             UniformMVP = GL.GetUniformLocation(ProgramId, "modelview");
@@ -44,13 +39,13 @@ namespace WEditor.Rendering
 
             if(GL.GetError() != ErrorCode.NoError)
             {
-                Console.WriteLine("[WEditor.Core] Failed to get modelview uniform for shader. Result: {0}", GL.GetProgramInfoLog(ProgramId));
+                Console.WriteLine("[EditorCore.Rendering] Failed to get modelview uniform for shader. Result: {0}", GL.GetProgramInfoLog(ProgramId));
             }
         }
 
-        protected void LoadShader(string fileName, ShaderType type, int program, out int address)
+        protected void LoadShader(string fileName, ShaderType type, int program)
         {
-            address = GL.CreateShader(type);
+            int address = GL.CreateShader(type);
             try
             {
                 using (var streamReader = new System.IO.StreamReader(fileName))
@@ -65,17 +60,17 @@ namespace WEditor.Rendering
 
                     if (compileStatus != 1)
                     {
-                        Console.WriteLine("[WEditor.Core] Failed to compile shader {0}. Log:\n{1}", fileName, GL.GetShaderInfoLog(address));
+                        Console.WriteLine("[EditorCore.Rendering] Failed to compile shader {0}. Log:\n{1}", fileName, GL.GetShaderInfoLog(address));
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[WEditor.Core] Caught exception while loading shader {0}. Ex: {1}", fileName, ex);
+                Console.WriteLine("[EditorCore.Rendering] Caught exception while loading shader {0}. Ex: {1}", fileName, ex);
             }
 
             // De-increment the reference count once it's been attached to the program
-            //GL.DeleteShader(address);
+            GL.DeleteShader(address);
         }
     }
 }
