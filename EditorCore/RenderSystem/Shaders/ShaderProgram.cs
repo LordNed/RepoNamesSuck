@@ -5,17 +5,16 @@ namespace WEditor.Rendering
 {
     public enum ShaderAttributeIds
     {
-        None = 0,
-        Position = 1,
+        Position = 0,
         Color = 2,
         TexCoord = 3,
     }
 
     public class ShaderProgram
     {
-        public readonly int ProgramId;
-        public readonly int UniformMVP;
-        public readonly int UniformColor;
+        public readonly int ProgramId = -1;
+        public readonly int UniformMVP = -1;
+        public readonly int UniformColor = -1;
         
         public ShaderProgram(string vertexShaderPath, string fragmentShaderPath)
         {

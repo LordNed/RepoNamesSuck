@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using System.Runtime.InteropServices;
+using OpenTK.Graphics.OpenGL;
 
 namespace WEditor.Rendering
 {
@@ -18,9 +19,9 @@ namespace WEditor.Rendering
             set
             {
                 m_vertices = value;
-                GCHandle pinnedArray = GCHandle.Alloc(m_vertices, GCHandleType.Pinned);
-                VertexDescription.UploadData(VertexDescription.VertexTypes.Position, 12, m_vertices.Length, pinnedArray.AddrOfPinnedObject());
-                pinnedArray.Free();
+                GL.GenBuffers(1, out VBO);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(m_vertices.Length * 4 * 3), m_vertices, BufferUsageHint.StaticDraw);
             }
         }
         public int[] Indexes
@@ -29,9 +30,9 @@ namespace WEditor.Rendering
             set
             {
                 m_indexes = value;
-                GCHandle pinnedArray = GCHandle.Alloc(m_indexes, GCHandleType.Pinned);
-                VertexDescription.UploadData(VertexDescription.VertexTypes.Indexes, 12, m_vertices.Length, pinnedArray.AddrOfPinnedObject());
-                pinnedArray.Free();
+                GL.GenBuffers(1, out EBO);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(m_indexes.Length * 4 * 3), m_indexes, BufferUsageHint.StaticDraw);
             }
         }
         public Color[] Color0;
@@ -42,10 +43,13 @@ namespace WEditor.Rendering
         private int[] m_indexes;
         private Color[] m_color0;
 
+        public int VBO;
+        public int EBO;
 
-        public Mesh(OpenGL context)
+        public Mesh()
         {
-            VertexDescription = new VertexDescription(context, Rendering.VertexDescription.VertexTypes.Position | Rendering.VertexDescription.VertexTypes.Color0);
+            //VertexDescription = new VertexDescription(Rendering.VertexDescription.VertexTypes.Position | Rendering.VertexDescription.VertexTypes.Color0);
+
         }
 
 

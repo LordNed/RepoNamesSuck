@@ -10,38 +10,14 @@ namespace WEditor.Rendering
 {
     public class RenderSystem
     {
-        private OpenGL m_GLContext;
         private List<Camera> m_cameraList;
         private ShaderProgram m_shader;
         private Mesh m_testMesh;
-
-        //The OpenGL "program" 's id. You use this to tell the GPU which Vertex/Fragment shader to use.
-        private int _programId;
-
-        //This is an id to a "Uniform". A uniform is set each frame and is constant for the entire drawcall.
-        private int _uniformMVP;
-
-        //This is an identifier that points to a specific buffer in GPU memory. You'd realistically need one of them
-        //per object you're drawing, but I'm only drawing one atm so meh.
-        private int _glVbo;
-        private int _glEbo;
 
         public RenderSystem()
         {
             m_cameraList = new List<Camera>();
             m_shader = new ShaderProgram("RenderSystem/Shaders/vert.glsl", "RenderSystem/Shaders/frag.glsl");
-            _programId = GL.CreateProgram();
-
-            //Create the Vertex and Fragment shader from file using our helper function
-            int vertShaderId, fragShaderId;
-            LoadShader("RenderSystem/Shaders/vert.glsl", ShaderType.VertexShader, _programId, out vertShaderId);
-            LoadShader("RenderSystem/Shaders/frag.glsl", ShaderType.FragmentShader, _programId, out fragShaderId);
-
-            GL.BindAttribLocation(_programId, (int)ShaderAttributeIds.Position, "vertexPos");
-            GL.LinkProgram(_programId);
-            _uniformMVP = GL.GetUniformLocation(_programId, "modelview");
-            if (GL.GetError() != ErrorCode.NoError)
-                Console.WriteLine(GL.GetProgramInfoLog(_programId));
 
             // Create a Default camera
             //Camera editorCamera = new Camera();
@@ -58,7 +34,7 @@ namespace WEditor.Rendering
             //m_cameraList.Add(rightCamera);
 
             /* Create a default cube */
-            //m_testMesh = new Mesh();
+            m_testMesh = new Mesh();
             Vector3 size = new Vector3(2f, 2f, 2f);
 
             Vector3[] meshVerts =
@@ -95,68 +71,14 @@ namespace WEditor.Rendering
                 0, 5, 4
             };
 
-            GL.GenBuffers(1, out _glVbo);
-
-            //This "binds" the buffer. Once a buffer is bound, all actions are relative to it until another buffer is bound.
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _glVbo);
-
-            //This uploads data to the currently bound buffer from the CPU -> GPU. This only needs to be done with the data changes (ie: you edited a vertexes position on the cpu side)
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(meshVerts.Length * Vector3.SizeInBytes), meshVerts,
-                BufferUsageHint.StaticDraw);
-
-            //Now we're going to repeat the same process for the Element buffer, which is what OpenGL calls indicies. (Notice how it's basically identical?)
-            GL.GenBuffers(1, out _glEbo);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _glEbo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(meshIndexes.Length * 4), meshIndexes,
-                BufferUsageHint.StaticDraw);
-        }
-
-        private void Draw()
-        {
-            //This is called *every* frame. Every time we want to draw, we do the following.
-            GL.ClearColor(0f, 0f, 1f, 1f);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            //Tell OpenGL which program to use (our Vert Shader (VS) and Frag Shader (FS))
-            GL.UseProgram(_programId);
-
-            //Enable depth-testing which keeps models from rendering inside out.
-            GL.Enable(EnableCap.DepthTest);
-
-            //Clear any previously bound buffer so we have no leftover data or anything.
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-
-
-            /* Anything below this point would technically be done per object you draw */
-
-            //Build a Model View Projection Matrix. This is where you would add camera movement (modifiying the View matrix), Perspective rendering (perspective matrix) and model position/scale/rotation (Model)
-            Matrix4 viewMatrix = Matrix4.LookAt(new Vector3(25, 15, 25), Vector3.Zero, Vector3.UnitY);
-            Matrix4 projMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(65), 1.6f, 10, 1000);
-            Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
-
-            //Bind the buffers that have the data you want to use
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _glVbo);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _glEbo);
-
-            //Then, you have to tell the GPU what the contents of the Array buffer look like. Ie: Is each entry just a position, or does it have a position, color, normal, etc.
-            GL.EnableVertexAttribArray((int)ShaderAttributeIds.Position);
-            GL.VertexAttribPointer((int)ShaderAttributeIds.Position, 3, VertexAttribPointerType.Float, false, Vector3.SizeInBytes, 0);
-
-            //Upload the WVP to the GPU
-            Matrix4 finalMatrix = modelMatrix * viewMatrix * projMatrix;
-            GL.UniformMatrix4(_uniformMVP, false, ref finalMatrix);
-
-            //Now we tell the GPU to actually draw the data we have
-            GL.DrawElements(PrimitiveType.Triangles, 36, DrawElementsType.UnsignedInt, 0);
-
-            //This is cleanup to undo the changes to the OpenGL state we did to draw this model.
-            GL.DisableVertexAttribArray((int)ShaderAttributeIds.Position);
+            m_testMesh.Vertices = meshVerts;
+            m_testMesh.Indexes = meshIndexes;
         }
 
         internal void RenderFrame()
         {
-            //Draw();
-            //return;
+            // Solid Fill the Back Buffer, until I can figure out what's going on with resizing
+            // windows and partial camera viewport rects.
             GL.ClearColor(0f, 0f, 0f, 1f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -177,7 +99,7 @@ namespace WEditor.Rendering
                 GL.Clear(ClearBufferMask.ColorBufferBit|ClearBufferMask.DepthBufferBit);
 
                 // Start using our Shader program
-                GL.UseProgram(_programId);
+                GL.UseProgram(m_shader.ProgramId);
 
                 GL.Enable(EnableCap.DepthTest);
 
@@ -191,8 +113,8 @@ namespace WEditor.Rendering
 
 
                 // Bind the Mesh objects
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _glVbo);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, _glEbo);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, m_testMesh.VBO);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_testMesh.EBO);
 
                 // Set the layout and enable attributes.
                 GL.EnableVertexAttribArray((int)ShaderAttributeIds.Position);
@@ -203,7 +125,7 @@ namespace WEditor.Rendering
                 //GL.Uniform3(m_shader.UniformColor, new Vector3(1f, 0f, 0f));
 
                 //Matrix4 finalMatrix = modelMatrix * viewMatrix * projMatrix;
-                GL.UniformMatrix4(_uniformMVP, false, ref finalMatrix);
+                GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
 
                 // Draw it
                 GL.DrawElements(PrimitiveType.Triangles, 36, DrawElementsType.UnsignedInt, 0);

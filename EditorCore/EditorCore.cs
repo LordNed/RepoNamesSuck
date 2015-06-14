@@ -21,9 +21,6 @@ namespace WEditor
             Console.WriteLine("[EditorCore] Initialized.");
         }
 
-
-        private OpenGL m_context;
-
         public void Tick()
         {
             Time.Internal_UpdateTime(m_dtStopwatch.ElapsedMilliseconds / 1000f);
