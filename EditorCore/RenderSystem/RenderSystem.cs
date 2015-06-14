@@ -1,14 +1,15 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using SharpGL;
+using System;
 using System.Collections.Generic;
 
 namespace WEditor.Rendering
 {
     public class RenderSystem
     {
-        private OpenGL m_glContext;
+        private OpenGL m_GLContext;
         private List<Camera> m_cameraList;
 
 
@@ -37,131 +38,120 @@ namespace WEditor.Rendering
 
         internal void RenderFrame()
         {
-            // Update the internal editor core state.
-            //  Get the OpenGL instance that's been passed to us.
-            GL.ClearColor(1f, 1f, 0f, 1f);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.Flush();
-
-            OpenGL gl = m_glContext;
-            if (gl == null)
-                return;
-
-            gl.Enable(OpenGL.GL_SCISSOR_TEST);
-            gl.Enable(OpenGL.GL_DEPTH_TEST);
+            GL.Enable(EnableCap.ScissorTest);
+            GL.Enable(EnableCap.DepthTest);
             for (int i = 0; i < m_cameraList.Count; i++)
             {
                 /* SETUP THE VIEWPORT FOR THE CAMERA */
                 Camera camera = m_cameraList[i];
 
                 Rect pixelRect = camera.PixelRect;
-                gl.Viewport((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
-                gl.Scissor((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
+                GL.Viewport((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
+                GL.Scissor((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
 
                 // Clear the backbuffer
                 Color clearColor = camera.ClearColor;
-                gl.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
-                gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+                GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
+                GL.Clear(ClearBufferMask.ColorBufferBit|ClearBufferMask.DepthBufferBit);
 
 
                 //  Reset the modelview matrix.
-                gl.LoadIdentity();
+                GL.LoadIdentity();
 
                 //  Move the geometry into a fairly central position.
-                gl.Translate(-1.5f, 0.0f, -6.0f);
+                GL.Translate(-1.5f, 0.0f, -6.0f);
 
                 //  Draw a pyramid. First, rotate the modelview matrix.
-                gl.Rotate(rotatePyramid, 0.0f, 1.0f, 0.0f);
+                GL.Rotate(rotatePyramid, 0.0f, 1.0f, 0.0f);
 
-                //  Start drawing triangles.
-                gl.Begin(OpenGL.GL_TRIANGLES);
+                //  Start drawing trianGLes.
+                GL.Begin(BeginMode.Triangles);
 
-                gl.Color(1.0f, 0.0f, 0.0f);
-                gl.Vertex(0.0f, 1.0f, 0.0f);
-                gl.Color(0.0f, 1.0f, 0.0f);
-                gl.Vertex(-1.0f, -1.0f, 1.0f);
-                gl.Color(0.0f, 0.0f, 1.0f);
-                gl.Vertex(1.0f, -1.0f, 1.0f);
+                GL.Color3(1.0f, 0.0f, 0.0f);
+                GL.Vertex3(0.0f, 1.0f, 0.0f);
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex3(-1.0f, -1.0f, 1.0f);
+                GL.Color3(0.0f, 0.0f, 1.0f);
+                GL.Vertex3(1.0f, -1.0f, 1.0f);
 
-                gl.Color(1.0f, 0.0f, 0.0f);
-                gl.Vertex(0.0f, 1.0f, 0.0f);
-                gl.Color(0.0f, 0.0f, 1.0f);
-                gl.Vertex(1.0f, -1.0f, 1.0f);
-                gl.Color(0.0f, 1.0f, 0.0f);
-                gl.Vertex(1.0f, -1.0f, -1.0f);
+                GL.Color3(1.0f, 0.0f, 0.0f);
+                GL.Vertex3(0.0f, 1.0f, 0.0f);
+                GL.Color3(0.0f, 0.0f, 1.0f);
+                GL.Vertex3(1.0f, -1.0f, 1.0f);
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex3(1.0f, -1.0f, -1.0f);
 
-                gl.Color(1.0f, 0.0f, 0.0f);
-                gl.Vertex(0.0f, 1.0f, 0.0f);
-                gl.Color(0.0f, 1.0f, 0.0f);
-                gl.Vertex(1.0f, -1.0f, -1.0f);
-                gl.Color(0.0f, 0.0f, 1.0f);
-                gl.Vertex(-1.0f, -1.0f, -1.0f);
+                GL.Color3(1.0f, 0.0f, 0.0f);
+                GL.Vertex3(0.0f, 1.0f, 0.0f);
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex3(1.0f, -1.0f, -1.0f);
+                GL.Color3(0.0f, 0.0f, 1.0f);
+                GL.Vertex3(-1.0f, -1.0f, -1.0f);
 
-                gl.Color(1.0f, 0.0f, 0.0f);
-                gl.Vertex(0.0f, 1.0f, 0.0f);
-                gl.Color(0.0f, 0.0f, 1.0f);
-                gl.Vertex(-1.0f, -1.0f, -1.0f);
-                gl.Color(0.0f, 1.0f, 0.0f);
-                gl.Vertex(-1.0f, -1.0f, 1.0f);
+                GL.Color3(1.0f, 0.0f, 0.0f);
+                GL.Vertex3(0.0f, 1.0f, 0.0f);
+                GL.Color3(0.0f, 0.0f, 1.0f);
+                GL.Vertex3(-1.0f, -1.0f, -1.0f);
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex3(-1.0f, -1.0f, 1.0f);
 
-                gl.End();
+                GL.End();
 
                 //  Reset the modelview.
-                gl.LoadIdentity();
+                GL.LoadIdentity();
 
                 //  Move into a more central position.
-                gl.Translate(1.5f, 0.0f, -7.0f);
+                GL.Translate(1.5f, 0.0f, -7.0f);
 
                 //  Rotate the cube.
-                gl.Rotate(rquad, 1.0f, 1.0f, 1.0f);
+                GL.Rotate(rquad, 1.0f, 1.0f, 1.0f);
 
                 //  Provide the cube colors and geometry.
-                gl.Begin(OpenGL.GL_QUADS);
+                GL.Begin(BeginMode.Quads);
 
-                gl.Color(0.0f, 1.0f, 0.0f);
-                gl.Vertex(1.0f, 1.0f, -1.0f);
-                gl.Vertex(-1.0f, 1.0f, -1.0f);
-                gl.Vertex(-1.0f, 1.0f, 1.0f);
-                gl.Vertex(1.0f, 1.0f, 1.0f);
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex3(1.0f, 1.0f, -1.0f);
+                GL.Vertex3(-1.0f, 1.0f, -1.0f);
+                GL.Vertex3(-1.0f, 1.0f, 1.0f);
+                GL.Vertex3(1.0f, 1.0f, 1.0f);
 
-                gl.Color(1.0f, 0.5f, 0.0f);
-                gl.Vertex(1.0f, -1.0f, 1.0f);
-                gl.Vertex(-1.0f, -1.0f, 1.0f);
-                gl.Vertex(-1.0f, -1.0f, -1.0f);
-                gl.Vertex(1.0f, -1.0f, -1.0f);
+                GL.Color3(1.0f, 0.5f, 0.0f);
+                GL.Vertex3(1.0f, -1.0f, 1.0f);
+                GL.Vertex3(-1.0f, -1.0f, 1.0f);
+                GL.Vertex3(-1.0f, -1.0f, -1.0f);
+                GL.Vertex3(1.0f, -1.0f, -1.0f);
 
-                gl.Color(1.0f, 0.0f, 0.0f);
-                gl.Vertex(1.0f, 1.0f, 1.0f);
-                gl.Vertex(-1.0f, 1.0f, 1.0f);
-                gl.Vertex(-1.0f, -1.0f, 1.0f);
-                gl.Vertex(1.0f, -1.0f, 1.0f);
+                GL.Color3(1.0f, 0.0f, 0.0f);
+                GL.Vertex3(1.0f, 1.0f, 1.0f);
+                GL.Vertex3(-1.0f, 1.0f, 1.0f);
+                GL.Vertex3(-1.0f, -1.0f, 1.0f);
+                GL.Vertex3(1.0f, -1.0f, 1.0f);
 
-                gl.Color(1.0f, 1.0f, 0.0f);
-                gl.Vertex(1.0f, -1.0f, -1.0f);
-                gl.Vertex(-1.0f, -1.0f, -1.0f);
-                gl.Vertex(-1.0f, 1.0f, -1.0f);
-                gl.Vertex(1.0f, 1.0f, -1.0f);
+                GL.Color3(1.0f, 1.0f, 0.0f);
+                GL.Vertex3(1.0f, -1.0f, -1.0f);
+                GL.Vertex3(-1.0f, -1.0f, -1.0f);
+                GL.Vertex3(-1.0f, 1.0f, -1.0f);
+                GL.Vertex3(1.0f, 1.0f, -1.0f);
 
-                gl.Color(0.0f, 0.0f, 1.0f);
-                gl.Vertex(-1.0f, 1.0f, 1.0f);
-                gl.Vertex(-1.0f, 1.0f, -1.0f);
-                gl.Vertex(-1.0f, -1.0f, -1.0f);
-                gl.Vertex(-1.0f, -1.0f, 1.0f);
+                GL.Color3(0.0f, 0.0f, 1.0f);
+                GL.Vertex3(-1.0f, 1.0f, 1.0f);
+                GL.Vertex3(-1.0f, 1.0f, -1.0f);
+                GL.Vertex3(-1.0f, -1.0f, -1.0f);
+                GL.Vertex3(-1.0f, -1.0f, 1.0f);
 
-                gl.Color(1.0f, 0.0f, 1.0f);
-                gl.Vertex(1.0f, 1.0f, -1.0f);
-                gl.Vertex(1.0f, 1.0f, 1.0f);
-                gl.Vertex(1.0f, -1.0f, 1.0f);
-                gl.Vertex(1.0f, -1.0f, -1.0f);
+                GL.Color3(1.0f, 0.0f, 1.0f);
+                GL.Vertex3(1.0f, 1.0f, -1.0f);
+                GL.Vertex3(1.0f, 1.0f, 1.0f);
+                GL.Vertex3(1.0f, -1.0f, 1.0f);
+                GL.Vertex3(1.0f, -1.0f, -1.0f);
 
-                gl.End();
+                GL.End();
             }
-            gl.Disable(OpenGL.GL_SCISSOR_TEST);
-            gl.Disable(OpenGL.GL_DEPTH_TEST);
+            GL.Disable(EnableCap.ScissorTest);
+            GL.Disable(EnableCap.DepthTest);
 
             //  Flush OpenGL.
-            gl.Flush();
+            GL.Flush();
 
             //  Rotate the geometry a bit.
             rotatePyramid += 60.0f * Time.DeltaTime;
@@ -170,9 +160,9 @@ namespace WEditor.Rendering
 
         internal void SetGraphicsContext(OpenGL context)
         {
-            m_glContext = context;
+            m_GLContext = context;
 
-            /*Mesh testMesh = new Mesh(m_glContext);
+            /*Mesh testMesh = new Mesh(m_GLContext);
             Vector3 size = new Vector3(2f, 2f, 2f);
 
             Vector3[] meshVerts =
@@ -224,15 +214,15 @@ namespace WEditor.Rendering
             }
 
             // Load and clear the projection matrix.
-            /*context.MatrixMode(OpenGL.GL_PROJECTION);
-            context.LoadIdentity();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
 
             // Perform a perspective transformation
-            context.Perspective(45.0f, width / height,
-                0.1f, 100.0f);
+            Matrix4 m_perspective = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4.0f, width / height, 0.1f, 100.0f);
+            GL.LoadMatrix(ref m_perspective);
 
             // Load the modelview.
-            context.MatrixMode(OpenGL.GL_MODELVIEW);*/
+            GL.MatrixMode(MatrixMode.Modelview);
         }
     }
 }
