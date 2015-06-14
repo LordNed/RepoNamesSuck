@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using SharpGL;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace WEditor.Rendering
 {
@@ -12,15 +13,35 @@ namespace WEditor.Rendering
         private OpenGL m_GLContext;
         private List<Camera> m_cameraList;
         private ShaderProgram m_shader;
+        private Mesh m_testMesh;
 
+        //The OpenGL "program" 's id. You use this to tell the GPU which Vertex/Fragment shader to use.
+        private int _programId;
 
-        float rotatePyramid = 0;
-        float rquad = 0; 
+        //This is an id to a "Uniform". A uniform is set each frame and is constant for the entire drawcall.
+        private int _uniformMVP;
+
+        //This is an identifier that points to a specific buffer in GPU memory. You'd realistically need one of them
+        //per object you're drawing, but I'm only drawing one atm so meh.
+        private int _glVbo;
+        private int _glEbo;
 
         public RenderSystem()
         {
             m_cameraList = new List<Camera>();
-            m_shader = new ShaderProgram("RenderSystem/Shaders/vert.glsl", "RenderSystem/Shaders/frag.glsl");
+            //m_shader = new ShaderProgram("RenderSystem/Shaders/vert.glsl", "RenderSystem/Shaders/frag.glsl");
+            _programId = GL.CreateProgram();
+
+            //Create the Vertex and Fragment shader from file using our helper function
+            int vertShaderId, fragShaderId;
+            LoadShader("RenderSystem/Shaders/vert.glsl", ShaderType.VertexShader, _programId, out vertShaderId);
+            LoadShader("RenderSystem/Shaders/frag.glsl", ShaderType.FragmentShader, _programId, out fragShaderId);
+
+            GL.BindAttribLocation(_programId, (int)ShaderAttributeIds.Position, "vertexPos");
+            GL.LinkProgram(_programId);
+            _uniformMVP = GL.GetUniformLocation(_programId, "modelview");
+            if (GL.GetError() != ErrorCode.NoError)
+                Console.WriteLine(GL.GetProgramInfoLog(_programId));
 
             // Create a Default camera
             //Camera editorCamera = new Camera();
@@ -35,136 +56,10 @@ namespace WEditor.Rendering
             rightCamera.ClearColor = new Color(0.5f, 0, 1f, 1f);
 
             m_cameraList.Add(leftCamera);
-            m_cameraList.Add(rightCamera);
-        }
+            //m_cameraList.Add(rightCamera);
 
-        internal void RenderFrame()
-        {
-            GL.Enable(EnableCap.ScissorTest);
-            GL.Enable(EnableCap.DepthTest);
-            for (int i = 0; i < m_cameraList.Count; i++)
-            {
-                /* SETUP THE VIEWPORT FOR THE CAMERA */
-                Camera camera = m_cameraList[i];
-
-                Rect pixelRect = camera.PixelRect;
-                GL.Viewport((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
-                GL.Scissor((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
-
-                // Clear the backbuffer
-                Color clearColor = camera.ClearColor;
-                GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
-                GL.Clear(ClearBufferMask.ColorBufferBit|ClearBufferMask.DepthBufferBit);
-
-
-                //  Reset the modelview matrix.
-                GL.LoadIdentity();
-
-                //  Move the geometry into a fairly central position.
-                GL.Translate(-1.5f, 0.0f, -6.0f);
-
-                //  Draw a pyramid. First, rotate the modelview matrix.
-                GL.Rotate(rotatePyramid, 0.0f, 1.0f, 0.0f);
-
-                //  Start drawing trianGLes.
-                GL.Begin(BeginMode.Triangles);
-
-                GL.Color3(1.0f, 0.0f, 0.0f);
-                GL.Vertex3(0.0f, 1.0f, 0.0f);
-                GL.Color3(0.0f, 1.0f, 0.0f);
-                GL.Vertex3(-1.0f, -1.0f, 1.0f);
-                GL.Color3(0.0f, 0.0f, 1.0f);
-                GL.Vertex3(1.0f, -1.0f, 1.0f);
-
-                GL.Color3(1.0f, 0.0f, 0.0f);
-                GL.Vertex3(0.0f, 1.0f, 0.0f);
-                GL.Color3(0.0f, 0.0f, 1.0f);
-                GL.Vertex3(1.0f, -1.0f, 1.0f);
-                GL.Color3(0.0f, 1.0f, 0.0f);
-                GL.Vertex3(1.0f, -1.0f, -1.0f);
-
-                GL.Color3(1.0f, 0.0f, 0.0f);
-                GL.Vertex3(0.0f, 1.0f, 0.0f);
-                GL.Color3(0.0f, 1.0f, 0.0f);
-                GL.Vertex3(1.0f, -1.0f, -1.0f);
-                GL.Color3(0.0f, 0.0f, 1.0f);
-                GL.Vertex3(-1.0f, -1.0f, -1.0f);
-
-                GL.Color3(1.0f, 0.0f, 0.0f);
-                GL.Vertex3(0.0f, 1.0f, 0.0f);
-                GL.Color3(0.0f, 0.0f, 1.0f);
-                GL.Vertex3(-1.0f, -1.0f, -1.0f);
-                GL.Color3(0.0f, 1.0f, 0.0f);
-                GL.Vertex3(-1.0f, -1.0f, 1.0f);
-
-                GL.End();
-
-                //  Reset the modelview.
-                GL.LoadIdentity();
-
-                //  Move into a more central position.
-                GL.Translate(1.5f, 0.0f, -7.0f);
-
-                //  Rotate the cube.
-                GL.Rotate(rquad, 1.0f, 1.0f, 1.0f);
-
-                //  Provide the cube colors and geometry.
-                GL.Begin(BeginMode.Quads);
-
-                GL.Color3(0.0f, 1.0f, 0.0f);
-                GL.Vertex3(1.0f, 1.0f, -1.0f);
-                GL.Vertex3(-1.0f, 1.0f, -1.0f);
-                GL.Vertex3(-1.0f, 1.0f, 1.0f);
-                GL.Vertex3(1.0f, 1.0f, 1.0f);
-
-                GL.Color3(1.0f, 0.5f, 0.0f);
-                GL.Vertex3(1.0f, -1.0f, 1.0f);
-                GL.Vertex3(-1.0f, -1.0f, 1.0f);
-                GL.Vertex3(-1.0f, -1.0f, -1.0f);
-                GL.Vertex3(1.0f, -1.0f, -1.0f);
-
-                GL.Color3(1.0f, 0.0f, 0.0f);
-                GL.Vertex3(1.0f, 1.0f, 1.0f);
-                GL.Vertex3(-1.0f, 1.0f, 1.0f);
-                GL.Vertex3(-1.0f, -1.0f, 1.0f);
-                GL.Vertex3(1.0f, -1.0f, 1.0f);
-
-                GL.Color3(1.0f, 1.0f, 0.0f);
-                GL.Vertex3(1.0f, -1.0f, -1.0f);
-                GL.Vertex3(-1.0f, -1.0f, -1.0f);
-                GL.Vertex3(-1.0f, 1.0f, -1.0f);
-                GL.Vertex3(1.0f, 1.0f, -1.0f);
-
-                GL.Color3(0.0f, 0.0f, 1.0f);
-                GL.Vertex3(-1.0f, 1.0f, 1.0f);
-                GL.Vertex3(-1.0f, 1.0f, -1.0f);
-                GL.Vertex3(-1.0f, -1.0f, -1.0f);
-                GL.Vertex3(-1.0f, -1.0f, 1.0f);
-
-                GL.Color3(1.0f, 0.0f, 1.0f);
-                GL.Vertex3(1.0f, 1.0f, -1.0f);
-                GL.Vertex3(1.0f, 1.0f, 1.0f);
-                GL.Vertex3(1.0f, -1.0f, 1.0f);
-                GL.Vertex3(1.0f, -1.0f, -1.0f);
-
-                GL.End();
-            }
-            GL.Disable(EnableCap.ScissorTest);
-            GL.Disable(EnableCap.DepthTest);
-
-            //  Flush OpenGL.
-            GL.Flush();
-
-            //  Rotate the geometry a bit.
-            rotatePyramid += 60.0f * Time.DeltaTime;
-            rquad -= 60.0f * Time.DeltaTime;
-        }
-
-        internal void SetGraphicsContext(OpenGL context)
-        {
-            m_GLContext = context;
-
-            /*Mesh testMesh = new Mesh(m_GLContext);
+            /* Create a default cube */
+            //m_testMesh = new Mesh();
             Vector3 size = new Vector3(2f, 2f, 2f);
 
             Vector3[] meshVerts =
@@ -201,8 +96,123 @@ namespace WEditor.Rendering
                 0, 5, 4
             };
 
-            testMesh.Vertices = meshVerts;
-            testMesh.Indexes = meshIndexes;*/
+            GL.GenBuffers(1, out _glVbo);
+
+            //This "binds" the buffer. Once a buffer is bound, all actions are relative to it until another buffer is bound.
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _glVbo);
+
+            //This uploads data to the currently bound buffer from the CPU -> GPU. This only needs to be done with the data changes (ie: you edited a vertexes position on the cpu side)
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(meshVerts.Length * Vector3.SizeInBytes), meshVerts,
+                BufferUsageHint.StaticDraw);
+
+            //Now we're going to repeat the same process for the Element buffer, which is what OpenGL calls indicies. (Notice how it's basically identical?)
+            GL.GenBuffers(1, out _glEbo);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _glEbo);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(meshIndexes.Length * 4), meshIndexes,
+                BufferUsageHint.StaticDraw);
+        }
+
+        private void Draw()
+        {
+            //This is called *every* frame. Every time we want to draw, we do the following.
+            GL.ClearColor(0f, 0f, 1f, 1f);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            //Tell OpenGL which program to use (our Vert Shader (VS) and Frag Shader (FS))
+            GL.UseProgram(_programId);
+
+            //Enable depth-testing which keeps models from rendering inside out.
+            GL.Enable(EnableCap.DepthTest);
+
+            //Clear any previously bound buffer so we have no leftover data or anything.
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+
+            /* Anything below this point would technically be done per object you draw */
+
+            //Build a Model View Projection Matrix. This is where you would add camera movement (modifiying the View matrix), Perspective rendering (perspective matrix) and model position/scale/rotation (Model)
+            Matrix4 viewMatrix = Matrix4.LookAt(new Vector3(25, 15, 25), Vector3.Zero, Vector3.UnitY);
+            Matrix4 projMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(65), 1.6f, 10, 1000);
+            Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
+
+            //Bind the buffers that have the data you want to use
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _glVbo);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _glEbo);
+
+            //Then, you have to tell the GPU what the contents of the Array buffer look like. Ie: Is each entry just a position, or does it have a position, color, normal, etc.
+            GL.EnableVertexAttribArray((int)ShaderAttributeIds.Position);
+            GL.VertexAttribPointer((int)ShaderAttributeIds.Position, 3, VertexAttribPointerType.Float, false, Vector3.SizeInBytes, 0);
+
+            //Upload the WVP to the GPU
+            Matrix4 finalMatrix = modelMatrix * viewMatrix * projMatrix;
+            GL.UniformMatrix4(_uniformMVP, false, ref finalMatrix);
+
+            //Now we tell the GPU to actually draw the data we have
+            GL.DrawElements(PrimitiveType.Triangles, 36, DrawElementsType.UnsignedInt, 0);
+
+            //This is cleanup to undo the changes to the OpenGL state we did to draw this model.
+            GL.DisableVertexAttribArray((int)ShaderAttributeIds.Position);
+        }
+
+        internal void RenderFrame()
+        {
+            Draw();
+            return;
+
+            GL.Enable(EnableCap.ScissorTest);
+            GL.Enable(EnableCap.DepthTest);
+            for (int i = 0; i < m_cameraList.Count; i++)
+            {
+                /* SETUP THE VIEWPORT FOR THE CAMERA */
+                Camera camera = m_cameraList[i];
+
+                Rect pixelRect = camera.PixelRect;
+                GL.Viewport((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
+                GL.Scissor((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
+
+                // Clear the backbuffer
+                Color clearColor = camera.ClearColor;
+                GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
+                GL.Clear(ClearBufferMask.ColorBufferBit|ClearBufferMask.DepthBufferBit);
+
+                // Start using our Shader program
+                GL.UseProgram(m_shader.ProgramId);
+
+                Matrix4 viewMatrix = Matrix4.LookAt(new Vector3(25, 15, -25), Vector3.Zero, Vector3.UnitY);
+                Matrix4 projMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(65), camera.PixelWidth/camera.PixelHeight, 0.1f, 100);
+
+                //Matrix4 viewProjMatrix = camera.ViewMatrix * camera.ProjectionMatrix;
+                //Matrix4 finalMatrix = Matrix4.CreateTranslation(new Vector3(0, 0, 6)) * viewProjMatrix;
+                Matrix4 finalMatrix = viewMatrix * projMatrix;
+
+
+                // Bind the Mesh objects
+                GL.BindBuffer(BufferTarget.ArrayBuffer, m_testMesh.VBO);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_testMesh.EBO);
+
+                // Set the layout and enable attributes.
+                GL.EnableVertexAttribArray((int)ShaderAttributeIds.Position);
+                GL.VertexAttribPointer((int)ShaderAttributeIds.Position, 3, VertexAttribPointerType.Float, false, 3 * 4, 0);
+
+                // Upload the MVP to the GPU
+                GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
+                GL.Uniform3(m_shader.UniformColor, new Vector3(1f, 0f, 0f));
+
+                // Draw it
+                GL.DrawArrays(PrimitiveType.TriangleStrip, m_testMesh.Indexes.Length / 3, 0);
+            }
+            GL.Disable(EnableCap.ScissorTest);
+            GL.Disable(EnableCap.DepthTest);
+
+            //  Flush OpenGL.
+            GL.Flush();
+        }
+
+        internal void SetGraphicsContext(OpenGL context)
+        {
+            m_GLContext = context;
+
+            
         }
 
         internal void SetOutputSize(float width, float height)
@@ -226,6 +236,27 @@ namespace WEditor.Rendering
             // Load the modelview.
             GL.MatrixMode(MatrixMode.Modelview);
 
+        }
+
+        protected void LoadShader(string fileName, ShaderType type, int program, out int address)
+        {
+            //Gets an id from OpenGL
+            address = GL.CreateShader(type);
+            using (var streamReader = new StreamReader(fileName))
+            {
+                GL.ShaderSource(address, streamReader.ReadToEnd());
+            }
+            //Compiles the shader code
+            GL.CompileShader(address);
+            //Tells OpenGL that this shader (be it vertex of fragment) belongs to the specified program
+            GL.AttachShader(program, address);
+
+            //Error checking.
+            int compileSuccess;
+            GL.GetShader(address, ShaderParameter.CompileStatus, out compileSuccess);
+
+            if (compileSuccess == 0)
+                Console.WriteLine(GL.GetShaderInfoLog(address));
         }
     }
 }
