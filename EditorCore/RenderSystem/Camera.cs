@@ -99,7 +99,7 @@ namespace WEditor.Rendering
         {
             get
             {
-                Matrix4 rhView = Matrix4.LookAt(Vector3.Zero, Vector3.Zero + Vector3.One, Vector3.UnitY);
+                Matrix4 rhView = Matrix4.LookAt(new Vector3(0, 15, -10), Vector3.Zero, Vector3.UnitY);
                 return rhView;
             }
         }
@@ -112,6 +112,11 @@ namespace WEditor.Rendering
         private Matrix4 m_projectionMatrix;
         private Rect m_viewportRect;
         private Rect m_pixelRect;
+
+        public Camera()
+        {
+            m_viewportRect = new Rect(0f, 0f, 1f, 1f);
+        }
 
         private void CalculateProjectionMatrix()
         {

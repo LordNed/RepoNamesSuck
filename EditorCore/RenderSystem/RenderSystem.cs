@@ -29,7 +29,7 @@ namespace WEditor.Rendering
         public RenderSystem()
         {
             m_cameraList = new List<Camera>();
-            //m_shader = new ShaderProgram("RenderSystem/Shaders/vert.glsl", "RenderSystem/Shaders/frag.glsl");
+            m_shader = new ShaderProgram("RenderSystem/Shaders/vert.glsl", "RenderSystem/Shaders/frag.glsl");
             _programId = GL.CreateProgram();
 
             //Create the Vertex and Fragment shader from file using our helper function
@@ -48,7 +48,6 @@ namespace WEditor.Rendering
             //m_cameraList.Add(editorCamera);
 
             Camera leftCamera = new Camera();
-            leftCamera.ViewportRect = new Rect(0, 0, 0.5f, 1f);
             leftCamera.ClearColor = new Color(1f, 0.5f, 0, 1f);
 
             Camera rightCamera = new Camera();
@@ -156,8 +155,10 @@ namespace WEditor.Rendering
 
         internal void RenderFrame()
         {
-            Draw();
-            return;
+            //Draw();
+            //return;
+            GL.ClearColor(0f, 0f, 0f, 1f);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.Enable(EnableCap.ScissorTest);
             GL.Enable(EnableCap.DepthTest);
@@ -176,43 +177,42 @@ namespace WEditor.Rendering
                 GL.Clear(ClearBufferMask.ColorBufferBit|ClearBufferMask.DepthBufferBit);
 
                 // Start using our Shader program
-                GL.UseProgram(m_shader.ProgramId);
+                GL.UseProgram(_programId);
 
-                Matrix4 viewMatrix = Matrix4.LookAt(new Vector3(25, 15, -25), Vector3.Zero, Vector3.UnitY);
-                Matrix4 projMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(65), camera.PixelWidth/camera.PixelHeight, 0.1f, 100);
+                GL.Enable(EnableCap.DepthTest);
 
-                //Matrix4 viewProjMatrix = camera.ViewMatrix * camera.ProjectionMatrix;
-                //Matrix4 finalMatrix = Matrix4.CreateTranslation(new Vector3(0, 0, 6)) * viewProjMatrix;
-                Matrix4 finalMatrix = viewMatrix * projMatrix;
+                Matrix4 viewMatrix = Matrix4.LookAt(new Vector3(25, 15, 25), Vector3.Zero, Vector3.UnitY);
+                Matrix4 projMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(65), 1.6f, 10, 1000);
+                Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
+
+                Matrix4 viewProjMatrix = camera.ViewMatrix * camera.ProjectionMatrix;
+                Matrix4 finalMatrix = modelMatrix * viewProjMatrix;
+
 
 
                 // Bind the Mesh objects
-                GL.BindBuffer(BufferTarget.ArrayBuffer, m_testMesh.VBO);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_testMesh.EBO);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, _glVbo);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, _glEbo);
 
                 // Set the layout and enable attributes.
                 GL.EnableVertexAttribArray((int)ShaderAttributeIds.Position);
-                GL.VertexAttribPointer((int)ShaderAttributeIds.Position, 3, VertexAttribPointerType.Float, false, 3 * 4, 0);
+                GL.VertexAttribPointer((int)ShaderAttributeIds.Position, 3, VertexAttribPointerType.Float, false, Vector3.SizeInBytes, 0);
 
                 // Upload the MVP to the GPU
-                GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
-                GL.Uniform3(m_shader.UniformColor, new Vector3(1f, 0f, 0f));
+                //GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
+                //GL.Uniform3(m_shader.UniformColor, new Vector3(1f, 0f, 0f));
+
+                //Matrix4 finalMatrix = modelMatrix * viewMatrix * projMatrix;
+                GL.UniformMatrix4(_uniformMVP, false, ref finalMatrix);
 
                 // Draw it
-                GL.DrawArrays(PrimitiveType.TriangleStrip, m_testMesh.Indexes.Length / 3, 0);
+                GL.DrawElements(PrimitiveType.Triangles, 36, DrawElementsType.UnsignedInt, 0);
             }
             GL.Disable(EnableCap.ScissorTest);
             GL.Disable(EnableCap.DepthTest);
 
             //  Flush OpenGL.
             GL.Flush();
-        }
-
-        internal void SetGraphicsContext(OpenGL context)
-        {
-            m_GLContext = context;
-
-            
         }
 
         internal void SetOutputSize(float width, float height)
