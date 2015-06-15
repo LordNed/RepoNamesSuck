@@ -37,7 +37,6 @@ namespace WEditor.WindWaker
             TextureMatrixArray, 
             LitMatrixArray, 
             NormalBinormalTangent,
-            MaxAttr, 
             NullAttr = 0xFF,
         }
 

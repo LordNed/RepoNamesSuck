@@ -131,63 +131,22 @@ namespace WEditor.WindWaker.Loaders
 
                                             switch (attribType)
 	                                        {
-		                                        case J3DFileResource.VertexArrayType.PositionMatrixIndex:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.Tex0MatrixIndex:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.Tex1MatrixIndex:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.Tex2MatrixIndex:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.Tex3MatrixIndex:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.Tex4MatrixIndex:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.Tex5MatrixIndex:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.Tex6MatrixIndex:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.Tex7MatrixIndex:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Position:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Normal:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Color0:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Color1:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Tex0:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Tex1:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Tex2:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Tex3:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Tex4:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Tex5:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Tex6:
-                                                 break;
                                                 case J3DFileResource.VertexArrayType.Tex7:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.PositionMatrixArray:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.NormalMatrixArray:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.TextureMatrixArray:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.LitMatrixArray:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.NormalBinormalTangent:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.MaxAttr:
-                                                 break;
-                                                case J3DFileResource.VertexArrayType.NullAttr:
-                                                 break;
+
+                                                    break;
                                                 default:
+                                                    Console.WriteLine("[J3DLoader] Unsupported attribType {0}", attribType);
                                                  break;
 	                                                }
                                         }
