@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using WEditor;
+using WEditor.WindWaker;
+using WEditor.WindWaker.Loaders;
 
 namespace SharpGLExample
 {
@@ -34,6 +36,8 @@ namespace SharpGLExample
         {
             m_control = context;
             m_editorCore.OnGraphicsContextInitialized();
+
+            Map map = MapLoader.Load(@"C:\Users\Matt\Documents\Wind Editor\ma2room_slim");
         }
 
         internal void OnOutputResized(float width, float height)

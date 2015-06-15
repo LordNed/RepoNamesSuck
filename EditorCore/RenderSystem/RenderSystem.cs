@@ -77,8 +77,8 @@ namespace WEditor.Rendering
             m_testMesh.Indexes = meshIndexes;
 
             Color[] colors = new Color[meshVerts.Length];
-            for(int i = 0; i < meshVerts.Length; i++)
-                colors[i] = new Color(meshVerts[i].X, meshVerts[i].Y, meshVerts[i].Z, 1f);
+            for (int i = 0; i < meshVerts.Length; i++)
+                colors[i] = new Color(1f, 1f, 0f, 0.5f);
             m_testMesh.Color0 = colors;
 
             m_meshList.Add(m_testMesh);

@@ -48,7 +48,8 @@ namespace WEditor.WindWaker.Loaders
                         /* 3D Model Formats */
                         case ".bmd":
                         case ".bdl":
-                            resource = new UnsupportedFileResource(fileName, folderName, archive);
+                            resource = new J3DFileResource(fileName, folderName, archive);
+                            J3DLoader.Load((J3DFileResource)resource, file.FullName);
                             break;
 
                         /* Event List */
