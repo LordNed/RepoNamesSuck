@@ -1,9 +1,7 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace WEditor.Rendering
 {
@@ -13,9 +11,12 @@ namespace WEditor.Rendering
         private ShaderProgram m_shader;
         private Mesh m_testMesh;
 
+        private List<Mesh> m_meshList;
+
         public RenderSystem()
         {
             m_cameraList = new List<Camera>();
+            m_meshList = new List<Mesh>();
             m_shader = new ShaderProgram("RenderSystem/Shaders/vert.glsl", "RenderSystem/Shaders/frag.glsl");
 
             // Create a Default camera
@@ -79,6 +80,8 @@ namespace WEditor.Rendering
             for(int i = 0; i < meshVerts.Length; i++)
                 colors[i] = new Color(meshVerts[i].X, meshVerts[i].Y, meshVerts[i].Z, 1f);
             m_testMesh.Color0 = colors;
+
+            m_meshList.Add(m_testMesh);
         }
 
         internal void RenderFrame()
@@ -104,30 +107,31 @@ namespace WEditor.Rendering
                 GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
                 GL.Clear(ClearBufferMask.ColorBufferBit|ClearBufferMask.DepthBufferBit);
 
-                // Start using our Shader program
-                GL.UseProgram(m_shader.ProgramId);
-
-                Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
-
                 Matrix4 viewProjMatrix = camera.ViewMatrix * camera.ProjectionMatrix;
-                Matrix4 finalMatrix = modelMatrix * viewProjMatrix;
 
-                // Bind the Mesh objects
-                GL.BindBuffer(BufferTarget.ArrayBuffer, m_testMesh.VBO);
-                GL.EnableVertexAttribArray((int)ShaderAttributeIds.Position);
-                GL.VertexAttribPointer((int)ShaderAttributeIds.Position, 3, VertexAttribPointerType.Float, false, 4 * 3, 0);
+                for (int m = 0; m < m_meshList.Count; m++)
+                {
+                    Mesh mesh = m_meshList[m];
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, m_testMesh.glColor0);
-                GL.EnableVertexAttribArray((int)ShaderAttributeIds.Color);
-                GL.VertexAttribPointer((int)ShaderAttributeIds.Color, 4, VertexAttribPointerType.Float, false, 4 * 4, 0);
-                
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_testMesh.EBO);
-                
-                // Upload the MVP to the GPU
-                GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
+                    // Bind the Shader
+                    GL.UseProgram(m_shader.ProgramId);
 
-                // Draw it
-                GL.DrawElements(PrimitiveType.Triangles, 36, DrawElementsType.UnsignedInt, 0);
+
+                    Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
+                    Matrix4 finalMatrix = modelMatrix * viewProjMatrix;
+
+                    // Bind the VAOs currently associated with this Mesh
+                    mesh.Bind();
+
+                    // Upload the MVP to the GPU
+                    GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
+
+                    // Draw our Mesh.
+                    GL.DrawElements(PrimitiveType.Triangles, mesh.Indexes.Length, DrawElementsType.UnsignedInt, 0);
+                    
+                    // Unbind the VAOs so that our VAO doesn't leak into the next drawcall.
+                    mesh.Unbind();
+                }
             }
             GL.Disable(EnableCap.ScissorTest);
             GL.Disable(EnableCap.DepthTest);
@@ -145,39 +149,6 @@ namespace WEditor.Rendering
                 camera.PixelWidth = width;
                 camera.PixelHeight = height;
             }
-
-            // Load and clear the projection matrix.
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-
-            // Perform a perspective transformation
-            Matrix4 m_perspective = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4.0f, width / height, 0.1f, 100.0f);
-            GL.LoadMatrix(ref m_perspective);
-
-            // Load the modelview.
-            GL.MatrixMode(MatrixMode.Modelview);
-
-        }
-
-        protected void LoadShader(string fileName, ShaderType type, int program, out int address)
-        {
-            //Gets an id from OpenGL
-            address = GL.CreateShader(type);
-            using (var streamReader = new StreamReader(fileName))
-            {
-                GL.ShaderSource(address, streamReader.ReadToEnd());
-            }
-            //Compiles the shader code
-            GL.CompileShader(address);
-            //Tells OpenGL that this shader (be it vertex of fragment) belongs to the specified program
-            GL.AttachShader(program, address);
-
-            //Error checking.
-            int compileSuccess;
-            GL.GetShader(address, ShaderParameter.CompileStatus, out compileSuccess);
-
-            if (compileSuccess == 0)
-                Console.WriteLine(GL.GetShaderInfoLog(address));
         }
     }
 }
