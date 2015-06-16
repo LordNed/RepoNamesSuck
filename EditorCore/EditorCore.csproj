@@ -64,6 +64,7 @@
     <Compile Include="RenderSystem\Camera.cs" />
     <Compile Include="RenderSystem\Material.cs" />
     <Compile Include="RenderSystem\Mesh.cs" />
+    <Compile Include="RenderSystem\MeshBatch.cs" />
     <Compile Include="RenderSystem\RenderSystem.cs" />
     <Compile Include="RenderSystem\ShaderProgram.cs" />
     <Compile Include="RenderSystem\VertexDescription.cs" />

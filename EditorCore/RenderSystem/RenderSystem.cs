@@ -7,21 +7,24 @@ namespace WEditor.Rendering
 {
     public class RenderSystem
     {
+        public static RenderSystem HackInstance;
+
         private List<Camera> m_cameraList;
         private ShaderProgram m_shader;
-        private Mesh m_testMesh;
 
-        private List<Mesh> m_meshList;
+        public List<Mesh> m_meshList;
 
         public RenderSystem()
         {
             m_cameraList = new List<Camera>();
             m_meshList = new List<Mesh>();
             m_shader = new ShaderProgram("RenderSystem/Shaders/vert.glsl", "RenderSystem/Shaders/frag.glsl");
+            HackInstance = this;
 
             // Create a Default camera
-            //Camera editorCamera = new Camera();
-            //m_cameraList.Add(editorCamera);
+            Camera editorCamera = new Camera();
+            editorCamera.ClearColor = new Color(0.8f, 0.2f, 1f, 1f);
+            m_cameraList.Add(editorCamera);
 
             Camera leftCamera = new Camera();
             leftCamera.ClearColor = new Color(1f, 0.5f, 0, 1f);
@@ -32,11 +35,11 @@ namespace WEditor.Rendering
             rightCamera.ViewportRect = new Rect(0.5f, 0f, 0.5f, 1f);
             rightCamera.ClearColor = new Color(0.5f, 0, 1f, 1f);
 
-            m_cameraList.Add(leftCamera);
-            m_cameraList.Add(rightCamera);
+            //m_cameraList.Add(leftCamera);
+            //m_cameraList.Add(rightCamera);
 
             /* Create a default cube */
-            m_testMesh = new Mesh();
+            var testMesh = new MeshBatch();
             Vector3 size = new Vector3(2f, 2f, 2f);
 
             Vector3[] meshVerts =
@@ -73,15 +76,18 @@ namespace WEditor.Rendering
                 0, 5, 4
             };
 
-            m_testMesh.Vertices = meshVerts;
-            m_testMesh.Indexes = meshIndexes;
+            testMesh.Vertices = meshVerts;
+            testMesh.Indexes = meshIndexes;
 
             Color[] colors = new Color[meshVerts.Length];
             for (int i = 0; i < meshVerts.Length; i++)
                 colors[i] = new Color(1f, 1f, 0f, 0.5f);
-            m_testMesh.Color0 = colors;
+            testMesh.Color0 = colors;
 
-            m_meshList.Add(m_testMesh);
+            Mesh mesh = new Mesh();
+            mesh.SubMeshes.Add(testMesh);
+
+            //m_meshList.Add(mesh);
         }
 
         internal void RenderFrame()
@@ -93,6 +99,9 @@ namespace WEditor.Rendering
 
             GL.Enable(EnableCap.ScissorTest);
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.PrimitiveRestart);
+            GL.PrimitiveRestartIndex(0xFFFF);
+
             for (int i = 0; i < m_cameraList.Count; i++)
             {
                 /* SETUP THE VIEWPORT FOR THE CAMERA */
@@ -112,29 +121,34 @@ namespace WEditor.Rendering
                 for (int m = 0; m < m_meshList.Count; m++)
                 {
                     Mesh mesh = m_meshList[m];
+                    for (int b = 0; b < mesh.SubMeshes.Count; b++)
+                    {
+                        MeshBatch batch = mesh.SubMeshes[b];
 
-                    // Bind the Shader
-                    GL.UseProgram(m_shader.ProgramId);
+                        // Bind the Shader
+                        GL.UseProgram(m_shader.ProgramId);
 
+                        Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
+                        Matrix4 finalMatrix = modelMatrix * viewProjMatrix;
 
-                    Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
-                    Matrix4 finalMatrix = modelMatrix * viewProjMatrix;
+                        // Bind the VAOs currently associated with this Mesh
+                        batch.Bind();
 
-                    // Bind the VAOs currently associated with this Mesh
-                    mesh.Bind();
+                        // Upload the MVP to the GPU
+                        GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
 
-                    // Upload the MVP to the GPU
-                    GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
+                        // Draw our Mesh.
+                        //GL.DrawElements(batch.PrimitveType, batch.Indexes.Length, DrawElementsType.UnsignedInt, 0);
+                        GL.DrawArrays(batch.PrimitveType, 0, batch.Indexes.Length);
 
-                    // Draw our Mesh.
-                    GL.DrawElements(PrimitiveType.Triangles, mesh.Indexes.Length, DrawElementsType.UnsignedInt, 0);
-                    
-                    // Unbind the VAOs so that our VAO doesn't leak into the next drawcall.
-                    mesh.Unbind();
+                        // Unbind the VAOs so that our VAO doesn't leak into the next drawcall.
+                        batch.Unbind();
+                    }
                 }
             }
             GL.Disable(EnableCap.ScissorTest);
             GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.PrimitiveRestart);
 
             //  Flush OpenGL.
             GL.Flush();

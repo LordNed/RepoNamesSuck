@@ -99,7 +99,7 @@ namespace WEditor.Rendering
         {
             get
             {
-                Matrix4 rhView = Matrix4.LookAt(new Vector3(0, 15, -10), Vector3.Zero, Vector3.UnitY);
+                Matrix4 rhView = Matrix4.LookAt(new Vector3(0, 4, -5), Vector3.Zero, Vector3.UnitY);
                 return rhView;
             }
         }

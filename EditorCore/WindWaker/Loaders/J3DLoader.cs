@@ -6,11 +6,31 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
 {
     public static class J3DLoader
     {
+        private class MeshVertexAttributeHolder
+        {
+            public List<Vector3> Position;
+            public List<Color> Color0;
+            public List<Vector2> Tex0;
+            public List<int> Indexes;
+
+            public List<J3DFileResource.VertexFormat> Attributes;
+
+            public MeshVertexAttributeHolder()
+            {
+                Position = new List<Vector3>();
+                Color0 = new List<Color>();
+                Tex0 = new List<Vector2>();
+                Attributes = new List<J3DFileResource.VertexFormat>();
+                Indexes = new List<int>();
+            }
+        }
+
         public static void Load(J3DFileResource resource, string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
@@ -18,7 +38,8 @@ namespace WEditor.WindWaker.Loaders
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("filePath not found");
 
-            int attributeCount = 0;
+            MeshVertexAttributeHolder vertexData = null;
+            Mesh j3dMesh = resource.Mesh;
 
             // Read the Header
             using (EndianBinaryReader reader = new EndianBinaryReader(File.Open(filePath, FileMode.Open), Endian.Big))
@@ -41,7 +62,7 @@ namespace WEditor.WindWaker.Loaders
                     switch(tagName)
                     {
                         case "VTX1":
-                            LoadVTX1FromFile(resource, reader, chunkSize, out attributeCount);
+                            vertexData = LoadVTX1FromFile(resource, reader, chunkSize);
                             break;
 
                         case "SHP1":
@@ -62,6 +83,16 @@ namespace WEditor.WindWaker.Loaders
                             // of primitives.
                             for(int b = 0; b < batchCount; b++)
                             {
+                                MeshBatch meshBatch = new MeshBatch();
+                                j3dMesh.SubMeshes.Add(meshBatch);
+                                int overallVertexCount = 0;
+                                meshBatch.PrimitveType = OpenTK.Graphics.OpenGL.PrimitiveType.TriangleStrip; // HackHack, this varies per primitive.
+                                // We need to look on each primitive and convert them to trianglestrips, most are TS some are TF's.
+
+                                // We re-use the list struct here to dynamically add paired pos/col/tex as we load them
+                                // then we convert them into arrays for the MeshBatch afterwards.
+                                MeshVertexAttributeHolder meshVertexData = new MeshVertexAttributeHolder();
+
                                 // chunkStart + batchOffset gets you the position where the batches are listed
                                 // 0x28 * b gives you the right batch - a batch is 0x28 in length
                                 reader.BaseStream.Position = chunkStart + batchOffset + (0x28 * b);
@@ -114,15 +145,19 @@ namespace WEditor.WindWaker.Loaders
 
                                         for(int v = 0; v < vertexCount; v++)
                                         {
+                                            meshVertexData.Indexes.Add(overallVertexCount);
+                                            overallVertexCount++;
+
                                             // Iterate through the attribute types. I think the actual vertices are stored in interleaved format,
                                             // ie: there's say 13 vertexes but those 13 vertexes will have a pos/color/tex index listed after it
                                             // depending on the overall attributes of the file.
-                                            for(int attrib = 0; attrib < attributeCount; attrib++)
+                                            for (int attrib = 0; attrib < vertexData.Attributes.Count; attrib++)
                                             {
+                                                long curPrimitiveStreamPos = chunkStart + primitiveDataOffset + numPrimitiveBytesRead;
+
                                                 // Jump the stream head forward to read the attribute type.
                                                 // chunkStart + attributeOffset = start of attribute section
                                                 // batchAttributeOffset + (attrib * 0x8) = attributes for this batch, 0x8 is the size of one attribute.
-                                                long curPrimitiveStreamPos = reader.BaseStream.Position;
                                                 reader.BaseStream.Position = chunkStart + attributeOffset + batchAttributeOffset + (attrib * 0x8);
                                                 J3DFileResource.VertexArrayType batchAttribType = (J3DFileResource.VertexArrayType)reader.ReadInt32();
                                                 J3DFileResource.VertexDataType batchDataType = (J3DFileResource.VertexDataType)reader.ReadInt32();
@@ -154,89 +189,41 @@ namespace WEditor.WindWaker.Loaders
                                                 switch (batchAttribType)
 	                                            {
                                                     case J3DFileResource.VertexArrayType.Position:
-                                                        //newVertex.Position = _file.Vertexes[primitiveIndex];
-                                                        break;
-                                                    case J3DFileResource.VertexArrayType.Normal:
-                                                        //newVertex.normal = _File....
+                                                        meshVertexData.Position.Add(vertexData.Position[attributeArrayIndex]);
                                                         break;
                                                     case J3DFileResource.VertexArrayType.Color0:
-                                                        //newVertex.Color0 = ...
-                                                        break;
-                                                    case J3DFileResource.VertexArrayType.Color1:
-                                                        //newVertex.Color1 = ...
+                                                        meshVertexData.Color0.Add(vertexData.Color0[attributeArrayIndex]);
                                                         break;
                                                     case J3DFileResource.VertexArrayType.Tex0:
-                                                        // newVertex.Tex0 = ...
+                                                        meshVertexData.Tex0.Add(vertexData.Tex0[attributeArrayIndex]);
                                                         break;
+
+                                                    case J3DFileResource.VertexArrayType.Normal:
+                                                    case J3DFileResource.VertexArrayType.Color1:
                                                     case J3DFileResource.VertexArrayType.Tex1:
-                                                        // newVertex.Tex1 = ...
-                                                        break;
+
                                                     case J3DFileResource.VertexArrayType.Tex2:
                                                     case J3DFileResource.VertexArrayType.Tex3:
                                                     case J3DFileResource.VertexArrayType.Tex4:
                                                     case J3DFileResource.VertexArrayType.Tex5:
                                                     case J3DFileResource.VertexArrayType.Tex6:
                                                     case J3DFileResource.VertexArrayType.Tex7:
-
-                                                        break;
                                                     default:
                                                         Console.WriteLine("[J3DLoader] Unsupported attribType {0}", batchAttribType);
                                                      break;
                                                 }
                                             }
-
-                                            // Jump 
                                         }
-
-                                        /*for(int vertIndex = 0; vertIndex < attributeCount; vertIndex++)
-                                        {
-                                            long curOffset = reader.BaseStream.Position;
-
-                                            // Go read the Batch attributes.
-                                            reader.BaseStream.Position = (batchStart + batchAttributeOffset) + (vertIndex * 0x8);
-                                            J3DFileResource.VertexArrayType attribType = (J3DFileResource.VertexArrayType)reader.ReadInt32();
-                                            J3DFileResource.VertexDataType attribDataType = (J3DFileResource.VertexDataType)reader.ReadInt32();
-
-                                            uint index;
-                                            reader.BaseStream.Position = batchStart + ????????
-
-                                            switch (attribDataType)
-                                            {
-                                                case J3DFileResource.VertexDataType.Signed8:
-                                                    index = reader.ReadByte();
-                                                    break;
-                                                case J3DFileResource.VertexDataType.Signed16:
-                                                    index = (uint)reader.ReadInt16();
-
-                                                case J3DFileResource.VertexDataType.Unsigned8:
-                                                case J3DFileResource.VertexDataType.Unsigned16:
-                                                case J3DFileResource.VertexDataType.Float32:
-                                                    throw new Exception("Unknown attribType!");
-                                            }
-
-                                            switch (attribType)
-	                                        {
-                                                case J3DFileResource.VertexArrayType.Position:
-                                                case J3DFileResource.VertexArrayType.Normal:
-                                                case J3DFileResource.VertexArrayType.Color0:
-                                                case J3DFileResource.VertexArrayType.Color1:
-                                                case J3DFileResource.VertexArrayType.Tex0:
-                                                case J3DFileResource.VertexArrayType.Tex1:
-                                                case J3DFileResource.VertexArrayType.Tex2:
-                                                case J3DFileResource.VertexArrayType.Tex3:
-                                                case J3DFileResource.VertexArrayType.Tex4:
-                                                case J3DFileResource.VertexArrayType.Tex5:
-                                                case J3DFileResource.VertexArrayType.Tex6:
-                                                case J3DFileResource.VertexArrayType.Tex7:
-
-                                                    break;
-                                                default:
-                                                    Console.WriteLine("[J3DLoader] Unsupported attribType {0}", attribType);
-                                                 break;
-	                                                }
-                                        }*/
+                                        
+                                        // After we write a primitive, write a speciall null-terminator
+                                        meshVertexData.Indexes.Add(0xFFFF);
                                     }
                                 }
+
+                                meshBatch.Vertices = meshVertexData.Position.ToArray();
+                                meshBatch.Color0 = meshVertexData.Color0.ToArray();
+                                meshBatch.TexCoord0 = meshVertexData.Tex0.ToArray();
+                                meshBatch.Indexes = meshVertexData.Indexes.ToArray();
                             }
 
 
@@ -258,10 +245,14 @@ namespace WEditor.WindWaker.Loaders
                     reader.BaseStream.Position = chunkStart + chunkSize;
                 }
             }
+
+            RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
         }
 
-        private static void LoadVTX1FromFile(J3DFileResource resource, EndianBinaryReader reader, int chunkSize, out int attributeCount)
+        private static MeshVertexAttributeHolder LoadVTX1FromFile(J3DFileResource resource, EndianBinaryReader reader, int chunkSize)
         {
+            MeshVertexAttributeHolder dataHolder = new MeshVertexAttributeHolder();
+
             long headerStart = reader.BaseStream.Position;
             int vertexFormatOffset = reader.ReadInt32();
             int[] vertexDataOffsets = new int[13];
@@ -282,7 +273,7 @@ namespace WEditor.WindWaker.Loaders
             } while (curFormat.ArrayType != J3DFileResource.VertexArrayType.NullAttr);
 
             // Don't count the last vertexFormat as it's the NullAttr one.
-            attributeCount = vertexFormats.Count - 1;
+            dataHolder.Attributes = vertexFormats.GetRange(0, vertexFormats.Count -1);
 
             // Now that we know how the vertexes are described, we can get the various data.
             for (int k = 0; k < vertexDataOffsets.Length; k++)
@@ -314,7 +305,7 @@ namespace WEditor.WindWaker.Loaders
                                 vertices.Add(vertex);
                             }
 
-                            resource.Mesh.Vertices = vertices.ToArray();
+                            dataHolder.Position = vertices;
                         }
                         break;
 
@@ -346,7 +337,7 @@ namespace WEditor.WindWaker.Loaders
                                 colors.Add(color);
                             }
 
-                            resource.Mesh.Color0 = colors.ToArray();
+                            dataHolder.Color0 = colors;
                         }
                         break;
 
@@ -373,7 +364,7 @@ namespace WEditor.WindWaker.Loaders
                                 texCoords.Add(texCoord);
                             }
 
-                            resource.Mesh.TexCoord0 = texCoords.ToArray();
+                            dataHolder.Tex0 = texCoords;
                         }
 
                         break;
@@ -390,6 +381,8 @@ namespace WEditor.WindWaker.Loaders
                         break;
                 }
             }
+
+            return dataHolder;
         }
 
 
