@@ -50,7 +50,6 @@ namespace SharpGLExample
 
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
-            m_viewModel.MousePosition = Mouse.GetPosition(winFormsHost);
         }
 
         void m_glControl_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -105,6 +104,7 @@ namespace SharpGLExample
 
         void m_glControl_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
+
             /*GL.ClearColor(Color4.Red);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -125,6 +125,11 @@ namespace SharpGLExample
         private void winFormsHost_KeyUp(object sender, KeyEventArgs e)
         {
             m_viewModel.SetKeyboardState(e.Key, false);
+        }
+
+        private void winFormsHost_MouseMove(object sender, MouseEventArgs e)
+        {
+            m_viewModel.MousePosition = Mouse.GetPosition(null);
         }
     }
 }

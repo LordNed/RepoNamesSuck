@@ -87,7 +87,7 @@ namespace WEditor.Rendering
             Mesh mesh = new Mesh();
             mesh.SubMeshes.Add(testMesh);
 
-            //m_meshList.Add(mesh);
+            m_meshList.Add(mesh);
         }
 
         internal void RenderFrame()
@@ -138,8 +138,7 @@ namespace WEditor.Rendering
                         GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
 
                         // Draw our Mesh.
-                        //GL.DrawElements(batch.PrimitveType, batch.Indexes.Length, DrawElementsType.UnsignedInt, 0);
-                        GL.DrawArrays(batch.PrimitveType, 0, batch.Indexes.Length);
+                        GL.DrawElements(batch.PrimitveType, batch.Indexes.Length, DrawElementsType.UnsignedInt, 0);
 
                         // Unbind the VAOs so that our VAO doesn't leak into the next drawcall.
                         batch.Unbind();

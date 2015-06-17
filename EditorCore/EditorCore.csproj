@@ -52,12 +52,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Colors.cs" />
+    <Compile Include="Common\Component.cs" />
     <Compile Include="Common\Input.cs" />
     <Compile Include="Common\MapEntityObject.cs" />
     <Compile Include="Common\Ray.cs" />
     <Compile Include="Common\Rectangle.cs" />
     <Compile Include="Common\Rotations.cs" />
     <Compile Include="Common\Time.cs" />
+    <Compile Include="Common\Transform.cs" />
     <Compile Include="EditorCore.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

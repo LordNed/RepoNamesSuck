@@ -4,7 +4,7 @@ using WEditor.Common;
 
 namespace WEditor.Rendering
 {
-    public class Camera
+    public class Camera : Component
     {
         /// <summary> The near clipping plane distance. </summary>
         public float NearClipPlane
@@ -99,13 +99,13 @@ namespace WEditor.Rendering
         {
             get
             {
-                Matrix4 rhView = Matrix4.LookAt(new Vector3(0, 4, -5), Vector3.Zero, Vector3.UnitY);
+                Matrix4 rhView = Matrix4.LookAt(Transform.Position, Transform.Position + Transform.Forward, Vector3.UnitY);
                 return rhView;
             }
         }
 
-        private float m_nearClipPlane = 0.1f;
-        private float m_farClipPlane = 100f;
+        private float m_nearClipPlane = 100f;
+        private float m_farClipPlane = 10000f;
         private float m_fieldOfView = 45f;
         private float m_pixelWidth;
         private float m_pixelHeight;
@@ -171,6 +171,63 @@ namespace WEditor.Rendering
             }
 
             return vec;*/
+        }
+
+
+        public float MoveSpeed = 350f;
+        public float MouseSensitivity = 20f;
+
+        public override void Update()
+        {
+            Vector3 moveDir = Vector3.Zero;
+            if (Input.GetKey(System.Windows.Input.Key.W))
+            {
+                moveDir += Vector3.UnitZ;
+            }
+            if (Input.GetKey(System.Windows.Input.Key.S))
+            {
+                moveDir -= Vector3.UnitZ;
+            }
+            if (Input.GetKey(System.Windows.Input.Key.D))
+            {
+                moveDir += Vector3.UnitX;
+            }
+            if (Input.GetKey(System.Windows.Input.Key.A))
+            {
+                moveDir -= Vector3.UnitX;
+            }
+
+            if (Input.GetMouseButton(1))
+            {
+                Rotate(Input.MouseDelta.X, Input.MouseDelta.Y);
+            }
+
+            // Early out if we're not moving this frame.
+            if (moveDir.LengthFast < 0.1f)
+                return;
+
+            float moveSpeed = Input.GetKey(System.Windows.Input.Key.LeftShift) ? MoveSpeed * 3f : MoveSpeed;
+
+            // Normalize the move direction
+            moveDir.NormalizeFast();
+
+            // Make it relative to the current rotation.
+            moveDir = Transform.Rotation.Multiply(moveDir);
+
+            Transform.Position += Vector3.Multiply(moveDir, moveSpeed * Time.DeltaTime);
+        }
+
+        private void Rotate(float x, float y)
+        {
+            Transform.Rotate(Vector3.UnitY, x * Time.DeltaTime * MouseSensitivity);
+            Transform.Rotate(Transform.Right, y * Time.DeltaTime * MouseSensitivity);
+
+            // Clamp them from looking over the top point.
+            Vector3 up = Vector3.Cross(Transform.Forward, Transform.Right);
+            if (Vector3.Dot(up, Vector3.UnitY) < 0.01f)
+            {
+                Transform.Rotate(Transform.Right, -y * Time.DeltaTime);
+            }
         }
     }
 }

@@ -24,8 +24,9 @@ namespace SharpGLExample
             m_intervalTimer.Interval = 16; // 60 FPS roughly
             m_intervalTimer.Enabled = true;
             m_intervalTimer.Tick += (args, o) =>
-            { 
-                Input.SetMousePosition(new OpenTK.Vector2((float)MousePosition.X, (float)MousePosition.Y));
+            {
+                var newMousePosition = Control.MousePosition;
+                Input.SetMousePosition(new OpenTK.Vector2((float)newMousePosition.X, (float)newMousePosition.Y));
                 m_editorCore.Tick();
                 if (m_control != null)
                     m_control.SwapBuffers();

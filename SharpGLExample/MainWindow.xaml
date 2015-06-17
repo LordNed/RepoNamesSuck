@@ -3,6 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525" MouseMove="Window_MouseMove">
     <Grid>
-        <WindowsFormsHost x:Name="winFormsHost" Margin="10" Initialized="winFormsHost_Initialized" KeyDown="winFormsHost_KeyDown" KeyUp="winFormsHost_KeyUp" LayoutUpdated="winFormsHost_LayoutUpdated"/>
+        <WindowsFormsHost x:Name="winFormsHost" Margin="10" Initialized="winFormsHost_Initialized" KeyDown="winFormsHost_KeyDown" KeyUp="winFormsHost_KeyUp" LayoutUpdated="winFormsHost_LayoutUpdated" MouseMove="winFormsHost_MouseMove"/>
     </Grid>
 </Window>
