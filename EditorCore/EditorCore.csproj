@@ -95,6 +95,12 @@
     <None Include="WindWaker\Templates\Blank.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="WindWaker\Templates\Camera Type - Room.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="WindWaker\Templates\Camera Point - Room.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="WindWaker\Templates\Camera Point.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -131,6 +137,9 @@
     <None Include="WindWaker\Templates\MEMA.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="WindWaker\Templates\2D Minimap.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="WindWaker\Templates\Player Spawn.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -156,6 +165,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\TemplateOrder.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="WindWaker\Templates\Waypoint RPPN.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="WindWaker\Templates\Waypoint Path RPAT.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\Waypoint Path.json">
