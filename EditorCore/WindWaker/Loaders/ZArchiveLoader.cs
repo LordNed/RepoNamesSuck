@@ -35,21 +35,27 @@ namespace WEditor.WindWaker.Loaders
                     {
                         /* Map Collision Format */
                         case ".dzb":
+                            Console.WriteLine("[ZArchiveLoader] Loading DZB (Map Collision) {0}...", fileName);
                             resource = new UnsupportedFileResource(fileName, folderName, archive);
+                            Console.WriteLine("[ZArchiveLoader] Loaded {0}.", fileName);
                             break;
 
                         /* Room and Stage Entity Data */
                         case ".dzr":
                         case ".dzs":
+                            Console.WriteLine("[ZArchiveLoader] Loading DZR/DZS (Map Entity Data) {0}...", fileName);
                             resource = new MapEntityResource(fileName, folderName, archive);
                             MapEntityLoader.Load((MapEntityResource) resource, map, file.FullName);
+                            Console.WriteLine("[ZArchiveLoader] Loaded {0}.", fileName);
                             break;
 
                         /* 3D Model Formats */
                         case ".bmd":
                         case ".bdl":
+                            Console.WriteLine("[ZArchiveLoader] Loading J3D (3D Model) {0}...", fileName);
                             resource = new J3DFileResource(fileName, folderName, archive);
                             J3DLoader.Load((J3DFileResource)resource, file.FullName);
+                            Console.WriteLine("[ZArchiveLoader] Loading DZB (Map Collision) {0}...", fileName);
                             break;
 
                         /* Event List */

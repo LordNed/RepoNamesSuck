@@ -37,6 +37,11 @@ namespace WEditor.Common
                 Type = type;
                 Value = defaultValue;
             }
+
+            public override string ToString()
+            {
+                return string.Format("{0} [{1}]", Name, Type);
+            }
         }
 
         public string FourCC { get; private set; }
@@ -46,6 +51,11 @@ namespace WEditor.Common
         {
             FourCC = fourCC;
             Properties = new BindingList<Property>();
+        }
+
+        public override string ToString()
+        {
+            return FourCC;
         }
 
         public Property this[string val]
