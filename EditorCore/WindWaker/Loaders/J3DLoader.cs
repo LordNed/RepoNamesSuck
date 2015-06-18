@@ -319,7 +319,7 @@ namespace WEditor.WindWaker.Loaders
                         {
                             var vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Normal);
 
-                            NewMethod(reader, dataHolder, totalLength, vertexFormat);
+                            dataHolder.Normal = NewMethod<Vector3>(reader, dataHolder, totalLength, vertexFormat);
                         }
                         break;
 
@@ -395,7 +395,7 @@ namespace WEditor.WindWaker.Loaders
             return dataHolder;
         }
 
-        private static T[] NewMethod<T>(EndianBinaryReader reader, MeshVertexAttributeHolder dataHolder, int totalLength, J3DFileResource.VertexFormat vertexFormat)
+        private static List<T> NewMethod<T>(EndianBinaryReader reader, MeshVertexAttributeHolder dataHolder, int totalLength, J3DFileResource.VertexFormat vertexFormat) where T : new()
         {
             int componentCount = 0;
             switch (vertexFormat.ArrayType)
@@ -455,7 +455,7 @@ namespace WEditor.WindWaker.Loaders
             for (int v = 0; v < sectionSize; v++)
             {
                 // Create a default version of the object and then fill it up depending on our component count and its data type...
-                T value = default(T);
+                dynamic value = new T();
 
                 switch (vertexFormat.DataType)
                 {
@@ -472,9 +472,10 @@ namespace WEditor.WindWaker.Loaders
                         break;
                 }
 
-
                 values.Add(value);
             }
+
+            return values;
         }
 
 
