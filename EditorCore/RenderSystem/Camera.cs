@@ -149,8 +149,7 @@ namespace WEditor.Rendering
 
         public Vector4 UnProject(Matrix4 projection, Matrix4 view, Vector3 mouse)
         {
-            throw new NotImplementedException();
-            /*Vector4 vec = new Vector4();
+            Vector4 vec = new Vector4();
 
             vec.X = 2.0f * mouse.X / PixelWidth - 1;
             vec.Y = -(2.0f * mouse.Y / PixelHeight - 1);
@@ -170,7 +169,7 @@ namespace WEditor.Rendering
                 vec.Z /= vec.W;
             }
 
-            return vec;*/
+            return vec;
         }
 
 
