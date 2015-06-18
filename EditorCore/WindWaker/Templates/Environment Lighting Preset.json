@@ -2,13 +2,13 @@
 	"FourCC" : "EnvR",
 	"Properties" :
 	[
-		{"Name" : "Clear Color A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Colo"},
-		{"Name" : "Raining Color A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Colo"},
-		{"Name" : "Snowing A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Colo"},
-		{"Name" : "Unknown A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Colo"},
-		{"Name" : "Clear Color B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Colo"},
-		{"Name" : "Raining Color B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Colo"},
-		{"Name" : "Snowing B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Colo"},
-		{"Name" : "Unknown B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Colo"},
+		{"Name" : "Clear Color A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["Colo"]},
+		{"Name" : "Raining Color A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["Colo"]},
+		{"Name" : "Snowing A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["Colo"]},
+		{"Name" : "Unknown A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["Colo"]},
+		{"Name" : "Clear Color B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["Colo"]},
+		{"Name" : "Raining Color B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["Colo"]},
+		{"Name" : "Snowing B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["Colo"]},
+		{"Name" : "Unknown B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["Colo"]},
 	]
 }

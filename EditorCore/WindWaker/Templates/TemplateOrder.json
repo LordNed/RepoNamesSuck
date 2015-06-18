@@ -3,7 +3,7 @@
 	"MECO",
 	"Virt",
 	"Pale",
-	"Colo",
+	"Colo", 
 	"EnvR",
 	"MULT",
 	"PLYR",
@@ -21,8 +21,8 @@
 	"TGSC",
 	"LGHT",
 	"PPNT",
-	"PATH",
 	"RPPN",
+	"PATH",
 	"RPAT",
 	"SOND",
 	"SCOB",
@@ -32,5 +32,6 @@
 	"LGTV",
 	"FLOR",
 	"TGDR",
-	"DMAP"
+	"DMAP",
+	"STAG"
 ]

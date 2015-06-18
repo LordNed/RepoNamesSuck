@@ -3,6 +3,6 @@
 	"Properties" :
 	[
 		{"Name" : "Room", "Type" : "objectReference", "ReferenceType" : "Room"},
-		{"Name" : "Entry", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "MEMA"}
+		{"Name" : "Entry", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["MEMA"]}
 	]
 }
