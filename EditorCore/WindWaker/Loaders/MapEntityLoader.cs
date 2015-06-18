@@ -111,6 +111,18 @@ namespace WEditor.WindWaker.Loaders
                 itemTemplates.Add(template);
             }
 
+            // Now that all templates have been loaded, resolve any templates that refer to other templates.
+            foreach(var template in itemTemplates)
+            {
+                if (!string.IsNullOrEmpty(template.Template))
+                {
+                    // If the template isn't null, we're going to replace its properties with another entities properties
+                    // so that we don't end up duplicating template code.
+                    var otherTemplate = itemTemplates.Find(x => string.Compare(x.FourCC, template.Template, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    template.Properties = new List<ItemJsonTemplate.Property>(otherTemplate.Properties);
+                }
+            }
+
             return itemTemplates;
         }
 
@@ -128,10 +140,23 @@ namespace WEditor.WindWaker.Loaders
 
             for(int i = 0; i < templateOrder.Count; i++)
             {
-                var chunk = unsortedChunks.Find(x => string.Compare(x.FourCC, templateOrder[i], StringComparison.InvariantCultureIgnoreCase) == 0);
+                var chunk = unsortedChunks.Find(x => string.Compare(x.FourCC, templateOrder[i]) == 0);
                 if (chunk != null)
                 {
                     sortedChunks.Add(chunk);
+                }
+            }
+
+            if(sortedChunks.Count != unsortedChunks.Count)
+            {
+                // Find the missing one that was not in our templateOrder list.
+                foreach(var unsortedChunk in unsortedChunks)
+                {
+                    if (!templateOrder.Contains(unsortedChunk.FourCC))
+                    {
+                        Console.WriteLine("[MapEntityLoader] TemplateOrder is missing type {0}, adding to end of list.", unsortedChunk.FourCC);
+                        sortedChunks.Add(unsortedChunk);
+                    }
                 }
             }
 
@@ -279,8 +304,14 @@ namespace WEditor.WindWaker.Loaders
                     List<MapEntityObject> potentialRefs = new List<MapEntityObject>();
                     for(int i = 0; i < resource.Objects.Count; i++)
                     {
-                        if (string.Compare(resource.Objects[i].FourCC, templateProperty.ReferenceFourCCType, StringComparison.InvariantCultureIgnoreCase) == 0)
-                            potentialRefs.Add(resource.Objects[i]);
+                        // Check against all potential reference types. This resolves the issue where things like  RCAM/CAMR point to AROB/RARO and they're sharing
+                        // a template (maybe a bad idea...) but need to object-reference against a different type. I don't think you'll have AROB/RARO in the same file
+                        // so this should work...
+                        for(int k = 0; k < templateProperty.ReferenceFourCCType.Length; k++)
+                        {
+                            if (string.Compare(resource.Objects[i].FourCC, templateProperty.ReferenceFourCCType[k]) == 0)
+                                potentialRefs.Add(resource.Objects[i]);
+                        }
                     }
 
                     return potentialRefs[index];
