@@ -100,6 +100,8 @@ namespace WEditor.Rendering
             GL.Enable(EnableCap.ScissorTest);
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.PrimitiveRestart);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.CullFace);
             GL.PrimitiveRestartIndex(0xFFFF);
 
             for (int i = 0; i < m_cameraList.Count; i++)
@@ -148,8 +150,9 @@ namespace WEditor.Rendering
             GL.Disable(EnableCap.ScissorTest);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.PrimitiveRestart);
+            GL.Disable(EnableCap.CullFace);
 
-            //  Flush OpenGL.
+            //  Flush OpenGL commands to make them draw.
             GL.Flush();
         }
 
