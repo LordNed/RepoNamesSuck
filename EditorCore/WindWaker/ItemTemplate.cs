@@ -21,7 +21,12 @@ namespace WEditor.WindWaker
             public int Length;
 
             /// <summary> Used if ReferenceType is set to "FourCC" </summary>
-            public string ReferenceFourCCType;
+            public string[] ReferenceFourCCType;
+
+            public override string ToString()
+            {
+                return string.Format("{0} [{1}]", Name, Type);
+            }
         }
 
         [JsonProperty("FourCC")]
@@ -29,5 +34,14 @@ namespace WEditor.WindWaker
 
         [JsonProperty("Properties")]
         public List<Property> Properties;
+
+        /// <summary Only used if this references another template instead of defining a unique set of properties. </summary>
+        [JsonProperty("Template")]
+        public string Template;
+
+        public override string ToString()
+        {
+            return string.Format("Template: {0} Property Count: {1}", FourCC, Properties.Count);
+        }
     }
 }
