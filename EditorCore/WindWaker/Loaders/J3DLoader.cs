@@ -319,48 +319,7 @@ namespace WEditor.WindWaker.Loaders
                         {
                             var vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Normal);
 
-                            // ToDo: Use the vertexFormat to see how big a vertex actually is.
-                            int vertexSize = 0;
-                            switch(vertexFormat.DataType)
-                            {
-                                case J3DFileResource.VertexDataType.Float32:
-                                    vertexSize = 3 * 4;
-                                    break;
-
-                                case J3DFileResource.VertexDataType.Unsigned16:
-                                case J3DFileResource.VertexDataType.Signed16:
-                                    vertexSize = 3 * 2;
-                                    break;
-                            }
-
-                            int numNormals = totalLength / vertexSize;
-                            List<Vector3> normals = new List<Vector3>(numNormals);
-                            float scaleFactor = (float)Math.Pow(0.5, vertexFormat.DecimalPoint);
-
-                            for (int v = 0; v < numNormals; v++)
-                            {
-                                Vector3 normal = new Vector3();
-
-                                switch (vertexFormat.DataType)
-                                {
-                                    case J3DFileResource.VertexDataType.Float32:
-                                        normal.X = reader.ReadSingle() * scaleFactor;
-                                        normal.Y = reader.ReadSingle() * scaleFactor;
-                                        normal.Z = reader.ReadSingle() * scaleFactor;
-                                        break;
-
-                                    case J3DFileResource.VertexDataType.Signed16:
-                                        normal.X = reader.ReadInt16() * scaleFactor;
-                                        normal.Y = reader.ReadInt16() * scaleFactor;
-                                        normal.Z = reader.ReadInt16() * scaleFactor;
-                                        break;
-                                }
-
-
-                                normals.Add(normal);
-                            }
-
-                            dataHolder.Normal = normals;
+                            NewMethod(reader, dataHolder, totalLength, vertexFormat);
                         }
                         break;
 
@@ -434,6 +393,88 @@ namespace WEditor.WindWaker.Loaders
             }
 
             return dataHolder;
+        }
+
+        private static T[] NewMethod<T>(EndianBinaryReader reader, MeshVertexAttributeHolder dataHolder, int totalLength, J3DFileResource.VertexFormat vertexFormat)
+        {
+            int componentCount = 0;
+            switch (vertexFormat.ArrayType)
+	        {
+                case J3DFileResource.VertexArrayType.Position:
+                case J3DFileResource.VertexArrayType.Normal:
+                    componentCount = 3;
+                    break;
+                case J3DFileResource.VertexArrayType.Color0:
+                case J3DFileResource.VertexArrayType.Color1:
+                    componentCount = 4;
+                    break;
+                case J3DFileResource.VertexArrayType.Tex0:
+                case J3DFileResource.VertexArrayType.Tex1:
+                case J3DFileResource.VertexArrayType.Tex2:
+                case J3DFileResource.VertexArrayType.Tex3:
+                case J3DFileResource.VertexArrayType.Tex4:
+                case J3DFileResource.VertexArrayType.Tex5:
+                case J3DFileResource.VertexArrayType.Tex6:
+                case J3DFileResource.VertexArrayType.Tex7:
+                    componentCount = 2;
+                    break;
+                default:
+                    Console.WriteLine("[J3DLoader] Unsupported ArrayType \"{0}\" found while loading VTX1!", vertexFormat.ArrayType);
+                    break;
+	        }
+
+
+            // We need to know the length of each 'vertex' (which can vary based on how many attributes and what types.
+            int vertexSize = 0;
+            switch (vertexFormat.DataType)
+            {
+                case J3DFileResource.VertexDataType.Float32:
+                    vertexSize = componentCount * 4;
+                    break;
+
+                case J3DFileResource.VertexDataType.Unsigned16:
+                case J3DFileResource.VertexDataType.Signed16:
+                    vertexSize = componentCount * 2;
+                    break;
+
+                case J3DFileResource.VertexDataType.Signed8:
+                case J3DFileResource.VertexDataType.Unsigned8:
+                case J3DFileResource.VertexDataType.RGBA8:
+                    vertexSize = componentCount * 1;
+                    break;
+                default:
+                    Console.WriteLine("[J3DLoader] Unsupported DataType \"{0}\" found while loading VTX1!", vertexFormat.DataType);
+                    break;
+            }
+
+
+            int sectionSize = totalLength / vertexSize;
+            List<T> values = new List<T>(sectionSize);
+            float scaleFactor = (float)Math.Pow(0.5, vertexFormat.DecimalPoint);
+
+            for (int v = 0; v < sectionSize; v++)
+            {
+                // Create a default version of the object and then fill it up depending on our component count and its data type...
+                T value = default(T);
+
+                switch (vertexFormat.DataType)
+                {
+                    case J3DFileResource.VertexDataType.Float32:
+                        value[0] = reader.ReadSingle() * scaleFactor;
+                        value[1] = reader.ReadSingle() * scaleFactor;
+                        value[2] = reader.ReadSingle() * scaleFactor;
+                        break;
+
+                    case J3DFileResource.VertexDataType.Signed16:
+                        value[0] = reader.ReadInt16() * scaleFactor;
+                        value[1] = reader.ReadInt16() * scaleFactor;
+                        value[2] = reader.ReadInt16() * scaleFactor;
+                        break;
+                }
+
+
+                values.Add(value);
+            }
         }
 
 
