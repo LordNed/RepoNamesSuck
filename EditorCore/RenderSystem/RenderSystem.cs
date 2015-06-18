@@ -87,7 +87,7 @@ namespace WEditor.Rendering
             Mesh mesh = new Mesh();
             mesh.SubMeshes.Add(testMesh);
 
-            m_meshList.Add(mesh);
+            //m_meshList.Add(mesh);
         }
 
         internal void RenderFrame()

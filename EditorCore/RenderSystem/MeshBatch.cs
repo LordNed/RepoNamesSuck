@@ -12,6 +12,9 @@ namespace WEditor.Rendering
             set
             {
                 m_vertices = value;
+                if (value.Length == 0)
+                    return;
+
                 UpdateAttributeAndBuffers(ShaderAttributeIds.Position, m_vertices);
             }
         }
@@ -22,6 +25,9 @@ namespace WEditor.Rendering
             set
             {
                 m_normals = value;
+                if (value.Length == 0)
+                    return;
+
                 UpdateAttributeAndBuffers(ShaderAttributeIds.Normal, m_normals);
             }
         }
@@ -32,6 +38,9 @@ namespace WEditor.Rendering
             set
             {
                 m_colors0 = value;
+                if (value.Length == 0)
+                    return;
+
                 UpdateAttributeAndBuffers(ShaderAttributeIds.Color0, m_colors0);
             }
         }
@@ -42,6 +51,9 @@ namespace WEditor.Rendering
             set
             {
                 m_colors1 = value;
+                if (value.Length == 0)
+                    return;
+
                 UpdateAttributeAndBuffers(ShaderAttributeIds.Color1, m_colors1);
             }
         }
@@ -52,6 +64,9 @@ namespace WEditor.Rendering
             set
             {
                 m_texCoord0 = value;
+                if (value.Length == 0)
+                    return;
+
                 UpdateAttributeAndBuffers(ShaderAttributeIds.TexCoord0, m_texCoord0);
             }
         }
@@ -62,6 +77,9 @@ namespace WEditor.Rendering
             set
             {
                 m_texCoord1 = value;
+                if (value.Length == 0)
+                    return;
+
                 UpdateAttributeAndBuffers(ShaderAttributeIds.TexCoord1, m_texCoord1);
             }
         }
@@ -72,6 +90,9 @@ namespace WEditor.Rendering
             set
             {
                 m_indexes = value;
+                if (value.Length == 0)
+                    return;
+
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_elementArrayBuffer);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(m_indexes.Length * 4), m_indexes, BufferUsageHint.StaticDraw);
             }
