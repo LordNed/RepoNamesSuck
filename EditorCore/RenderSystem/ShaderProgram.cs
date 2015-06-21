@@ -28,7 +28,8 @@ namespace WEditor.Rendering
             LoadShader(fragmentShaderPath, ShaderType.FragmentShader, ProgramId);
 
             GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.Position, "vertexPos");
-            GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.Color0, "color");
+            GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.Color0, "color0");
+            GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.TexCoord0, "texCoord0");
 
             GL.LinkProgram(ProgramId);
 

@@ -506,7 +506,7 @@ namespace WEditor.WindWaker.Loaders
         {
             MeshVertexAttributeHolder dataHolder = new MeshVertexAttributeHolder();
 
-            long headerStart = reader.BaseStream.Position;
+            //long headerStart = reader.BaseStream.Position;
             int vertexFormatOffset = reader.ReadInt32();
             int[] vertexDataOffsets = new int[13];
             for (int k = 0; k < vertexDataOffsets.Length; k++)
@@ -537,7 +537,7 @@ namespace WEditor.WindWaker.Loaders
                     continue;
 
                 // Get the total length of this block of data.
-                int totalLength = GetVertexDataLength(vertexDataOffsets, k, (int)(headerStart + chunkSize));
+                int totalLength = GetVertexDataLength(vertexDataOffsets, k, (int)(chunkSize));
                 J3DFileResource.VertexFormat vertexFormat = null;
 
                 switch (k)

@@ -117,8 +117,8 @@ namespace WEditor.Rendering
             m_width = width;
             m_height = height;
 
-            WrapS = TextureWrapMode.Clamp;
-            WrapT = TextureWrapMode.Clamp;
+            WrapS = TextureWrapMode.Repeat;
+            WrapT = TextureWrapMode.Repeat;
             MinFilter = TextureMinFilter.Nearest;
             MagFilter = TextureMagFilter.Nearest;
             BorderColor = new Color(1f, 0f, 1f, 1f);
@@ -128,6 +128,24 @@ namespace WEditor.Rendering
         public void Bind()
         {
             GL.BindTexture(TextureTarget.Texture2D, m_textureBuffer);
+        }
+
+        public static Texture2D GenerateCheckerboard()
+        {
+            Texture2D texture = new Texture2D(2, 2);
+            texture.PixelData = new byte[] {    0, 0, 0, 255, 255, 255, 255, 255,
+                                                255, 255, 255, 255, 0, 0, 0, 255 };
+
+            return texture;
+        }
+
+        public static Texture2D GenerateWhite()
+        {
+            Texture2D texture = new Texture2D(2, 2);
+            texture.PixelData = new byte[] {    255, 255, 255, 255, 255, 255, 255, 255, 
+                                                255, 255, 255, 255, 255, 255, 255, 255 };
+
+            return texture;
         }
     }
 }

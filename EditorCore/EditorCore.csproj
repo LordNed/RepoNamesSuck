@@ -71,6 +71,7 @@
     <Compile Include="RenderSystem\MeshBatch.cs" />
     <Compile Include="RenderSystem\RenderSystem.cs" />
     <Compile Include="RenderSystem\ShaderProgram.cs" />
+    <Compile Include="RenderSystem\Texture2D.cs" />
     <Compile Include="RenderSystem\VertexDescription.cs" />
     <Compile Include="WindWaker\BaseFileResource.cs" />
     <Compile Include="WindWaker\J3DFileResource.cs" />
@@ -86,10 +87,10 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="RenderSystem\Shaders\frag.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="RenderSystem\Shaders\vert.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\Actor.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
