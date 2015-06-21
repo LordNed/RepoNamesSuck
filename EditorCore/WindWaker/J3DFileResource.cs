@@ -9,6 +9,16 @@ namespace WEditor.WindWaker
 {
     public class J3DFileResource : BaseFileResource
     {
+        public enum HierarchyDataTypes
+        {
+            Finish = 0x0, //Terminator
+            NewNode = 0x01, //Hierarchy down (insert node), new child
+            EndNode = 0x02, //Hierarchy up, close child
+            Joint = 0x10, //
+            Material = 0x11,
+            Batch = 0x12, //ie Batch
+        }
+
         public enum VertexArrayType
         {
             PositionMatrixIndex,
@@ -77,29 +87,42 @@ namespace WEditor.WindWaker
 
         public class MaterialEntry
         {
-            public byte Unknown1;
-            public byte Unknown2;
-            public short Padding1;
-            public short IndirectTexturingIndex;
-            public short CullModeIndex;
-            public short[] AmbientColorIndex; // 2 of these
-            public short[] ChannelControlIndex; // 4 of these - Sets the lighting controls for a particular color channel.
+            public byte Unknown1Index;
+            public byte CullModeIndex;
+            public byte NumChannelsIndex;
+            public byte NumTexGensIndex;
+            public byte NumTevStagesIndex;
+            public byte ZCompareLocIndex;
+            public byte ZModeIndex;
+            public byte DitherIndex;
             public short[] MaterialColorIndex; // 2
+            public short[] ChannelControlIndex; // 4 of these - Sets the lighting controls for a particular color channel.
+            public short[] AmbientColorIndex; // 2 of these 'matcolor'
             public short[] LightingIndex; // 8
             public short[] TexCoordIndex; // 8
             public short[] TexCoord2Index; // 8
-            public short[] TexMatrixIndex; // 8
-            public short[] TexMatrix2Index; // 16
-            public short[] texIndex; // 8
+            public short[] TexMatrixIndex; // 10
+            public short[] TexMatrix2Index; // 20
+            public short[] texIndex; // 8 - Texture
             public short[] tevConstantColorIndex; // 4
             public byte[] constColorSel; // 16
             public byte[] constAlphaSel; // 16
             public short[] tevOrderIndex; // 16
             public short[] tevColorIndex; // 4
-            public short[] tevStageInfoIndex; // 16
+            public short[] tevStageInfoIndex; // 16 // Tev Combiner
             public short[] tevSwapModeInfoIndex; // 16
             public short[] tevSwapModeTableInfoIndex; // 16
-            public short[] unknownIndices; // 16 more :s
+            public short[] unknownIndices; // 12 more :s
+            public short FogIndex;
+            public short AlphaCompareIndex;
+            public short BlendModeIndex;
+            public short Unknown2Index;
+        }
+
+        public class InfoNode
+        {
+            public HierarchyDataTypes Type;
+            public ushort Value;
         }
 
         public Mesh Mesh;
