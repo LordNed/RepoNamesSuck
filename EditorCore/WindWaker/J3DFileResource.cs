@@ -75,6 +75,33 @@ namespace WEditor.WindWaker
             public byte DecimalPoint; // Number of Mantissa bits for fixed point numbers (position of decimal point)
         }
 
+        public class MaterialEntry
+        {
+            public byte Unknown1;
+            public byte Unknown2;
+            public short Padding1;
+            public short IndirectTexturingIndex;
+            public short CullModeIndex;
+            public short[] AmbientColorIndex; // 2 of these
+            public short[] ChannelControlIndex; // 4 of these - Sets the lighting controls for a particular color channel.
+            public short[] MaterialColorIndex; // 2
+            public short[] LightingIndex; // 8
+            public short[] TexCoordIndex; // 8
+            public short[] TexCoord2Index; // 8
+            public short[] TexMatrixIndex; // 8
+            public short[] TexMatrix2Index; // 16
+            public short[] texIndex; // 8
+            public short[] tevConstantColorIndex; // 4
+            public byte[] constColorSel; // 16
+            public byte[] constAlphaSel; // 16
+            public short[] tevOrderIndex; // 16
+            public short[] tevColorIndex; // 4
+            public short[] tevStageInfoIndex; // 16
+            public short[] tevSwapModeInfoIndex; // 16
+            public short[] tevSwapModeTableInfoIndex; // 16
+            public short[] unknownIndices; // 16 more :s
+        }
+
         public Mesh Mesh;
 
         public J3DFileResource(string fileName, string folderName, ZArchive parentArchive) : base (fileName, folderName, parentArchive)
