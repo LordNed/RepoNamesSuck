@@ -18,6 +18,7 @@ namespace WEditor.WindWaker.Loaders
             public List<Vector3> Normal;
             public List<Color> Color0;
             public List<Vector2> Tex0;
+            public List<Vector2> Tex1;
             public List<int> Indexes;
 
             public List<J3DFileResource.VertexFormat> Attributes;
@@ -28,6 +29,7 @@ namespace WEditor.WindWaker.Loaders
                 Normal = new List<Vector3>();
                 Color0 = new List<Color>();
                 Tex0 = new List<Vector2>();
+                Tex1 = new List<Vector2>();
                 Attributes = new List<J3DFileResource.VertexFormat>();
                 Indexes = new List<int>();
             }
@@ -143,7 +145,7 @@ namespace WEditor.WindWaker.Loaders
         /// <returns></returns>
         private static int ConvertInfoHiearchyToSceneGraph(ref SceneNode parent, List<J3DFileResource.InfoNode> allNodes, int currentListIndex)
         {
-            for(int i = currentListIndex; i < allNodes.Count; i++)
+            for (int i = currentListIndex; i < allNodes.Count; i++)
             {
                 J3DFileResource.InfoNode curNode = allNodes[i];
                 SceneNode newNode = new SceneNode();
@@ -169,6 +171,8 @@ namespace WEditor.WindWaker.Loaders
                     case J3DFileResource.HierarchyDataTypes.Material:
                     case J3DFileResource.HierarchyDataTypes.Joint:
                     case J3DFileResource.HierarchyDataTypes.Batch:
+                    case J3DFileResource.HierarchyDataTypes.Finish:
+
                         // If it's any of the above we simply create a node for them. We create and pull from a different InfoNode because
                         // Hitting a NewNode can modify the value of i so curNode is now no longer valid.
                         J3DFileResource.InfoNode thisNode = allNodes[i];
@@ -177,7 +181,6 @@ namespace WEditor.WindWaker.Loaders
                         parent.Children.Add(newNode);
                         break;
 
-                    case J3DFileResource.HierarchyDataTypes.Finish:
                     default:
                         Console.WriteLine("[J3DLoader] Unsupported HierarchyDataType \"{0}\" in model!", curNode.Type);
                         break;
@@ -499,6 +502,7 @@ namespace WEditor.WindWaker.Loaders
                 curFormat.ArrayType = (J3DFileResource.VertexArrayType)reader.ReadInt32();
                 curFormat.ComponentCount = reader.ReadInt32();
                 curFormat.DataType = (J3DFileResource.VertexDataType)reader.ReadInt32();
+                curFormat.ColorDataType = (J3DFileResource.VertexColorType)curFormat.DataType;
                 curFormat.DecimalPoint = reader.ReadByte();
                 reader.ReadBytes(3); // Padding
                 vertexFormats.Add(curFormat);
@@ -515,39 +519,20 @@ namespace WEditor.WindWaker.Loaders
 
                 // Get the total length of this block of data.
                 int totalLength = GetVertexDataLength(vertexDataOffsets, k, (int)(headerStart + chunkSize));
+                J3DFileResource.VertexFormat vertexFormat = null;
 
                 switch (k)
                 {
                     // Position Data
                     case 0:
-                        {
-                            var vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Position);
-
-                            // ToDo: Use the vertexFormat to see how big a vertex actually is.
-                            int numVertexes = totalLength / 12;
-                            List<Vector3> vertices = new List<Vector3>(numVertexes);
-
-                            for (int v = 0; v < numVertexes; v++)
-                            {
-                                Vector3 vertex = new Vector3();
-                                vertex.X = reader.ReadSingle();
-                                vertex.Y = reader.ReadSingle();
-                                vertex.Z = reader.ReadSingle();
-
-                                vertices.Add(vertex);
-                            }
-
-                            dataHolder.Position = vertices;
-                        }
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Position);
+                        dataHolder.Position = LoadVertexAttribute<Vector3>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Position, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
                         break;
 
                     // Normal Data
                     case 1:
-                        {
-                            var vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Normal);
-
-                            dataHolder.Normal = NewMethod<Vector3>(reader, dataHolder, totalLength, vertexFormat);
-                        }
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Normal);
+                        dataHolder.Normal = LoadVertexAttribute<Vector3>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Normal, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
                         break;
 
                     // Normal Binormal Tangent Data (presumed)
@@ -556,26 +541,8 @@ namespace WEditor.WindWaker.Loaders
 
                     // Color 0 Data
                     case 3:
-                        {
-                            var vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Color0);
-
-                            // ToDo: Use the vertexFormat to see how the colors are actually stored.
-                            int numColors = totalLength / 4;
-                            List<Color> colors = new List<Color>(numColors);
-
-                            for (int c = 0; c < numColors; c++)
-                            {
-                                Color color = new Color();
-                                color.R = reader.ReadByte() / 255f;
-                                color.G = reader.ReadByte() / 255f;
-                                color.B = reader.ReadByte() / 255f;
-                                color.A = reader.ReadByte() / 255f;
-
-                                colors.Add(color);
-                            }
-
-                            dataHolder.Color0 = colors;
-                        }
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Color0);
+                        dataHolder.Color0 = LoadVertexAttribute<Color>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Color0, J3DFileResource.VertexDataType.None, vertexFormat.ColorDataType);
                         break;
 
                     // Color 1 Data (presumed)
@@ -584,30 +551,17 @@ namespace WEditor.WindWaker.Loaders
 
                     // Tex 0 Data
                     case 5:
-                        {
-                            var vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex0);
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex0);
+                        dataHolder.Tex0 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex0, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
+                        break;
 
-                            // ToDo: Use the vertexFormat to see how the UV coords are actually stored.
-                            int numTexCoords = totalLength / 4;
-                            float scaleFactor = (float)Math.Pow(0.5, vertexFormat.DecimalPoint);
-                            List<Vector2> texCoords = new List<Vector2>(numTexCoords);
-
-                            for (int t = 0; t < numTexCoords; t++)
-                            {
-                                Vector2 texCoord = new Vector2();
-                                texCoord.X = reader.ReadSingle() * scaleFactor;
-                                texCoord.Y = reader.ReadSingle() * scaleFactor;
-
-                                texCoords.Add(texCoord);
-                            }
-
-                            dataHolder.Tex0 = texCoords;
-                        }
-
+                    // Tex 1 Data
+                    case 6:
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex1);
+                        dataHolder.Tex1 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex1, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
                         break;
 
                     // Other Tex data
-                    case 6:
                     case 7:
                     case 8:
                     case 9:
@@ -622,11 +576,11 @@ namespace WEditor.WindWaker.Loaders
             return dataHolder;
         }
 
-        private static List<T> NewMethod<T>(EndianBinaryReader reader, MeshVertexAttributeHolder dataHolder, int totalLength, J3DFileResource.VertexFormat vertexFormat) where T : new()
+        private static List<T> LoadVertexAttribute<T>(EndianBinaryReader reader, int totalAttributeDataLength, byte decimalPoint, J3DFileResource.VertexArrayType arrayType, J3DFileResource.VertexDataType dataType, J3DFileResource.VertexColorType colorType) where T : new()
         {
             int componentCount = 0;
-            switch (vertexFormat.ArrayType)
-	        {
+            switch (arrayType)
+            {
                 case J3DFileResource.VertexArrayType.Position:
                 case J3DFileResource.VertexArrayType.Normal:
                     componentCount = 3;
@@ -646,14 +600,14 @@ namespace WEditor.WindWaker.Loaders
                     componentCount = 2;
                     break;
                 default:
-                    Console.WriteLine("[J3DLoader] Unsupported ArrayType \"{0}\" found while loading VTX1!", vertexFormat.ArrayType);
+                    Console.WriteLine("[J3DLoader] Unsupported ArrayType \"{0}\" found while loading VTX1!", arrayType);
                     break;
-	        }
+            }
 
 
-            // We need to know the length of each 'vertex' (which can vary based on how many attributes and what types.
+            // We need to know the length of each 'vertex' (which can vary based on how many attributes and what types there are)
             int vertexSize = 0;
-            switch (vertexFormat.DataType)
+            switch (dataType)
             {
                 case J3DFileResource.VertexDataType.Float32:
                     vertexSize = componentCount * 4;
@@ -666,39 +620,97 @@ namespace WEditor.WindWaker.Loaders
 
                 case J3DFileResource.VertexDataType.Signed8:
                 case J3DFileResource.VertexDataType.Unsigned8:
-                case J3DFileResource.VertexDataType.RGBA8:
                     vertexSize = componentCount * 1;
                     break;
                 default:
-                    Console.WriteLine("[J3DLoader] Unsupported DataType \"{0}\" found while loading VTX1!", vertexFormat.DataType);
+                    Console.WriteLine("[J3DLoader] Unsupported DataType \"{0}\" found while loading VTX1!", dataType);
+                    break;
+            }
+
+            switch (colorType)
+            {
+                case J3DFileResource.VertexColorType.RGB8:
+                    vertexSize = 3;
+                    break;
+                case J3DFileResource.VertexColorType.RGBX8:
+                case J3DFileResource.VertexColorType.RGBA8:
+                    vertexSize = 4;
+                    break;
+
+                case J3DFileResource.VertexColorType.None:
+                    break;
+
+                case J3DFileResource.VertexColorType.RGB565:
+                case J3DFileResource.VertexColorType.RGBA4:
+                case J3DFileResource.VertexColorType.RGBA6:
+                default:
+                    Console.WriteLine("[J3DLoader] Unsupported Color Data Type: {0}!", colorType);
                     break;
             }
 
 
-            int sectionSize = totalLength / vertexSize;
+            int sectionSize = totalAttributeDataLength / vertexSize;
             List<T> values = new List<T>(sectionSize);
-            float scaleFactor = (float)Math.Pow(0.5, vertexFormat.DecimalPoint);
+            float scaleFactor = (float)Math.Pow(0.5, decimalPoint);
 
             for (int v = 0; v < sectionSize; v++)
             {
                 // Create a default version of the object and then fill it up depending on our component count and its data type...
                 dynamic value = new T();
 
-                switch (vertexFormat.DataType)
+                for (int i = 0; i < componentCount; i++)
                 {
-                    case J3DFileResource.VertexDataType.Float32:
-                        value[0] = reader.ReadSingle() * scaleFactor;
-                        value[1] = reader.ReadSingle() * scaleFactor;
-                        value[2] = reader.ReadSingle() * scaleFactor;
-                        break;
+                    switch (dataType)
+                    {
+                        case J3DFileResource.VertexDataType.Float32:
+                            value[i] = reader.ReadSingle() * scaleFactor;
+                            break;
 
-                    case J3DFileResource.VertexDataType.Signed16:
-                        value[0] = reader.ReadInt16() * scaleFactor;
-                        value[1] = reader.ReadInt16() * scaleFactor;
-                        value[2] = reader.ReadInt16() * scaleFactor;
-                        break;
+                        case J3DFileResource.VertexDataType.Unsigned16:
+                            value[i] = reader.ReadUInt16() * scaleFactor;
+                            break;
+
+                        case J3DFileResource.VertexDataType.Signed16:
+                            value[i] = reader.ReadInt16() * scaleFactor;
+                            break;
+
+                        case J3DFileResource.VertexDataType.Unsigned8:
+                            value[i] = reader.ReadByte() * scaleFactor;
+                            break;
+
+                        case J3DFileResource.VertexDataType.Signed8:
+                            value[i] = reader.ReadSByte() * scaleFactor;
+                            break;
+
+                        case J3DFileResource.VertexDataType.None:
+                            // Let the next switch statement get it.
+                            break;
+
+                        default:
+                            Console.WriteLine("[J3DLoader] Unsupported Data Type: {0}!", dataType);
+                            break;
+                    }
+
+
+                    switch (colorType)
+                    {
+                        case J3DFileResource.VertexColorType.RGBX8:
+                        case J3DFileResource.VertexColorType.RGB8:
+                        case J3DFileResource.VertexColorType.RGBA8:
+                            value[i] = reader.ReadByte() / 255f;
+                            break;
+
+                        case J3DFileResource.VertexColorType.None:
+                            break;
+
+                        case J3DFileResource.VertexColorType.RGB565:
+                        case J3DFileResource.VertexColorType.RGBA4:
+                        case J3DFileResource.VertexColorType.RGBA6:
+                        default:
+                            Console.WriteLine("[J3DLoader] Unsupported Color Data Type: {0}!", colorType);
+                            break;
+                    }
                 }
-
                 values.Add(value);
             }
 

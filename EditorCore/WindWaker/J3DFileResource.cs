@@ -58,12 +58,19 @@ namespace WEditor.WindWaker
             Signed16 = 0x3,
             Float32 = 0x4,
 
+            None = 0xFF // WindEditor addition to make loading easier.
+        }
+
+        public enum VertexColorType
+        {
             RGB565 = 0x0,
             RGB8 = 0x1,
             RGBX8 = 0x2,
             RGBA4 = 0x3,
             RGBA6 = 0x4,
-            RGBA8 = 0x5
+            RGBA8 = 0x5,
+
+            None = 0xFF // WindEditor addition to make loading easier.
         }
 
         public enum PrimitiveType
@@ -82,6 +89,8 @@ namespace WEditor.WindWaker
             public VertexArrayType ArrayType;
             public int ComponentCount; // Meaning depends o
             public VertexDataType DataType; // What type of data is stored here. 
+            public VertexColorType ColorDataType; // What kind of Color data is stored here if DataType is set to None
+
             public byte DecimalPoint; // Number of Mantissa bits for fixed point numbers (position of decimal point)
         }
 
