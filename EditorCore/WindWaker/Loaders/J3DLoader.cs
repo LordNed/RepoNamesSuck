@@ -80,51 +80,38 @@ namespace WEditor.WindWaker.Loaders
                     switch (tagName)
                     {
                         case "INF1":
-                            {
-                                //ushort unknown0 = reader.ReadUInt16();
-                                //ushort unknown1 = reader.ReadUInt16(); // wtf is with my documentation.
-                                ushort unknown1 = reader.ReadUInt16(); // A lot of Link's models have it but no idea what it means. Alt. doc says: "0 for BDL, 01 for BMD"
-                                ushort padding = reader.ReadUInt16();
-                                uint packetCount = reader.ReadUInt32(); // Total number of Packets across all Batches in file.
-                                uint vertexCount = reader.ReadUInt32(); // Total number of vertexes across all batches within the file.
-                                uint hierarchyDataOffset = reader.ReadUInt32();
-
-                                // The Hierarchy defines how Joints, Materials and Shapes are laid out. This allows them to bind a material
-                                // and draw multiple shapes (batches) with the material. It also complicates drawing things, but whatever.
-                                reader.BaseStream.Position = chunkStart + hierarchyDataOffset;
-
-                                List<J3DFileResource.InfoNode> infoNodes = new List<J3DFileResource.InfoNode>();
-                                J3DFileResource.InfoNode curNode = null;
-
-                                do
-                                {
-                                    curNode = new J3DFileResource.InfoNode();
-                                    curNode.Type = (J3DFileResource.HierarchyDataTypes)reader.ReadUInt16();
-                                    curNode.Value = reader.ReadUInt16(); // "Index into Joint, Material, or Shape table.
-
-                                    infoNodes.Add(curNode);
-                                }
-                                while (curNode.Type != J3DFileResource.HierarchyDataTypes.Finish);
-
-                                ConvertInfoHiearchyToSceneGraph(ref rootNode, infoNodes, 0);
-                            }
+                            rootNode = LoadINF1FromFile(rootNode, reader, chunkStart);
                             break;
                         case "VTX1":
-                            vertexData = LoadVTX1FromFile(resource, reader, chunkSize);
+                            vertexData = LoadVTX1FromFile(resource, reader, chunkStart, chunkSize);
                             break;
-
                         case "SHP1":
                             LoadSHP1Section(vertexData, j3dMesh, reader, chunkStart);
                             break;
-
                         case "MAT3":
                             LoadMAT3Section(reader, chunkStart);
-
                             break;
-
-
                         case "TEX1":
+                            {
+                                ushort textureCount = reader.ReadUInt16();
+                                ushort padding = reader.ReadUInt16(); // Usually 0xFFFF?
+                                uint textureHeaderOffset = reader.ReadUInt32(); // textureCount # bti image headers are stored here, relative to chunkStart.
+                                uint stringTableOffset = reader.ReadUInt32(); // One filename per texture. relative to chunkStart.
 
+
+                                for(int t = 0; t < textureCount; t++)
+                                {
+                                    // 0x20 is the length of the BinaryTextureImage header which all come in a row, but then the stream
+                                    // gets jumped around while loading the BTI file.
+                                    reader.BaseStream.Position = chunkStart + textureHeaderOffset + (t * 0x20);
+                                    BinaryTextureImage texture = new BinaryTextureImage();
+                                    texture.Load(reader);
+
+                                    string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+                                    texture.SaveImageToDisk(executionPath + "/" + t.ToString() + ".png");
+                                }
+                            }
                             break;
 
                     }
@@ -134,6 +121,37 @@ namespace WEditor.WindWaker.Loaders
             }
 
             RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
+        }
+
+        private static SceneNode LoadINF1FromFile(SceneNode rootNode, EndianBinaryReader reader, long chunkStart)
+        {
+            //ushort unknown0 = reader.ReadUInt16();
+            //ushort unknown1 = reader.ReadUInt16(); // wtf is with my documentation.
+            ushort unknown1 = reader.ReadUInt16(); // A lot of Link's models have it but no idea what it means. Alt. doc says: "0 for BDL, 01 for BMD"
+            ushort padding = reader.ReadUInt16();
+            uint packetCount = reader.ReadUInt32(); // Total number of Packets across all Batches in file.
+            uint vertexCount = reader.ReadUInt32(); // Total number of vertexes across all batches within the file.
+            uint hierarchyDataOffset = reader.ReadUInt32();
+
+            // The Hierarchy defines how Joints, Materials and Shapes are laid out. This allows them to bind a material
+            // and draw multiple shapes (batches) with the material. It also complicates drawing things, but whatever.
+            reader.BaseStream.Position = chunkStart + hierarchyDataOffset;
+
+            List<J3DFileResource.InfoNode> infoNodes = new List<J3DFileResource.InfoNode>();
+            J3DFileResource.InfoNode curNode = null;
+
+            do
+            {
+                curNode = new J3DFileResource.InfoNode();
+                curNode.Type = (J3DFileResource.HierarchyDataTypes)reader.ReadUInt16();
+                curNode.Value = reader.ReadUInt16(); // "Index into Joint, Material, or Shape table.
+
+                infoNodes.Add(curNode);
+            }
+            while (curNode.Type != J3DFileResource.HierarchyDataTypes.Finish);
+
+            ConvertInfoHiearchyToSceneGraph(ref rootNode, infoNodes, 0);
+            return rootNode;
         }
 
         /// <summary>
@@ -484,7 +502,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private static MeshVertexAttributeHolder LoadVTX1FromFile(J3DFileResource resource, EndianBinaryReader reader, int chunkSize)
+        private static MeshVertexAttributeHolder LoadVTX1FromFile(J3DFileResource resource, EndianBinaryReader reader, long chunkStart, int chunkSize)
         {
             MeshVertexAttributeHolder dataHolder = new MeshVertexAttributeHolder();
 
@@ -494,6 +512,7 @@ namespace WEditor.WindWaker.Loaders
             for (int k = 0; k < vertexDataOffsets.Length; k++)
                 vertexDataOffsets[k] = reader.ReadInt32();
 
+            reader.BaseStream.Position = chunkStart + vertexFormatOffset;
             List<J3DFileResource.VertexFormat> vertexFormats = new List<J3DFileResource.VertexFormat>();
             J3DFileResource.VertexFormat curFormat = null;
             do
@@ -622,6 +641,10 @@ namespace WEditor.WindWaker.Loaders
                 case J3DFileResource.VertexDataType.Unsigned8:
                     vertexSize = componentCount * 1;
                     break;
+
+                case J3DFileResource.VertexDataType.None:
+                    break;
+
                 default:
                     Console.WriteLine("[J3DLoader] Unsupported DataType \"{0}\" found while loading VTX1!", dataType);
                     break;
