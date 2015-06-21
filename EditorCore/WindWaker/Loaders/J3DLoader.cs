@@ -107,9 +107,9 @@ namespace WEditor.WindWaker.Loaders
                                     BinaryTextureImage texture = new BinaryTextureImage();
                                     texture.Load(reader);
 
-                                    string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                                    //string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-                                    texture.SaveImageToDisk(executionPath + "/" + t.ToString() + ".png");
+                                    //texture.SaveImageToDisk(executionPath + "/" + t.ToString() + ".png");
                                 }
                             }
                             break;
