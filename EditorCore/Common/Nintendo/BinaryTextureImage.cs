@@ -133,42 +133,41 @@ namespace WEditor
         public FilterMode MagFilter { get; private set; }
         public byte MinLOD { get; private set; } // Fixed point number, 1/8 = conversion (ToDo: is this multiply by 8 or divide...)
         public byte MagLOD { get; private set; } // Fixed point number, 1/8 = conversion (ToDo: is this multiply by 8 or divide...)
-        public byte ImageCount { get; private set; }
+        public byte MipMapCount { get; private set; }
         public ushort LodBias { get; private set; } // Fixed point number, 1/100 = conversion
 
         private Palette m_imagePalette;
         private byte[] m_rgbaImageData;
 
-        public void Load(EndianBinaryReader stream)
+        public void Load(EndianBinaryReader stream, long headerStart, int imageIndex = 0)
         {
-            long headerStart = stream.BaseStream.Position;
-
             Format = (TextureFormats)stream.ReadByte();
             AlphaSetting = stream.ReadByte();
             Width = stream.ReadUInt16();
             Height = stream.ReadUInt16();
             WrapS = (WrapModes)stream.ReadByte();
             WrapT = (WrapModes)stream.ReadByte();
-            PaletteFormat = (PaletteFormats)stream.ReadInt16();
+            byte unknown1 = stream.ReadByte();
+            PaletteFormat = (PaletteFormats)stream.ReadByte();
             PaletteCount = stream.ReadUInt16();
             int paletteDataOffset = stream.ReadInt32();
             BorderColor = new Color32(stream.ReadByte(), stream.ReadByte(), stream.ReadByte(), stream.ReadByte());
             MinFilter = (FilterMode)stream.ReadByte();
             MagFilter = (FilterMode)stream.ReadByte();
-            ImageCount = stream.ReadByte();
-            byte unknown = stream.ReadByte();
+            short unknown2 = stream.ReadInt16();
+            MipMapCount = stream.ReadByte();
+            byte unknown3 = stream.ReadByte();
             LodBias = stream.ReadUInt16();
 
             int imageDataOffset = stream.ReadInt32();
 
-
             // Load the Palette data 
-            stream.BaseStream.Position = headerStart + paletteDataOffset + (11 * 0x20);
+            stream.BaseStream.Position = headerStart + paletteDataOffset + (0x20 * imageIndex);
             m_imagePalette = new Palette();
             m_imagePalette.Load(stream, PaletteCount);
 
             // Now load and decode image data into an ARGB array.
-            stream.BaseStream.Position = headerStart + imageDataOffset + (11 * 0x20);
+            stream.BaseStream.Position = headerStart + imageDataOffset + (0x20 * imageIndex);
             m_rgbaImageData = DecodeData(stream, Width, Height, Format, m_imagePalette, PaletteFormat);
         }
 

@@ -127,8 +127,10 @@ namespace WEditor.WindWaker.Loaders
                 // and index into the finalTextureIndex list that comes from the MAT3 section, lol.
                 ushort materialIndex = remapIndexList[node.Value];
                 short textureIndex = materialList[materialIndex].texIndex[0];
-
-                curTexture = textures[finalTextureIndex[textureIndex]];
+                
+                // Models that don't use textures will have a textureIndex of -1.
+                if(textureIndex >= 0)
+                    curTexture = textures[finalTextureIndex[textureIndex]];
             }
 
             if (node.Type == J3DFileResource.HierarchyDataTypes.Batch)
@@ -146,23 +148,56 @@ namespace WEditor.WindWaker.Loaders
             uint stringTableOffset = reader.ReadUInt32(); // One filename per texture. relative to chunkStart.
             List<Texture2D> textureList = new List<Texture2D>();
 
+            // Get all Texture Names
+            reader.BaseStream.Position = chunkStart + stringTableOffset;
+            List<string> textureNames = ReadStringTable(reader);
+
             for (int t = 0; t < textureCount; t++)
             {
                 // 0x20 is the length of the BinaryTextureImage header which all come in a row, but then the stream
                 // gets jumped around while loading the BTI file.
                 reader.BaseStream.Position = chunkStart + textureHeaderOffset + (t * 0x20);
                 BinaryTextureImage texture = new BinaryTextureImage();
-                texture.Load(reader);
+                texture.Load(reader, chunkStart + 0x20, t);
 
                 Texture2D texture2D = new Texture2D(texture.Width, texture.Height);
                 texture2D.PixelData = texture.GetData();
                 textureList.Add(texture2D);
-                //string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-                //texture.SaveImageToDisk(executionPath + "/" + t.ToString() + ".png");
+
+                string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                texture.SaveImageToDisk(executionPath + "/TextureDump/" + string.Format("[{2}]_{0}_{1}.png", textureNames[t], texture.Format, t));
             }
 
             return textureList;
+        }
+
+        private static List<string> ReadStringTable(EndianBinaryReader reader)
+        {
+            long headerStart = reader.BaseStream.Position;
+            var stringList = new List<string>();
+
+            // String Tables are pre-fixed with a header which specifies the number of strings.
+            ushort numStrings = reader.ReadUInt16();
+            ushort padding = reader.ReadUInt16();
+
+            for(int i = 0; i < numStrings; i++)
+            {
+                // 0x4 bytes for the string table header, then an additional 0x4 per string 'header'.
+                // This offsets us to start of the next string in the table.
+                reader.BaseStream.Position = headerStart + 0x4 + (i * 0x4);
+                ushort stringHash = reader.ReadUInt16();
+                ushort stringOffset = reader.ReadUInt16();
+
+                // Jump forward to the offset to read the string.
+                reader.BaseStream.Position = headerStart + stringOffset;
+                string value = reader.ReadStringUntil('\0');
+
+                stringList.Add(value);
+            }
+
+
+            return stringList;
         }
 
         private static SceneNode LoadINF1FromFile(SceneNode rootNode, EndianBinaryReader reader, long chunkStart)
@@ -395,6 +430,12 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
+        private struct ShapeAttribute
+        {
+            public J3DFileResource.VertexArrayType ArrayType;
+            public J3DFileResource.VertexDataType DataType;
+        }
+
         private static void LoadSHP1SectionFromFile(MeshVertexAttributeHolder vertexData, Mesh j3dMesh, EndianBinaryReader reader, long chunkStart)
         {
             short batchCount = reader.ReadInt16();
@@ -407,6 +448,22 @@ namespace WEditor.WindWaker.Loaders
             int primitiveDataOffset = reader.ReadInt32();
             int matrixDataOffset = reader.ReadInt32();
             int packetLocationOffset = reader.ReadInt32();
+
+            // We need to figure out how many primitive attributes there are in the SHP1 section. This can differ from the number of
+            // attributes in the VTX1 section, as the SHP1 can also include things like PositionMatrixIndex, so the count can be different.
+            reader.BaseStream.Position = chunkStart + attributeOffset;
+            var shp1Attributes = new List<ShapeAttribute>();
+            do
+            {
+                ShapeAttribute attribute = new ShapeAttribute();
+                attribute.ArrayType = (J3DFileResource.VertexArrayType)reader.ReadInt32();
+                attribute.DataType = (J3DFileResource.VertexDataType)reader.ReadInt32();
+
+                if (attribute.ArrayType == J3DFileResource.VertexArrayType.NullAttr)
+                    break;
+
+                shp1Attributes.Add(attribute);
+            } while (true);
 
             // Batches can have different attributes (ie: some have pos, some have normal, some have texcoords, etc.) they're split by batches,
             // where everything in the batch uses the same set of vertex attributes. Each batch then has several packets, which are a collection
@@ -433,10 +490,10 @@ namespace WEditor.WindWaker.Loaders
                 ushort packetCount = reader.ReadUInt16();
                 ushort batchAttributeOffset = reader.ReadUInt16();
                 ushort firstMatrixIndex = reader.ReadUInt16();
-                ushort packetIndex = reader.ReadUInt16();
+                ushort firstPacketIndex = reader.ReadUInt16();
                 ushort unknownpadding = reader.ReadUInt16();
 
-                float unknown1 = reader.ReadSingle();
+                float boundingSphereDiameter = reader.ReadSingle();
                 Vector3 boundingBoxMin = new Vector3();
                 boundingBoxMin.X = reader.ReadSingle();
                 boundingBoxMin.Y = reader.ReadSingle();
@@ -451,7 +508,7 @@ namespace WEditor.WindWaker.Loaders
                 {
                     // Packet Location
                     reader.BaseStream.Position = chunkStart + packetLocationOffset;
-                    reader.BaseStream.Position += (packetIndex + p) * 0x8; // A Packet Location is 0x8 long, so we skip ahead to the right one.
+                    reader.BaseStream.Position += (firstPacketIndex + p) * 0x8; // A Packet Location is 0x8 long, so we skip ahead to the right one.
 
                     uint packetSize = reader.ReadUInt32();
                     uint packetOffset = reader.ReadUInt32();
@@ -467,6 +524,11 @@ namespace WEditor.WindWaker.Loaders
                         J3DFileResource.PrimitiveType type = (J3DFileResource.PrimitiveType)reader.ReadByte();
                         ushort vertexCount = reader.ReadUInt16();
 
+                        if (type == J3DFileResource.PrimitiveType.TriangleFan)
+                        {
+                            Console.WriteLine("Unsupported");
+                        }
+
                         numPrimitiveBytesRead += 0x3; // Advance us by 3 for the Primitive header.
 
                         // Game pads the chunks out with zeros, so this is the signal for an early break;
@@ -481,32 +543,24 @@ namespace WEditor.WindWaker.Loaders
                             // Iterate through the attribute types. I think the actual vertices are stored in interleaved format,
                             // ie: there's say 13 vertexes but those 13 vertexes will have a pos/color/tex index listed after it
                             // depending on the overall attributes of the file.
-                            for (int attrib = 0; attrib < vertexData.Attributes.Count; attrib++)
+                            for (int attrib = 0; attrib < shp1Attributes.Count; attrib++)
                             {
-                                long curPrimitiveStreamPos = chunkStart + primitiveDataOffset + numPrimitiveBytesRead + packetOffset;
-
-                                // Jump the stream head forward to read the attribute type.
-                                // chunkStart + attributeOffset = start of attribute section
-                                // batchAttributeOffset + (attrib * 0x8) = attributes for this batch, 0x8 is the size of one attribute.
-                                reader.BaseStream.Position = chunkStart + attributeOffset + batchAttributeOffset + (attrib * 0x8);
-                                J3DFileResource.VertexArrayType batchAttribType = (J3DFileResource.VertexArrayType)reader.ReadInt32();
-                                J3DFileResource.VertexDataType batchDataType = (J3DFileResource.VertexDataType)reader.ReadInt32();
-
-                                // Jump back to the primitives we were reading...
-                                reader.BaseStream.Position = curPrimitiveStreamPos;
+                                // Jump to primitive location
+                                reader.BaseStream.Position = chunkStart + primitiveDataOffset + numPrimitiveBytesRead + packetOffset;
 
                                 // Now that we know how big the vertex type is stored in (either a Signed8 or a Signed16) we can read that much data
                                 // and then we can use that index and index into 
                                 int attributeArrayIndex = 0;
-                                switch (batchDataType)
+                                uint numBytesRead = 0;
+                                switch (shp1Attributes[attrib].DataType)
                                 {
                                     case J3DFileResource.VertexDataType.Signed8:
                                         attributeArrayIndex = reader.ReadByte();
-                                        numPrimitiveBytesRead += 1;
+                                        numBytesRead = 1;
                                         break;
                                     case J3DFileResource.VertexDataType.Signed16:
                                         attributeArrayIndex = reader.ReadInt16();
-                                        numPrimitiveBytesRead += 2;
+                                        numBytesRead = 2;
                                         break;
                                     default:
                                         Console.WriteLine("[J3DLoader] Unknown Batch Index Type");
@@ -516,7 +570,7 @@ namespace WEditor.WindWaker.Loaders
                                 // Now that we know what the index is, we can retrieve it from the appropriate array
                                 // and stick it into our vertex. The J3D format removes all duplicate vertex attributes
                                 // so we need to re-duplicate them here so that we can feed them to a PC GPU in a normal fashion.
-                                switch (batchAttribType)
+                                switch (shp1Attributes[attrib].ArrayType)
                                 {
                                     case J3DFileResource.VertexArrayType.Position:
                                         meshVertexData.Position.Add(vertexData.Position[attributeArrayIndex]);
@@ -542,9 +596,11 @@ namespace WEditor.WindWaker.Loaders
                                     case J3DFileResource.VertexArrayType.Tex6:
                                     case J3DFileResource.VertexArrayType.Tex7:
                                     default:
-                                        Console.WriteLine("[J3DLoader] Unsupported attribType {0}", batchAttribType);
+                                        Console.WriteLine("[J3DLoader] Unsupported attribType {0}", shp1Attributes[attrib].ArrayType);
                                         break;
                                 }
+
+                                numPrimitiveBytesRead += numBytesRead;
                             }
                         }
 
@@ -597,6 +653,7 @@ namespace WEditor.WindWaker.Loaders
                 // Get the total length of this block of data.
                 int totalLength = GetVertexDataLength(vertexDataOffsets, k, (int)(chunkSize));
                 J3DFileResource.VertexFormat vertexFormat = null;
+                reader.BaseStream.Position = chunkStart + vertexDataOffsets[k];
 
                 switch (k)
                 {

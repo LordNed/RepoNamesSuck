@@ -7,5 +7,5 @@ out vec4 outputColor;
 
 void main()
 {
-	outputColor = texture(tex, outTexCoord0);
+	outputColor = texture(tex, outTexCoord0) * outColor;
 }
