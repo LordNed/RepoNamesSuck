@@ -14,8 +14,6 @@ namespace WEditor.Rendering
 
         public List<Mesh> m_meshList;
 
-        private Texture2D m_hackTexture;
-
         public RenderSystem()
         {
             m_cameraList = new List<Camera>();
@@ -89,7 +87,6 @@ namespace WEditor.Rendering
             Mesh mesh = new Mesh();
             mesh.SubMeshes.Add(testMesh);
 
-            m_hackTexture = Texture2D.GenerateCheckerboard();
             //m_meshList.Add(mesh);
         }
 
@@ -141,7 +138,8 @@ namespace WEditor.Rendering
 
                         // Bind our Textures
                         GL.ActiveTexture(TextureUnit.Texture0);
-                        m_hackTexture.Bind();
+                        if(batch.Texture != null)
+                            batch.Texture.Bind();
 
                         // Upload the MVP to the GPU
                         GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);

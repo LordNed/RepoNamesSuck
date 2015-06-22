@@ -45,6 +45,11 @@ namespace WEditor.WindWaker.Loaders
             {
                 Children = new List<SceneNode>();
             }
+
+            public override string ToString()
+            {
+                return string.Format("{0} - {1}", Type, Value);
+            }
         }
 
         public static void Load(J3DFileResource resource, string filePath)
@@ -56,6 +61,10 @@ namespace WEditor.WindWaker.Loaders
 
             MeshVertexAttributeHolder vertexData = null;
             SceneNode rootNode = new SceneNode();
+            List<Texture2D> textureList = new List<Texture2D>();
+            List<ushort> materialRemapIndexs = new List<ushort>();
+            List<ushort> textureRemapIndexs = new List<ushort>();
+            List<J3DFileResource.MaterialEntry> materialList = new List<J3DFileResource.MaterialEntry>();
 
             Mesh j3dMesh = resource.Mesh;
 
@@ -86,47 +95,78 @@ namespace WEditor.WindWaker.Loaders
                             vertexData = LoadVTX1FromFile(resource, reader, chunkStart, chunkSize);
                             break;
                         case "SHP1":
-                            LoadSHP1Section(vertexData, j3dMesh, reader, chunkStart);
+                            LoadSHP1SectionFromFile(vertexData, j3dMesh, reader, chunkStart);
                             break;
                         case "MAT3":
-                            LoadMAT3Section(reader, chunkStart);
+                            LoadMAT3SectionFromFile(materialList, materialRemapIndexs, textureRemapIndexs, reader, chunkStart);
                             break;
                         case "TEX1":
-                            {
-                                ushort textureCount = reader.ReadUInt16();
-                                ushort padding = reader.ReadUInt16(); // Usually 0xFFFF?
-                                uint textureHeaderOffset = reader.ReadUInt32(); // textureCount # bti image headers are stored here, relative to chunkStart.
-                                uint stringTableOffset = reader.ReadUInt32(); // One filename per texture. relative to chunkStart.
-
-
-                                for(int t = 0; t < textureCount; t++)
-                                {
-                                    // 0x20 is the length of the BinaryTextureImage header which all come in a row, but then the stream
-                                    // gets jumped around while loading the BTI file.
-                                    reader.BaseStream.Position = chunkStart + textureHeaderOffset + (t * 0x20);
-                                    BinaryTextureImage texture = new BinaryTextureImage();
-                                    texture.Load(reader);
-
-                                    //string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
-                                    //texture.SaveImageToDisk(executionPath + "/" + t.ToString() + ".png");
-                                }
-                            }
+                            textureList = LoadTEX1FromFile(reader, chunkStart);
                             break;
-
                     }
 
                     reader.BaseStream.Position = chunkStart + chunkSize;
                 }
             }
 
+            // We're going to do something a little crazy - we're going to read the scene view and apply textures to meshes (for now)
+            Texture2D testTexture = Texture2D.GenerateCheckerboard();
+            AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref testTexture, materialList, materialRemapIndexs, textureRemapIndexs);
             RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
+        }
+
+        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Texture2D curTexture, List<J3DFileResource.MaterialEntry> materialList, List<ushort> remapIndexList, List<ushort> finalTextureIndex)
+        {
+            if (node.Type == J3DFileResource.HierarchyDataTypes.Material)
+            {
+                // Don't ask me why this is so complicated. The node.Value has an index into the remapIndexList,
+                // which gives an index into the MaterialList, which finally gives an index into the Textures list.
+                // And no, I dont' know why texIndex is an array.
+                //
+                // Apparently it gets one step more complicated. You then have to take the textureIndex provided by the material
+                // and index into the finalTextureIndex list that comes from the MAT3 section, lol.
+                ushort materialIndex = remapIndexList[node.Value];
+                short textureIndex = materialList[materialIndex].texIndex[0];
+
+                curTexture = textures[finalTextureIndex[textureIndex]];
+            }
+
+            if (node.Type == J3DFileResource.HierarchyDataTypes.Batch)
+                mesh.SubMeshes[node.Value].Texture = curTexture;
+
+            foreach (var child in node.Children)
+                AssignTextureToMeshRecursive(child, mesh, textures, ref curTexture, materialList, remapIndexList, finalTextureIndex);
+        }
+
+        private static List<Texture2D> LoadTEX1FromFile(EndianBinaryReader reader, long chunkStart)
+        {
+            ushort textureCount = reader.ReadUInt16();
+            ushort padding = reader.ReadUInt16(); // Usually 0xFFFF?
+            uint textureHeaderOffset = reader.ReadUInt32(); // textureCount # bti image headers are stored here, relative to chunkStart.
+            uint stringTableOffset = reader.ReadUInt32(); // One filename per texture. relative to chunkStart.
+            List<Texture2D> textureList = new List<Texture2D>();
+
+            for (int t = 0; t < textureCount; t++)
+            {
+                // 0x20 is the length of the BinaryTextureImage header which all come in a row, but then the stream
+                // gets jumped around while loading the BTI file.
+                reader.BaseStream.Position = chunkStart + textureHeaderOffset + (t * 0x20);
+                BinaryTextureImage texture = new BinaryTextureImage();
+                texture.Load(reader);
+
+                Texture2D texture2D = new Texture2D(texture.Width, texture.Height);
+                texture2D.PixelData = texture.GetData();
+                textureList.Add(texture2D);
+                //string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+                //texture.SaveImageToDisk(executionPath + "/" + t.ToString() + ".png");
+            }
+
+            return textureList;
         }
 
         private static SceneNode LoadINF1FromFile(SceneNode rootNode, EndianBinaryReader reader, long chunkStart)
         {
-            //ushort unknown0 = reader.ReadUInt16();
-            //ushort unknown1 = reader.ReadUInt16(); // wtf is with my documentation.
             ushort unknown1 = reader.ReadUInt16(); // A lot of Link's models have it but no idea what it means. Alt. doc says: "0 for BDL, 01 for BMD"
             ushort padding = reader.ReadUInt16();
             uint packetCount = reader.ReadUInt32(); // Total number of Packets across all Batches in file.
@@ -208,7 +248,7 @@ namespace WEditor.WindWaker.Loaders
             return 0;
         }
 
-        private static void LoadMAT3Section(EndianBinaryReader reader, long chunkStart)
+        private static void LoadMAT3SectionFromFile(List<J3DFileResource.MaterialEntry> outMaterials, List<ushort> outRemapIndexes, List<ushort> textureRemapIndexs, EndianBinaryReader reader, long chunkStart)
         {
             short materialCount = reader.ReadInt16();
             short padding = reader.ReadInt16();
@@ -242,6 +282,22 @@ namespace WEditor.WindWaker.Loaders
             int ditherInfoOffset = reader.ReadInt32();
             int nbtScaleInfoOffset = reader.ReadInt32();
 
+            // Read the materialIndexOffset section into our outRemapIndexes since there's a weird extra level of redirection here.
+            reader.BaseStream.Position = chunkStart + materialIndexOffset;
+            for (int i = 0; i < materialCount; i++)
+            {
+                outRemapIndexes.Add(reader.ReadUInt16());
+            }
+
+            // Read the texTableOffset section into our textureRemapIndexes, since there's another weird level fo redirection here.
+            // Reading extra ones because I don't know how long this shit is supposed to be.
+            reader.BaseStream.Position = chunkStart + texTableOffset;
+            for (int i = 0; i < materialCount * 4; i++)
+            {
+                textureRemapIndexs.Add(reader.ReadUInt16());
+            }
+
+
             for (int m = 0; m < materialCount; m++)
             {
                 // A Material entry is 0x14c long.
@@ -249,6 +305,8 @@ namespace WEditor.WindWaker.Loaders
 
                 // Start reading each material.
                 J3DFileResource.MaterialEntry material = new J3DFileResource.MaterialEntry();
+                outMaterials.Add(material);
+
                 material.Unknown1Index = reader.ReadByte();
                 material.CullModeIndex = reader.ReadByte();
                 material.NumChannelsIndex = reader.ReadByte();
@@ -337,7 +395,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private static void LoadSHP1Section(MeshVertexAttributeHolder vertexData, Mesh j3dMesh, EndianBinaryReader reader, long chunkStart)
+        private static void LoadSHP1SectionFromFile(MeshVertexAttributeHolder vertexData, Mesh j3dMesh, EndianBinaryReader reader, long chunkStart)
         {
             short batchCount = reader.ReadInt16();
             short padding = reader.ReadInt16();
@@ -690,19 +748,19 @@ namespace WEditor.WindWaker.Loaders
                             break;
 
                         case J3DFileResource.VertexDataType.Unsigned16:
-                            value[i] = reader.ReadUInt16() * scaleFactor;
+                            value[i] = (float)reader.ReadUInt16() * scaleFactor;
                             break;
 
                         case J3DFileResource.VertexDataType.Signed16:
-                            value[i] = reader.ReadInt16() * scaleFactor;
+                            value[i] = (float)reader.ReadInt16() * scaleFactor;
                             break;
 
                         case J3DFileResource.VertexDataType.Unsigned8:
-                            value[i] = reader.ReadByte() * scaleFactor;
+                            value[i] = (float)reader.ReadByte() * scaleFactor;
                             break;
 
                         case J3DFileResource.VertexDataType.Signed8:
-                            value[i] = reader.ReadSByte() * scaleFactor;
+                            value[i] = (float)reader.ReadSByte() * scaleFactor;
                             break;
 
                         case J3DFileResource.VertexDataType.None:

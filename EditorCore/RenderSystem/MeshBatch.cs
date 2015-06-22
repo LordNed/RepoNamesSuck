@@ -98,6 +98,8 @@ namespace WEditor.Rendering
             }
         }
 
+        public Texture2D Texture;
+
         public PrimitiveType PrimitveType = PrimitiveType.Triangles;
 
         /// <summary> Indicates which vertex attributes are enabled on this mesh. </summary>

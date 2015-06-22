@@ -137,7 +137,7 @@ namespace WEditor
         public ushort LodBias { get; private set; } // Fixed point number, 1/100 = conversion
 
         private Palette m_imagePalette;
-        private byte[] m_argbImageData;
+        private byte[] m_rgbaImageData;
 
         public void Load(EndianBinaryReader stream)
         {
@@ -169,7 +169,7 @@ namespace WEditor
 
             // Now load and decode image data into an ARGB array.
             stream.BaseStream.Position = headerStart + imageDataOffset + (11 * 0x20);
-            m_argbImageData = DecodeData(stream, Width, Height, Format, m_imagePalette, PaletteFormat);
+            m_rgbaImageData = DecodeData(stream, Width, Height, Format, m_imagePalette, PaletteFormat);
         }
 
         public void SaveImageToDisk(string outputFile)
@@ -181,12 +181,17 @@ namespace WEditor
 
                 //Lock the bitmap for writing, copy the bits and then unlock for saving.
                 IntPtr ptr = bmpData.Scan0;
-                byte[] imageData = m_argbImageData;
+                byte[] imageData = m_rgbaImageData;
                 Marshal.Copy(imageData, 0, ptr, imageData.Length);
                 bmp.UnlockBits(bmpData);
 
                 bmp.Save(outputFile);
             }
+        }
+
+        public byte[] GetData()
+        {
+            return m_rgbaImageData;
         }
 
         #region Decoding
