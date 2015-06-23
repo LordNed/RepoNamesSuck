@@ -59,7 +59,7 @@ namespace WEditor.Common.Nintendo.J3D
         public float Rotation;
         public float TranslateS;
         public float TranslateT;
-        public float[] PreMatrix; // 4 Long
+        public float[,] PreMatrix; // 4x4
     }
 
     public class TevIn
