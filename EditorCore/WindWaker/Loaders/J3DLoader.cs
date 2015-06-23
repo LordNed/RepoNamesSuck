@@ -154,8 +154,7 @@ namespace WEditor.WindWaker.Loaders
 
             for (int t = 0; t < textureCount; t++)
             {
-                // 0x20 is the length of the BinaryTextureImage header which all come in a row, but then the stream
-                // gets jumped around while loading the BTI file.
+                // 0x20 is the length of the BinaryTextureImage header which all come in a row, but then the stream gets jumped around while loading the BTI file.
                 reader.BaseStream.Position = chunkStart + textureHeaderOffset + (t * 0x20);
                 BinaryTextureImage texture = new BinaryTextureImage();
                 texture.Load(reader, chunkStart + 0x20, t);

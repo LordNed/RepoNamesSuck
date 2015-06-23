@@ -139,6 +139,7 @@ namespace WEditor
         private Palette m_imagePalette;
         private byte[] m_rgbaImageData;
 
+        // headerStart seems to be chunkStart + 0x20 and I don't know why.
         public void Load(EndianBinaryReader stream, long headerStart, int imageIndex = 0)
         {
             Format = (TextureFormats)stream.ReadByte();
