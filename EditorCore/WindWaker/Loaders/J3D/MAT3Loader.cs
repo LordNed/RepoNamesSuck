@@ -286,7 +286,7 @@ namespace WEditor.WindWaker.Loaders.J3D
             List<byte> texGenCounts = ReadSection<byte>(reader, chunkStart + texGenNumberOffset, chunkStart + texCoordInfoOffset, ReadByte, 1);
             List<TexCoordGen> texGenInfo = ReadSection<TexCoordGen>(reader, chunkStart + texCoordInfoOffset, chunkStart + texCoordInfo2Offset, ReadTexCoordGen, 4);
             List<TexMatrix> texMatrixInfo = ReadSection<TexMatrix>(reader, chunkStart + texMatrixInfoOffset, chunkStart + texMatrixInfo2Offset, ReadTexMatrix, 100);
-            texStageIndexToTextureIndex = ReadSection<short>(reader, chunkStart + texTableOffset, chunkStart + tevOrderInfoOffset, ReadShort, 2);
+            texStageIndexToTextureIndex.AddRange(ReadSection<short>(reader, chunkStart + texTableOffset, chunkStart + tevOrderInfoOffset, ReadShort, 2));
             List<TevOrder> tevOrderInfo = ReadSection<TevOrder>(reader, chunkStart + tevOrderInfoOffset, chunkStart + tevColorOffset, ReadTevOrder, 4);
             List<byte> tevCounts = ReadSection<byte>(reader, chunkStart + tevStageNumInfoOffset, chunkStart + tevStageInfoOffset, ReadByte, 1);
             List<TevCombinerStage> tevStageInfos = ReadSection<TevCombinerStage>(reader, chunkStart + tevStageInfoOffset, chunkStart + tevSwapModeInfoOffset, ReadTevCombinerStage, 20);
