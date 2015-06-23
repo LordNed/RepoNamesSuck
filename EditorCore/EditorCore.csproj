@@ -57,6 +57,8 @@
     <Compile Include="Common\Input.cs" />
     <Compile Include="Common\MapEntityObject.cs" />
     <Compile Include="Common\Nintendo\BinaryTextureImage.cs" />
+    <Compile Include="Common\Nintendo\J3D\Common.cs" />
+    <Compile Include="Common\Nintendo\J3D\Materials.cs" />
     <Compile Include="Common\Ray.cs" />
     <Compile Include="Common\Rectangle.cs" />
     <Compile Include="Common\Rotations.cs" />
