@@ -19,6 +19,7 @@ namespace WEditor.WindWaker
             Batch = 0x12, //ie Batch
         }
 
+        // This might be GXVertexAttribute
         public enum VertexArrayType
         {
             PositionMatrixIndex,
@@ -71,17 +72,6 @@ namespace WEditor.WindWaker
             RGBA8 = 0x5,
 
             None = 0xFF // WindEditor addition to make loading easier.
-        }
-
-        public enum PrimitiveType
-        {
-            Points = 0xB8,
-            Lines = 0xA8,
-            LineStrip = 0xB0,
-            Triangles = 0x80,
-            TriangleStrip = 0x98,
-            TriangleFan = 0xA0,
-            Quads = 0x80,
         }
 
         public class VertexFormat
