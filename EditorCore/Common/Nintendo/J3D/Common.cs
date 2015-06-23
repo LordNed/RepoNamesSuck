@@ -19,6 +19,11 @@ namespace WEditor.Common.Nintendo.J3D
                 String = str;
                 StringHash = hash;
             }
+
+            public override string ToString()
+            {
+                return String;
+            }
         }
 
         public List<Entry> Strings { get; private set; }

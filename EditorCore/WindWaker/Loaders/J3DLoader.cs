@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WEditor.Common.Nintendo.J3D;
 using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
@@ -150,7 +151,7 @@ namespace WEditor.WindWaker.Loaders
 
             // Get all Texture Names
             reader.BaseStream.Position = chunkStart + stringTableOffset;
-            List<string> textureNames = ReadStringTable(reader);
+            StringTable stringTable = StringTable.FromStream(reader);
 
             for (int t = 0; t < textureCount; t++)
             {
@@ -165,38 +166,10 @@ namespace WEditor.WindWaker.Loaders
 
 
                 string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                texture.SaveImageToDisk(executionPath + "/TextureDump/" + string.Format("[{2}]_{0}_{1}.png", textureNames[t], texture.Format, t));
+                texture.SaveImageToDisk(executionPath + "/TextureDump/" + string.Format("[{2}]_{0}_{1}.png", stringTable[t], texture.Format, t));
             }
 
             return textureList;
-        }
-
-        private static List<string> ReadStringTable(EndianBinaryReader reader)
-        {
-            long headerStart = reader.BaseStream.Position;
-            var stringList = new List<string>();
-
-            // String Tables are pre-fixed with a header which specifies the number of strings.
-            ushort numStrings = reader.ReadUInt16();
-            ushort padding = reader.ReadUInt16();
-
-            for(int i = 0; i < numStrings; i++)
-            {
-                // 0x4 bytes for the string table header, then an additional 0x4 per string 'header'.
-                // This offsets us to start of the next string in the table.
-                reader.BaseStream.Position = headerStart + 0x4 + (i * 0x4);
-                ushort stringHash = reader.ReadUInt16();
-                ushort stringOffset = reader.ReadUInt16();
-
-                // Jump forward to the offset to read the string.
-                reader.BaseStream.Position = headerStart + stringOffset;
-                string value = reader.ReadStringUntil('\0');
-
-                stringList.Add(value);
-            }
-
-
-            return stringList;
         }
 
         private static SceneNode LoadINF1FromFile(SceneNode rootNode, EndianBinaryReader reader, long chunkStart)
@@ -282,7 +255,7 @@ namespace WEditor.WindWaker.Loaders
             return 0;
         }
 
-        private static void LoadMAT3SectionFromFile(List<J3DFileResource.MaterialEntry> outMaterials, List<ushort> outRemapIndexes, List<ushort> textureRemapIndexs, EndianBinaryReader reader, long chunkStart)
+        private static void LoadMAT3SectionFromFile(List<J3DFileResource.MaterialEntry> outMaterials, List<ushort> indexToMaterialIndex, List<ushort> indexToTextureIndex, EndianBinaryReader reader, long chunkStart)
         {
             short materialCount = reader.ReadInt16();
             short padding = reader.ReadInt16();
@@ -316,11 +289,14 @@ namespace WEditor.WindWaker.Loaders
             int ditherInfoOffset = reader.ReadInt32();
             int nbtScaleInfoOffset = reader.ReadInt32();
 
+            reader.BaseStream.Position = chunkStart + stringTableOffset;
+            StringTable nameTable = StringTable.FromStream(reader);
+
             // Read the materialIndexOffset section into our outRemapIndexes since there's a weird extra level of redirection here.
             reader.BaseStream.Position = chunkStart + materialIndexOffset;
             for (int i = 0; i < materialCount; i++)
             {
-                outRemapIndexes.Add(reader.ReadUInt16());
+                indexToMaterialIndex.Add(reader.ReadUInt16());
             }
 
             // Read the texTableOffset section into our textureRemapIndexes, since there's another weird level fo redirection here.
@@ -328,7 +304,7 @@ namespace WEditor.WindWaker.Loaders
             reader.BaseStream.Position = chunkStart + texTableOffset;
             for (int i = 0; i < materialCount * 4; i++)
             {
-                textureRemapIndexs.Add(reader.ReadUInt16());
+                indexToTextureIndex.Add(reader.ReadUInt16());
             }
 
 
