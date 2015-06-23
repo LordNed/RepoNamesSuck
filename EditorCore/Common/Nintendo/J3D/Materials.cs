@@ -81,9 +81,9 @@ namespace WEditor.Common.Nintendo.J3D
 
     public class TevOrder
     {
-        public byte TexCoord;
+        public byte TexCoordId;
         public byte TexMap;
-        public byte Color;
+        public byte ChannelId;
     }
 
     public class TevIndirect
@@ -131,13 +131,27 @@ namespace WEditor.Common.Nintendo.J3D
         public byte ScaleExponent;
     }
 
-    public class TevCombiner
+    public class TevCombinerStage
     {
         public byte Unknown0;
-        public TevIn ColorIn;
-        public TevOp ColorOp;
-        public TevIn AlphaIn;
-        public TevOp AlphaOp;
+        //public TevIn ColorIn;
+        //public TevOp ColorOp;
+        //public TevIn AlphaIn;
+        //public TevOp AlphaOp;
+
+        public byte ColorIn;
+        public byte ColorOp;
+        public byte ColorBias;
+        public byte ColorScale;
+        public byte ColorClamp;
+        public byte ColorRegId;
+        public byte AlphaIn;
+        public byte AlphaOp;
+        public byte AlphaBias;
+        public byte AlphaScale;
+        public byte AlphaClamp;
+        public byte AlphaRegId;
+        public byte Unknown1;
     }
 
     public class FogInfo

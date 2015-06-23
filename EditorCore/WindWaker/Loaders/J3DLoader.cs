@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WEditor.Common.Nintendo.J3D;
 using WEditor.Rendering;
+using WEditor.WindWaker.Loaders.J3D;
 
 namespace WEditor.WindWaker.Loaders
 {
@@ -64,7 +65,7 @@ namespace WEditor.WindWaker.Loaders
             SceneNode rootNode = new SceneNode();
             List<Texture2D> textureList = new List<Texture2D>();
             List<ushort> materialRemapIndexs = new List<ushort>();
-            List<ushort> textureRemapIndexs = new List<ushort>();
+            List<short> textureRemapIndexs = new List<short>();
             List<J3DFileResource.MaterialEntry> materialList = new List<J3DFileResource.MaterialEntry>();
 
             Mesh j3dMesh = resource.Mesh;
@@ -99,7 +100,7 @@ namespace WEditor.WindWaker.Loaders
                             LoadSHP1SectionFromFile(vertexData, j3dMesh, reader, chunkStart);
                             break;
                         case "MAT3":
-                            LoadMAT3SectionFromFile(materialList, materialRemapIndexs, textureRemapIndexs, reader, chunkStart);
+                            MAT3Loader.LoadMAT3SectionFromStream(reader, chunkStart, materialList, materialRemapIndexs, textureRemapIndexs);
                             break;
                         case "TEX1":
                             textureList = LoadTEX1FromFile(reader, chunkStart);
@@ -116,7 +117,7 @@ namespace WEditor.WindWaker.Loaders
             RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
         }
 
-        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Texture2D curTexture, List<J3DFileResource.MaterialEntry> materialList, List<ushort> remapIndexList, List<ushort> finalTextureIndex)
+        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Texture2D curTexture, List<J3DFileResource.MaterialEntry> materialList, List<ushort> remapIndexList, List<short> finalTextureIndex)
         {
             if (node.Type == J3DFileResource.HierarchyDataTypes.Material)
             {
@@ -253,157 +254,7 @@ namespace WEditor.WindWaker.Loaders
             }
 
             return 0;
-        }
-
-        private static void LoadMAT3SectionFromFile(List<J3DFileResource.MaterialEntry> outMaterials, List<ushort> indexToMaterialIndex, List<ushort> indexToTextureIndex, EndianBinaryReader reader, long chunkStart)
-        {
-            short materialCount = reader.ReadInt16();
-            short padding = reader.ReadInt16();
-            int materialsOffset = reader.ReadInt32();
-            int materialIndexOffset = reader.ReadInt32();
-            int stringTableOffset = reader.ReadInt32(); // Name Offset
-            int indirectTexturingOffset = reader.ReadInt32();
-            int gxCullModeOffset = reader.ReadInt32();
-            int materialColorOffset = reader.ReadInt32(); // gxColorMaterial Color
-            int colorChanNum = reader.ReadInt32();
-            int colorChanInfoOffset = reader.ReadInt32();
-            int ambientColorOffset = reader.ReadInt32(); // Ambient Color
-            int lightInfoOffset = reader.ReadInt32(); //
-            int texGenNumber = reader.ReadInt32(); // numTexGens
-            int texCoordInfoOffset = reader.ReadInt32(); // TexCoordGen Offset
-            int texCoordInfo2Offset = reader.ReadInt32();
-            int texMatrixInfoOffset = reader.ReadInt32();
-            int texMatrixInfo2Offset = reader.ReadInt32();
-            int texTableOffset = reader.ReadInt32(); // Texture Offset (?)
-            int tevOrderInfoOffset = reader.ReadInt32();
-            int tevColorOffset = reader.ReadInt32(); // gxColorS10
-            int tevKColorOffset = reader.ReadInt32(); // gxColor
-            int tevStageNumInfoOffset = reader.ReadInt32();
-            int tevStageInfoOffset = reader.ReadInt32(); // Tev Combiner
-            int tevSwapModeInfoOffset = reader.ReadInt32();
-            int tevSwapModeTableInfoOffset = reader.ReadInt32();
-            int fogInfoOffset = reader.ReadInt32();
-            int alphaCompInfoOffset = reader.ReadInt32();
-            int blendInfoOffset = reader.ReadInt32();
-            int zModeInfoOffset = reader.ReadInt32();
-            int ditherInfoOffset = reader.ReadInt32();
-            int nbtScaleInfoOffset = reader.ReadInt32();
-
-            reader.BaseStream.Position = chunkStart + stringTableOffset;
-            StringTable nameTable = StringTable.FromStream(reader);
-
-            // Read the materialIndexOffset section into our outRemapIndexes since there's a weird extra level of redirection here.
-            reader.BaseStream.Position = chunkStart + materialIndexOffset;
-            for (int i = 0; i < materialCount; i++)
-            {
-                indexToMaterialIndex.Add(reader.ReadUInt16());
-            }
-
-            // Read the texTableOffset section into our textureRemapIndexes, since there's another weird level fo redirection here.
-            // Reading extra ones because I don't know how long this shit is supposed to be.
-            reader.BaseStream.Position = chunkStart + texTableOffset;
-            for (int i = 0; i < materialCount * 4; i++)
-            {
-                indexToTextureIndex.Add(reader.ReadUInt16());
-            }
-
-
-            for (int m = 0; m < materialCount; m++)
-            {
-                // A Material entry is 0x14c long.
-                reader.BaseStream.Position = chunkStart + materialsOffset + (m * 0x14c);
-
-                // Start reading each material.
-                J3DFileResource.MaterialEntry material = new J3DFileResource.MaterialEntry();
-                outMaterials.Add(material);
-
-                material.Unknown1Index = reader.ReadByte();
-                material.CullModeIndex = reader.ReadByte();
-                material.NumChannelsIndex = reader.ReadByte();
-                material.NumTexGensIndex = reader.ReadByte();
-                material.NumTevStagesIndex = reader.ReadByte();
-                material.ZCompareLocIndex = reader.ReadByte();
-                material.ZModeIndex = reader.ReadByte();
-                material.DitherIndex = reader.ReadByte();
-
-                material.MaterialColorIndex = new short[2];
-                for (int l = 0; l < 2; l++)
-                    material.MaterialColorIndex[l] = reader.ReadInt16();
-
-                material.ChannelControlIndex = new short[4];
-                for (int l = 0; l < 4; l++)
-                    material.ChannelControlIndex[l] = reader.ReadInt16();
-
-                material.AmbientColorIndex = new short[2];
-                for (int l = 0; l < 2; l++)
-                    material.AmbientColorIndex[l] = reader.ReadInt16();
-
-                material.LightingIndex = new short[8];
-                for (int l = 0; l < 8; l++)
-                    material.LightingIndex[l] = reader.ReadInt16();
-
-                material.TexCoordIndex = new short[8];
-                for (int l = 0; l < 8; l++)
-                    material.TexCoordIndex[l] = reader.ReadInt16();
-
-                material.TexCoord2Index = new short[8];
-                for (int l = 0; l < 8; l++)
-                    material.TexCoord2Index[l] = reader.ReadInt16();
-
-                material.TexMatrixIndex = new short[10];
-                for (int l = 0; l < 10; l++)
-                    material.TexMatrixIndex[l] = reader.ReadInt16();
-
-                material.TexMatrix2Index = new short[20];
-                for (int l = 0; l < 20; l++)
-                    material.TexMatrix2Index[l] = reader.ReadInt16();
-
-                material.texIndex = new short[8];
-                for (int l = 0; l < 8; l++)
-                    material.texIndex[l] = reader.ReadInt16();
-
-                material.tevConstantColorIndex = new short[4];
-                for (int l = 0; l < 4; l++)
-                    material.tevConstantColorIndex[l] = reader.ReadInt16();
-
-                material.constColorSel = new byte[16];
-                for (int l = 0; l < 16; l++)
-                    material.constColorSel[l] = reader.ReadByte();
-
-                material.constAlphaSel = new byte[16];
-                for (int l = 0; l < 16; l++)
-                    material.constAlphaSel[l] = reader.ReadByte();
-
-                material.tevOrderIndex = new short[16];
-                for (int l = 0; l < 16; l++)
-                    material.tevOrderIndex[l] = reader.ReadInt16();
-
-                material.tevColorIndex = new short[4];
-                for (int l = 0; l < 4; l++)
-                    material.tevColorIndex[l] = reader.ReadInt16();
-
-                material.tevStageInfoIndex = new short[16];
-                for (int l = 0; l < 16; l++)
-                    material.tevStageInfoIndex[l] = reader.ReadInt16();
-
-                material.tevSwapModeInfoIndex = new short[16];
-                for (int l = 0; l < 16; l++)
-                    material.tevSwapModeInfoIndex[l] = reader.ReadInt16();
-
-                material.tevSwapModeTableInfoIndex = new short[16];
-                for (int l = 0; l < 16; l++)
-                    material.tevSwapModeTableInfoIndex[l] = reader.ReadInt16();
-
-                material.unknownIndices = new short[12];
-                for (int l = 0; l < 12; l++)
-                    material.unknownIndices[l] = reader.ReadInt16();
-
-                material.FogIndex = reader.ReadInt16();
-                material.AlphaCompareIndex = reader.ReadInt16();
-                material.BlendModeIndex = reader.ReadInt16();
-                material.Unknown2Index = reader.ReadInt16();
-            }
-        }
+        }       
 
         private struct ShapeAttribute
         {
