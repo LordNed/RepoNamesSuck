@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WEditor.Rendering;
 
 namespace WEditor.Common.Nintendo.J3D
 {
@@ -165,5 +166,38 @@ namespace WEditor.Common.Nintendo.J3D
         public float FarZ;
         public Color32 Color;
         public ushort[] Table; // 10 of these.
+    }
+
+    public class Material
+    {
+        public byte Unknown0;
+        public GXCullMode CullMode;
+        public byte NumColorChannels; // "NumChannels"
+        public byte NumTexGens;
+        public byte NumTevStages;
+        public ZMode ZMode; // Z Compare Mode - glDepthFunc, less, lequal, equal, greater, always, never
+        public byte DitherIndex;
+        public Color[] MaterialColors; // 2
+        public ChannelControl[] ChannelControl; // 4
+        public Color[] AmbientColors; // 2
+        public Color[] LightingColors; // 8
+        public TexCoordGen[] TexCoordGens; // 8
+        public TexCoordGen[] TexCoordGens2; // 8
+        public TexMatrix[] TexMatrixs; // 10
+        public TexMatrix[] TexMatrixs2; // 20
+        public Texture2D[] Textures; // ToDo: Remap this already?
+        public Color[] TevKColor; //4
+        public GXKonstColorSel[] ConstColorSel; // 16
+        public GXKonstAlphaSel[] ConstAlphaSel; // 16
+        public TevOrder[] TevOrderIndex; // 16
+        public Color[] TevColor; // 4
+        public TevCombinerStage[] TevStageInfo; // 16
+        public TevSwapMode[] TevSwapMode; // 16
+        public TevSwapModeTable[] TevSwapModeTable; // 16
+        public short[] UnknownIndexes; // 12
+        public short FogIndex;
+        public AlphaCompare AlphaCompare;
+        public BlendMode BlendMode;
+        public short Unknown2;
     }
 }

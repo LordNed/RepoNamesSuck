@@ -35,7 +35,7 @@ namespace WPF_Interface
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Map = MapLoader.Load(@"C:\Users\Matt\Documents\Wind Editor\ma2room");
+            Map = MapLoader.Load(@"C:\Users\Matt\Documents\Wind Editor\ma2room_slim");
         }
 
         protected void OnPropertyChanged(string propertyName)

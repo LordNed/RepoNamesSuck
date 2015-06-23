@@ -347,10 +347,10 @@ namespace WEditor.WindWaker.Loaders
                     {
                         // Jump to the primitives
                         // Primitives
-                        J3DFileResource.PrimitiveType type = (J3DFileResource.PrimitiveType)reader.ReadByte();
+                        J3DFileResource.GXPrimitiveType type = (J3DFileResource.GXPrimitiveType)reader.ReadByte();
                         ushort vertexCount = reader.ReadUInt16();
 
-                        if (type == J3DFileResource.PrimitiveType.TriangleFan)
+                        if (type == J3DFileResource.GXPrimitiveType.TriangleFan)
                         {
                             Console.WriteLine("Unsupported");
                         }
