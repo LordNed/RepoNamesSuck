@@ -48,10 +48,6 @@ namespace WEditor
 
         /// <summary>
         /// Defines how textures handle going out of [0..1] range for texcoords.
-        /// 
-        /// Standard WrapModes derived from OpenGL docs, only ClampToEdge and Repeat
-        /// seem to be used, but MirroredRepeat is included in the rare case that is
-        /// actually used.
         /// </summary>
         public enum WrapModes
         {
@@ -74,22 +70,19 @@ namespace WEditor
         }
 
         /// <summary>
-        /// FilterMode specifies what type of filtering the file should use for
-        /// min/mag. The current values are presumed from the OpenGL docs, hopefully
-        /// Nintendo derived theirs from the OpenGL specification since other stuff
-        /// seems to be.
+        /// FilterMode specifies what type of filtering the file should use for min/mag.
         /// </summary>
         public enum FilterMode
         {
             /* Valid in both Min and Mag Filter */
-            Nearest = 0x1,
-            Linear = 0x2,
+            Nearest = 0x0,                  // Point Sampling, No Mipmap
+            Linear = 0x1,                   // Bilinear Filtering, No Mipmap
 
             /* Valid in only Min Filter */
-            NearestMipmapNearest = 0x3,
-            NearestMipmapLinear = 0x4,
-            LinearMipmapNearest = 0x5,
-            LinearMipmapLinear = 0x6,
+            NearestMipmapNearest = 0x2,     // Point Sampling, Discrete Mipmap
+            NearestMipmapLinear = 0x3,      // Bilinear Filtering, Discrete Mipmap
+            LinearMipmapNearest = 0x4,      // Point Sampling, Linear MipMap
+            LinearMipmapLinear = 0x5,       // Trilinear Filtering
         }
 
         /// <summary>
