@@ -435,6 +435,7 @@ namespace WEditor.WindWaker.Loaders.J3D
                 WEditor.Common.Nintendo.J3D.Material material = new WEditor.Common.Nintendo.J3D.Material();
                 materialList.Add(material);
 
+                material.Name = nameTable[m];
                 material.Flag = flag;
                 material.CullMode = (GXCullMode)cullModes[reader.ReadByte()];
                 material.NumChannelControls = numChannelControls[reader.ReadByte()];
