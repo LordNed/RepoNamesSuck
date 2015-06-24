@@ -387,17 +387,16 @@ namespace WEditor.WindWaker.Loaders.J3D
             var tevSwapModeTables = ReadSection<TevSwapModeTable>(reader, chunkStart, chunkSize, offsets, 22, ReadTevSwapModeTable, 4);
 
             /* FOG INFO */
-            // THIS IS A GUESS AT DATA TYPE
             var fogInfos = ReadSection<FogInfo>(reader, chunkStart, chunkSize, offsets, 23, ReadFogInfo, 44);
 
             /* ALPHA COMPARE INFO */
             var alphaCompares = ReadSection<AlphaCompare>(reader, chunkStart, chunkSize, offsets, 24, ReadAlphaCompare, 8);
 
             /* BLEND INFO */
-            List<BlendMode> blendModeInfos = ReadSection<BlendMode>(reader, chunkStart, chunkSize, offsets, 25, ReadBlendMode, 4);
+            var blendModeInfos = ReadSection<BlendMode>(reader, chunkStart, chunkSize, offsets, 25, ReadBlendMode, 4);
 
             /* ZMODE INFO */
-            List<ZMode> zModeInfos = ReadSection<ZMode>(reader, chunkStart, chunkSize, offsets, 26, ReadZMode, 4);
+            var zModeInfos = ReadSection<ZMode>(reader, chunkStart, chunkSize, offsets, 26, ReadZMode, 4);
 
             /* ZCOMP LOC INFO */
             // THIS IS A GUESS AT DATA TYPE
