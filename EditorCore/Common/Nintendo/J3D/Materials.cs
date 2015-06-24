@@ -7,28 +7,56 @@ using WEditor.Rendering;
 
 namespace WEditor.Common.Nintendo.J3D
 {
+    /// <summary>
+    /// GX_SetZMode - Sets the Z-buffer compare mode. The result of the Z compare is used to conditionally write color values to the Embedded Frame Buffer.
+    /// </summary>
     public class ZMode
     {
+        /// <summary> If false, ZBuffering is disabled and the Z buffer is not updated. </summary>
         public bool Enable;
-        public byte Function;
+        /// <summary> Determines the comparison that is performed. The newely rasterized Z value is on the left while the value from the Z buffer is on the right. If the result of the comparison is false, the newly rasterized pixel is discarded. </summary>
+        public GXCompareType Function;
+        /// <summary> If true, the Z buffer is updated with the new Z value after a comparison is performed. 
+        /// Example: Disabling this would prevent a write to the Z buffer, useful for UI elements or other things
+        /// that shouldn't write to Z Buffer. See glDepthMask. </summary>
         public bool UpdateEnable;
     }
 
+    /// <summary>
+    /// GX_SetAlphaCompare - Sets the parameters for the alpha compare function which uses the alpha output from the last active TEV stage.
+    /// The alpha compare operation is:
+    ///     alpha_pass = (alpha_src(comp0)ref0) (op) (alpha_src(comp1)ref1)
+    /// where alpha_src is the alpha from the last active TEV stage.
+    /// </summary>
     public class AlphaCompare
     {
-        public byte Compare0;
+        /// <summary> subfunction 0 </summary>
+        public GXCompareType Comp0;
+        /// <summary> Reference value for subfunction 0. </summary>
         public byte Reference0;
-        public byte Operation;
-        public byte Compare1;
+        /// <summary> Alpha combine control for subfunctions 0 and 1. </summary>
+        public GXAlphaOp Operation;
+        /// <summary> subfunction 1 </summary>
+        public GXCompareType Comp1;
+        /// <summary> Reference value for subfunction 1. </summary>
         public byte Reference1;
     }
 
+    /// <summary>
+    /// GX_SetBlendMode - Determines how the source image is blended with the Embedded Frame Buffer.
+    /// When <see cref="Type"/> is set to <see cref="GXBlendMode.None"/> the source data is written directly to the EFB. 
+    /// When set to <see cref="GXBlendMode.Blend"/> source and EFB pixels are blended using the following equation:
+    ///     dst_pix_clr = src_pix_clr * src_fact + dst_pix_clr * dst_fact
+    /// </summary>
     public class BlendMode
     {
-        public byte Type;
-        public byte SourceFact;
-        public byte DestinationFact;
-        public byte Operation;
+        /// <summary> Blending Type </summary>
+        public GXBlendMode Type;
+        /// <summary> Blending Control </summary>
+        public GXBlendModeControl SourceFact;
+        /// <summary> Blending Control </summary>
+        public GXBlendModeControl DestinationFact;
+        public byte Operation; // Seems to be logic operators such as clear, and, copy, equiv, inv, invand, etc.
     }
 
     public class ChannelControl
@@ -164,40 +192,50 @@ namespace WEditor.Common.Nintendo.J3D
         public float EndZ;
         public float NearZ;
         public float FarZ;
-        public Color32 Color;
+        public Color Color;
         public ushort[] Table; // 10 of these.
     }
 
     public class Material
     {
-        public byte Unknown0;
+        public byte Flag; // ToDo: Usage?
         public GXCullMode CullMode;
-        public byte NumColorChannels; // "NumChannels"
+        public byte NumChannelControls; // "NumChans"
         public byte NumTexGens;
         public byte NumTevStages;
-        public ZMode ZMode; // Z Compare Mode - glDepthFunc, less, lequal, equal, greater, always, never
+
+        /// <summary> Does the Z buffering happen before or after texturing. Normally it happens before, but when alpha compare is used, it must be done after. </summary>
+        public byte ZCompareLocIndex; // This one is still an index I think, I don't think it's translated to its actual value.
+
+        /// <summary> Z Buffer compare mode. </summary>
+        public ZMode ZMode;
+
         public byte DitherIndex;
+
+
         public Color[] MaterialColors; // 2
-        public ChannelControl[] ChannelControl; // 4
+        public ChannelControl[] ChannelControls; // 4
         public Color[] AmbientColors; // 2
         public Color[] LightingColors; // 8
-        public TexCoordGen[] TexCoordGens; // 8
-        public TexCoordGen[] TexCoordGens2; // 8
-        public TexMatrix[] TexMatrixs; // 10
-        public TexMatrix[] TexMatrixs2; // 20
-        public Texture2D[] Textures; // ToDo: Remap this already?
-        public Color[] TevKColor; //4
-        public GXKonstColorSel[] ConstColorSel; // 16
-        public GXKonstAlphaSel[] ConstAlphaSel; // 16
-        public TevOrder[] TevOrderIndex; // 16
-        public Color[] TevColor; // 4
-        public TevCombinerStage[] TevStageInfo; // 16
-        public TevSwapMode[] TevSwapMode; // 16
-        public TevSwapModeTable[] TevSwapModeTable; // 16
+        public TexCoordGen[] TexGenInfos; // 8
+        public TexCoordGen[] TexGen2Infos; // 8
+        public TexMatrix[] TexMatrices; // 10
+        public TexMatrix[] DttMatrices; // 20 - Post-Transform Matrices
+        public short[] Textures; // 8
+        public Color[] TevKonstColors; //4
+        public GXKonstColorSel[] KonstColorSels; // 16
+        public GXKonstAlphaSel[] KonstAlphaSels; // 16
+        public TevOrder[] TevOrderInfos; // 16
+
+        /// <summary> Might be the colors the TEV registers are initialized with - prev, color0, color1 and color2. </summary>
+        public Color[] TevColor; // 4 - er... which color? There's lots of colors!
+        public TevCombinerStage[] TevStageInfos; // 16
+        public TevSwapMode[] TevSwapModes; // 16
+        public TevSwapModeTable[] TevSwapModeTables; // 16
         public short[] UnknownIndexes; // 12
         public short FogIndex;
         public AlphaCompare AlphaCompare;
         public BlendMode BlendMode;
-        public short Unknown2;
+        public short UnknownIndex2;
     }
 }
