@@ -14,12 +14,19 @@ namespace WEditor.Common.Nintendo.J3D
     {
         /// <summary> If false, ZBuffering is disabled and the Z buffer is not updated. </summary>
         public bool Enable;
+
         /// <summary> Determines the comparison that is performed. The newely rasterized Z value is on the left while the value from the Z buffer is on the right. If the result of the comparison is false, the newly rasterized pixel is discarded. </summary>
         public GXCompareType Function;
+
         /// <summary> If true, the Z buffer is updated with the new Z value after a comparison is performed. 
         /// Example: Disabling this would prevent a write to the Z buffer, useful for UI elements or other things
         /// that shouldn't write to Z Buffer. See glDepthMask. </summary>
         public bool UpdateEnable;
+
+        public override string ToString()
+        {
+            return string.Format("Enabled: {0} Function: {1} UpdateEnable: {2}", Enable, Function, UpdateEnable);
+        }
     }
 
     /// <summary>
@@ -32,14 +39,23 @@ namespace WEditor.Common.Nintendo.J3D
     {
         /// <summary> subfunction 0 </summary>
         public GXCompareType Comp0;
+
         /// <summary> Reference value for subfunction 0. </summary>
         public byte Reference0;
+
         /// <summary> Alpha combine control for subfunctions 0 and 1. </summary>
         public GXAlphaOp Operation;
+
         /// <summary> subfunction 1 </summary>
         public GXCompareType Comp1;
+
         /// <summary> Reference value for subfunction 1. </summary>
         public byte Reference1;
+
+        public override string ToString()
+        {
+            return string.Format("Compare: {0} Ref: {1} Op: {2} Compare: {3} Reference: {4}", Comp0, Reference0, Operation, Comp1, Reference1);
+        }
     }
 
     /// <summary>
@@ -52,21 +68,45 @@ namespace WEditor.Common.Nintendo.J3D
     {
         /// <summary> Blending Type </summary>
         public GXBlendMode Type;
+
         /// <summary> Blending Control </summary>
         public GXBlendModeControl SourceFact;
+
         /// <summary> Blending Control </summary>
         public GXBlendModeControl DestinationFact;
+
         public byte Operation; // Seems to be logic operators such as clear, and, copy, equiv, inv, invand, etc.
+
+        public override string ToString()
+        {
+            return string.Format("Type: {0} Control: {1} Destination Control: {2} Operation: {3}", Type, SourceFact, DestinationFact, Operation);
+        }
     }
 
-    public class ChannelControl
+    /// <summary>
+    /// The color channel can have 1-8 lights associated with it, set using <see cref="ChanCtrl.LitMask"/>. 
+    /// The <see cref="ChanCtrl.DiffuseFunction"/> and <see cref="ChanCtrl.AttenuationFunction"/> parameters control the lighting equation for all lights associated with this channel.
+    /// The <see cref="ChanCtrl.AmbientSrc"/> and <see cref="ChanCtrl.MaterialSrc"/> used to select whether the input source colors come from the register colors or vertex colors.
+    /// </summary>
+    public class ChanCtrl
     {
+        /// <summary> Whether or not to enable lighting for this channel. If false, the material source color is passed through as the mateiral output color.</summary>
         public bool Enable;
+
+        /// <summary> Source for the Material color </summary>
         public byte MaterialSrc;
-        public byte LitMask;
-        public byte DiffuseFunction;
-        public byte AttenuationFunction;
-        public byte AmbientSource;
+
+        /// <summary> Light ID or IDs to associate with this channel. </summary>
+        public GXLightId LitMask;
+
+        /// <summary> Diffuse function to use. </summary>
+        public GXDiffuseFn DiffuseFunction;
+
+        /// <summary> Attenuation function to use. </summary>
+        public GXAttenuationFn AttenuationFunction;
+
+        /// <summary> Source for the ambient color. </summary>
+        public byte AmbientSrc;
     }
 
     public class TexCoordGen
@@ -198,23 +238,37 @@ namespace WEditor.Common.Nintendo.J3D
 
     public class Material
     {
-        public byte Flag; // ToDo: Usage?
+        /// <summary> Human readable name of the material, no file references point to this name. </summary>
+        public string Name;
+
+        /// <summary> Unknown usage. BMDView2 specifies that a value of 1 is "Draw on Way Down" while a value of 4 is "Draw on Way Up (guess)",
+        /// in reference to the INF1 hierarchy. A value of 0 indicates that the material is end/null - see the loader for detailed desc.
+        /// </summary>
+        public byte Flag;
+
+        /// <summary> Face Culling Mode </summary>
         public GXCullMode CullMode;
-        public byte NumChannelControls; // "NumChans"
+
+        public byte NumChannelControls; // "NumChans" - I think this is GX_SetNumChans which sets the number of color channels that are output to the TEV stages.
+
+        /// <summary> Number of texture coordinates that are generated and available for use in the Texture Environment TEV stages. </summary>
         public byte NumTexGens;
+
+        /// <summary> Number of consecutive TEV stages. Must be at least one. </summary>
         public byte NumTevStages;
 
-        /// <summary> Does the Z buffering happen before or after texturing. Normally it happens before, but when alpha compare is used, it must be done after. </summary>
-        public byte ZCompareLocIndex; // This one is still an index I think, I don't think it's translated to its actual value.
+        /// <summary> If true, the Z buffering happens before texturing (instead of after). Normally it happens before, but when alpha compare is used, it must be done after. </summary>
+        public bool ZCompLoc;
 
         /// <summary> Z Buffer compare mode. </summary>
         public ZMode ZMode;
 
-        public byte DitherIndex;
+        /// <summary> Enables or disables dithering. If true, a 4x4 Bayer matrix is used for dithering. </summary>
+        public bool Dither;
 
 
         public Color[] MaterialColors; // 2
-        public ChannelControl[] ChannelControls; // 4
+        public ChanCtrl[] ChannelControls; // 4
         public Color[] AmbientColors; // 2
         public Color[] LightingColors; // 8
         public TexCoordGen[] TexGenInfos; // 8
@@ -231,9 +285,9 @@ namespace WEditor.Common.Nintendo.J3D
         public Color[] TevColor; // 4 - er... which color? There's lots of colors!
         public TevCombinerStage[] TevStageInfos; // 16
         public TevSwapMode[] TevSwapModes; // 16
-        public TevSwapModeTable[] TevSwapModeTables; // 16
+        public TevSwapModeTable[] TevSwapModeTables; // 4
         public short[] UnknownIndexes; // 12
-        public short FogIndex;
+        public FogInfo Fog;
         public AlphaCompare AlphaCompare;
         public BlendMode BlendMode;
         public short UnknownIndex2;
