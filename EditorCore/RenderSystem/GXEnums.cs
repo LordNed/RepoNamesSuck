@@ -237,4 +237,36 @@ namespace WEditor.Rendering
         TriangleFan = 0xA0,
         Quads = 0x80,
     }
+
+    public enum GXLightId
+    {
+        Light0 = 0x001,
+        Light1 = 0x002,
+        Light2 = 0x004,
+        Light3 = 0x008,
+        Light4 = 0x010,
+        Light5 = 0x020,
+        Light6 = 0x040,
+        Light7 = 0x080,
+        None = 0x000
+    }
+
+    public enum GXDiffuseFn
+    {
+        None = 0,
+        Signed = 1,
+        Clamp = 2
+    }
+
+    public enum GXAttenuationFn
+    {
+        // No attenuation
+        None = 2,
+
+        // Specular Computation
+        Spec = 0,
+
+        // Spot Light Attenuation
+        Spot = 1
+    }
 }
