@@ -121,7 +121,7 @@ namespace WEditor.WindWaker.Loaders.J3D
                 Type = (GXBlendMode)stream.ReadByte(),
                 SourceFact = (GXBlendModeControl)stream.ReadByte(),
                 DestinationFact = (GXBlendModeControl)stream.ReadByte(),
-                Operation = stream.ReadByte()
+                Operation = (GXLogicOp)stream.ReadByte()
             };
         }
 
@@ -130,11 +130,11 @@ namespace WEditor.WindWaker.Loaders.J3D
             var retVal = new ChanCtrl
             {
                 Enable = stream.ReadBoolean(),
-                MaterialSrc = stream.ReadByte(),
+                MaterialSrc = (GXColorSrc) stream.ReadByte(),
                 LitMask = (GXLightId) stream.ReadByte(),
                 DiffuseFunction = (GXDiffuseFn) stream.ReadByte(),
                 AttenuationFunction = (GXAttenuationFn) stream.ReadByte(),
-                AmbientSrc = stream.ReadByte()
+                AmbientSrc = (GXColorSrc) stream.ReadByte()
             };
 
             stream.ReadBytes(2); // Padding

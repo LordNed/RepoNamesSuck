@@ -75,7 +75,8 @@ namespace WEditor.Common.Nintendo.J3D
         /// <summary> Blending Control </summary>
         public GXBlendModeControl DestinationFact;
 
-        public byte Operation; // Seems to be logic operators such as clear, and, copy, equiv, inv, invand, etc.
+        /// <summary> What operation is used to blend them when <see cref="Type"/> is set to <see cref="GXBlendMode.Logic"/>. </summary>
+        public GXLogicOp Operation; // Seems to be logic operators such as clear, and, copy, equiv, inv, invand, etc.
 
         public override string ToString()
         {
@@ -93,8 +94,8 @@ namespace WEditor.Common.Nintendo.J3D
         /// <summary> Whether or not to enable lighting for this channel. If false, the material source color is passed through as the mateiral output color.</summary>
         public bool Enable;
 
-        /// <summary> Source for the Material color </summary>
-        public byte MaterialSrc;
+        /// <summary> Source for the Material color. When set to <see cref="GXColorSrc.Register"/> the color set by GX_SetChanMatColor is used. </summary>
+        public GXColorSrc MaterialSrc;
 
         /// <summary> Light ID or IDs to associate with this channel. </summary>
         public GXLightId LitMask;
@@ -105,8 +106,8 @@ namespace WEditor.Common.Nintendo.J3D
         /// <summary> Attenuation function to use. </summary>
         public GXAttenuationFn AttenuationFunction;
 
-        /// <summary> Source for the ambient color. </summary>
-        public byte AmbientSrc;
+        /// <summary> Source for the ambient color. When set to <see cref="GXColorSrc.Register"/> the color set by GX_SetChanAmbColor is used. </summary>
+        public GXColorSrc AmbientSrc;
     }
 
     public class TexCoordGen
