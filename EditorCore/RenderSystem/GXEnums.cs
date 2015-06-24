@@ -34,7 +34,7 @@ namespace WEditor.Rendering
         All = 3     // Cull all primitives
     }
 
-    public enum GXBlendMode
+    public enum GXBlendModeControl
     {
         Zero = 0,               // ! < 0.0
         One = 1,                // ! < 1.0
@@ -44,6 +44,14 @@ namespace WEditor.Rendering
         InverseSrcAlpha = 5,    // ! < 1.0 - (Source Alpha)
         DstAlpha = 6,           // ! < Framebuffer Alpha
         InverseDstAlpha = 7     // ! < 1.0 - (Framebuffer Alpha)
+    }
+
+    public enum GXBlendMode
+    {
+        None = 0,
+        Blend = 1,
+        Logic = 2,
+        Subtract = 3
     }
 
     public enum GXTevOp
@@ -132,7 +140,7 @@ namespace WEditor.Rendering
         KCSel_K0_B = 0x18,  // K0[BBB] Register
         KCSel_K1_B = 0x19,  // K1[BBB] Register
         KCSel_K2_B = 0x1A,  // K2[BBB] Register
-        KCSel_K3_R = 0x1B,  // K3[BBB] Register
+        KCSel_K3_B = 0x1B,  // K3[BBB] Register
         KCSel_K0_A = 0x1C,  // K0[AAA] Register
         KCSel_K1_A = 0x1D,  // K1[AAA] Register
         KCSel_K2_A = 0x1E,  // K2[AAA] Register
@@ -160,7 +168,7 @@ namespace WEditor.Rendering
         KASel_K0_B = 0x18,  // K0[B] Register
         KASel_K1_B = 0x19,  // K1[B] Register
         KASel_K2_B = 0x1A,  // K2[B] Register
-        KASel_K3_R = 0x1B,  // K3[B] Register
+        KASel_K3_B = 0x1B,  // K3[B] Register
         KASel_K0_A = 0x1C,  // K0[A] Register
         KASel_K1_A = 0x1D,  // K1[A] Register
         KASel_K2_A = 0x1E,  // K2[A] Register

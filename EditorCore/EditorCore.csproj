@@ -68,7 +68,7 @@
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderSystem\Camera.cs" />
-    <Compile Include="RenderSystem\Material.cs" />
+    <Compile Include="RenderSystem\GXEnums.cs" />
     <Compile Include="RenderSystem\Mesh.cs" />
     <Compile Include="RenderSystem\MeshBatch.cs" />
     <Compile Include="RenderSystem\RenderSystem.cs" />
