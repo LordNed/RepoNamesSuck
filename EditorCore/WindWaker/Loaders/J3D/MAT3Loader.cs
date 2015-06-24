@@ -15,6 +15,48 @@ namespace WEditor.WindWaker.Loaders.J3D
         /// <param name="stream">The stream to decode the instance from</param>
         private delegate T LoadFromStream<T>(EndianBinaryReader stream);
 
+        /* MAT 3 HEADER INFO
+         * The variable names are far more descriptive than using an int[] offset list. However, Nintendo
+         * appears to store unused indexes as zeros, which means that we have to write a function that
+         * searches for the next non-zero offset. We thus have to convert it from specifically named
+         * variables to an int[] so we can iterate over it. The original variable names have been replicated
+         * below for clarity/reference.
+         * 
+         * 
+         * 
+            00 - int materialsOffset = reader.ReadInt32();
+            01 - int materialIndexOffset = reader.ReadInt32();
+            02 - int stringTableOffset = reader.ReadInt32(); // Name Offset
+            03 - int indirectTexturingOffset = reader.ReadInt32();
+            04 - int gxCullModeOffset = reader.ReadInt32();
+            05 - int materialColorOffset = reader.ReadInt32(); // gxColorMaterial Color
+            06 - int numColorChanOffset = reader.ReadInt32();
+            07 - int colorChanInfoOffset = reader.ReadInt32();
+            08 - int ambientColorOffset = reader.ReadInt32(); // Ambient Color
+            09 - int lightInfoOffset = reader.ReadInt32(); //
+            10 - int texGenNumberOffset = reader.ReadInt32(); // numTexGens
+            11 - int texCoordInfoOffset = reader.ReadInt32(); // TexCoordGen Offset
+            12 - int texCoordInfo2Offset = reader.ReadInt32();
+            13 - int texMatrixInfoOffset = reader.ReadInt32();
+            14 - int texMatrixInfo2Offset = reader.ReadInt32();
+            15 - int texTableOffset = reader.ReadInt32(); // Texture Offset (?)
+            16 - int tevOrderInfoOffset = reader.ReadInt32();
+            17 - int tevColorOffset = reader.ReadInt32(); // gxColorS10
+            18 - int tevKColorOffset = reader.ReadInt32(); // gxColor
+            19 - int tevStageNumInfoOffset = reader.ReadInt32();
+            20 - int tevStageInfoOffset = reader.ReadInt32(); // Tev Combiner
+            21 - int tevSwapModeInfoOffset = reader.ReadInt32();
+            22 - int tevSwapModeTableInfoOffset = reader.ReadInt32();
+            23 - int fogInfoOffset = reader.ReadInt32();
+            24 - int alphaCompareInfoOffset = reader.ReadInt32();
+            25 - int blendInfoOffset = reader.ReadInt32();
+            26 - int zModeInfoOffset = reader.ReadInt32();
+            27 - int zCompLocOffset 
+            28 - int ditherInfoOffset = reader.ReadInt32();
+            29 - int nbtScaleInfoOffset = reader.ReadInt32();
+         * 
+         */
+
         private static List<T> Collect<T>(EndianBinaryReader stream, LoadFromStream<T> function, int count)
         {
             List<T> values = new List<T>();
@@ -26,10 +68,10 @@ namespace WEditor.WindWaker.Loaders.J3D
             return values;
         }
 
-        private static List<T> ReadSection<T>(EndianBinaryReader stream, long offset, long nextOffset, LoadFromStream<T> function, int itemSize)
+        private static List<T> ReadSection<T>(EndianBinaryReader stream, long chunkStart, int chunkSize, int[] offsets, int offset, LoadFromStream<T> function, int itemSize)
         {
-            stream.BaseStream.Position = offset;
-            return Collect<T>(stream, function, (int)(nextOffset - offset) / itemSize);
+            stream.BaseStream.Position = chunkStart + offsets[offset];
+            return Collect<T>(stream, function, GetOffsetLength(offsets, offset, chunkSize) / itemSize);
         }
 
         #region Stream Decoding Functions
@@ -49,7 +91,7 @@ namespace WEditor.WindWaker.Loaders.J3D
             var retVal = new ZMode
             {
                 Enable = stream.ReadBoolean(),
-                Function = (GXCompareType) stream.ReadByte(),
+                Function = (GXCompareType)stream.ReadByte(),
                 UpdateEnable = stream.ReadBoolean(),
             };
 
@@ -63,7 +105,7 @@ namespace WEditor.WindWaker.Loaders.J3D
             {
                 Comp0 = (GXCompareType)stream.ReadByte(),
                 Reference0 = stream.ReadByte(),
-                Operation = (GXAlphaOp) stream.ReadByte(),
+                Operation = (GXAlphaOp)stream.ReadByte(),
                 Comp1 = (GXCompareType)stream.ReadByte(),
                 Reference1 = stream.ReadByte()
             };
@@ -76,23 +118,23 @@ namespace WEditor.WindWaker.Loaders.J3D
         {
             return new BlendMode
             {
-                Type = (GXBlendMode) stream.ReadByte(),
-                SourceFact = (GXBlendModeControl) stream.ReadByte(),
-                DestinationFact = (GXBlendModeControl) stream.ReadByte(),
+                Type = (GXBlendMode)stream.ReadByte(),
+                SourceFact = (GXBlendModeControl)stream.ReadByte(),
+                DestinationFact = (GXBlendModeControl)stream.ReadByte(),
                 Operation = stream.ReadByte()
             };
         }
 
-        private static ChannelControl ReadChannelControl(EndianBinaryReader stream)
+        private static ChanCtrl ReadChannelControl(EndianBinaryReader stream)
         {
-            var retVal = new ChannelControl
+            var retVal = new ChanCtrl
             {
                 Enable = stream.ReadBoolean(),
                 MaterialSrc = stream.ReadByte(),
-                LitMask = stream.ReadByte(),
-                DiffuseFunction = stream.ReadByte(),
-                AttenuationFunction = stream.ReadByte(),
-                AmbientSource = stream.ReadByte()
+                LitMask = (GXLightId) stream.ReadByte(),
+                DiffuseFunction = (GXDiffuseFn) stream.ReadByte(),
+                AttenuationFunction = (GXAttenuationFn) stream.ReadByte(),
+                AmbientSrc = stream.ReadByte()
             };
 
             stream.ReadBytes(2); // Padding
@@ -248,135 +290,122 @@ namespace WEditor.WindWaker.Loaders.J3D
         {
             return stream.ReadInt16();
         }
+
+        private static bool ReadBool(EndianBinaryReader stream)
+        {
+            return stream.ReadBoolean();
+        }
         #endregion
 
-        public static List<WEditor.Common.Nintendo.J3D.Material> LoadMAT3SectionFromStream(EndianBinaryReader reader, long chunkStart, List<ushort> indexToMaterialIndex)
+        public static List<WEditor.Common.Nintendo.J3D.Material> LoadMAT3SectionFromStream(EndianBinaryReader reader, long chunkStart, int chunkSize, List<ushort> indexToMaterialIndex)
         {
             short materialCount = reader.ReadInt16();
             short padding = reader.ReadInt16();
-            int materialsOffset = reader.ReadInt32();
-            int materialIndexOffset = reader.ReadInt32();
-            int stringTableOffset = reader.ReadInt32(); // Name Offset
-            int indirectTexturingOffset = reader.ReadInt32();
-            int gxCullModeOffset = reader.ReadInt32();
-            int materialColorOffset = reader.ReadInt32(); // gxColorMaterial Color
-            int numColorChanOffset = reader.ReadInt32();
-            int colorChanInfoOffset = reader.ReadInt32();
-            int ambientColorOffset = reader.ReadInt32(); // Ambient Color
-            int lightInfoOffset = reader.ReadInt32(); //
-            int texGenNumberOffset = reader.ReadInt32(); // numTexGens
-            int texCoordInfoOffset = reader.ReadInt32(); // TexCoordGen Offset
-            int texCoordInfo2Offset = reader.ReadInt32();
-            int texMatrixInfoOffset = reader.ReadInt32();
-            int texMatrixInfo2Offset = reader.ReadInt32();
-            int texTableOffset = reader.ReadInt32(); // Texture Offset (?)
-            int tevOrderInfoOffset = reader.ReadInt32();
-            int tevColorOffset = reader.ReadInt32(); // gxColorS10
-            int tevKColorOffset = reader.ReadInt32(); // gxColor
-            int tevStageNumInfoOffset = reader.ReadInt32();
-            int tevStageInfoOffset = reader.ReadInt32(); // Tev Combiner
-            int tevSwapModeInfoOffset = reader.ReadInt32();
-            int tevSwapModeTableInfoOffset = reader.ReadInt32();
-            int fogInfoOffset = reader.ReadInt32();
-            int alphaCompareInfoOffset = reader.ReadInt32();
-            int blendInfoOffset = reader.ReadInt32();
-            int zModeInfoOffset = reader.ReadInt32();
-            int ditherInfoOffset = reader.ReadInt32();
-            int nbtScaleInfoOffset = reader.ReadInt32();
 
+            // Nintendo sets unused offsets to zero, so we can't just use the next variable name in the list. Instead we have to search
+            // until we find a non-zero one and calculate the difference that way. Thus, we convert all of the offsets into an int[] for
+            // array operations.
+            int[] offsets = new int[30];
+            for (int i = 0; i < offsets.Length; i++)
+                offsets[i] = reader.ReadInt32();
 
             List<Common.Nintendo.J3D.Material> materialList = new List<Material>();
 
             // Read the materialIndexOffset section into our outRemapIndexes since there's a weird extra level of redirection here.
-            reader.BaseStream.Position = chunkStart + materialIndexOffset;
+            reader.BaseStream.Position = chunkStart + offsets[1];
             for (int i = 0; i < materialCount; i++)
             {
                 indexToMaterialIndex.Add(reader.ReadUInt16());
             }
 
             /* STRING TABLE */
-            reader.BaseStream.Position = chunkStart + stringTableOffset;
+            reader.BaseStream.Position = chunkStart + offsets[2];
             StringTable nameTable = StringTable.FromStream(reader);
 
             /* INDIRECT TEXTURING */
             // ???????
 
             /* CULL MODE */
-            List<int> cullModes = ReadSection<int>(reader, chunkStart + gxCullModeOffset, chunkStart + materialColorOffset, ReadInt32, 4);
+            var cullModes = ReadSection<int>(reader, chunkStart, chunkSize, offsets, 4, ReadInt32, 4);
 
             /* MATERIAL COLOR */
-            List<Color> materialColors = ReadSection<Color>(reader, chunkStart + materialColorOffset, chunkStart + numColorChanOffset, ReadColor32, 4);
+            var materialColors = ReadSection<Color>(reader, chunkStart, chunkSize, offsets, 5, ReadColor32, 4);
 
             /* NUM COLOR CHAN */
             // THIS IS A GUESS AT DATA TYPE
-            List<byte> numChannelControls = ReadSection<byte>(reader, chunkStart + numColorChanOffset, chunkStart + colorChanInfoOffset, ReadByte, 1);
+            var numChannelControls = ReadSection<byte>(reader, chunkStart, chunkSize, offsets, 6, ReadByte, 1);
 
             /* COLOR CHAN INFO */
-            List<ChannelControl> colorChannelInfos = ReadSection<ChannelControl>(reader, chunkStart + colorChanInfoOffset, chunkStart + ambientColorOffset, ReadChannelControl, 8);
+            var colorChannelInfos = ReadSection<ChanCtrl>(reader, chunkStart, chunkSize, offsets, 7, ReadChannelControl, 8);
 
             /* AMBIENT COLOR */
-            List<Color> ambientColors = ReadSection<Color>(reader, chunkStart + ambientColorOffset, chunkStart + lightInfoOffset, ReadColor32, 4);
+            var ambientColors = ReadSection<Color>(reader, chunkStart, chunkSize, offsets, 8, ReadColor32, 4);
 
             /* LIGHT INFO */
             // THIS IS A GUESS AT DATA TYPE
-            var lightingColors = ReadSection<Color>(reader, chunkStart + lightInfoOffset, chunkStart + texGenNumberOffset, ReadColorShort, 8);
+            var lightingColors = ReadSection<Color>(reader, chunkStart, chunkSize, offsets, 9, ReadColorShort, 8);
 
             /* TEX GEN NUMBER */
             // THIS IS A GUESS AT DATA TYPE
-            var numTexGens = ReadSection<byte>(reader, chunkStart + texGenNumberOffset, chunkStart + texCoordInfoOffset, ReadByte, 1);
+            var numTexGens = ReadSection<byte>(reader, chunkStart, chunkSize, offsets, 10, ReadByte, 1);
 
             /* TEX GEN INFO */
-            var texGenInfos = ReadSection<TexCoordGen>(reader, chunkStart + texCoordInfoOffset, chunkStart + texCoordInfo2Offset, ReadTexCoordGen, 4);
+            var texGenInfos = ReadSection<TexCoordGen>(reader, chunkStart, chunkSize, offsets, 11, ReadTexCoordGen, 4);
 
             /* TEX GEN 2 INFO */
-            var texGen2Infos = ReadSection<TexCoordGen>(reader, chunkStart + texCoordInfo2Offset, chunkStart + texMatrixInfoOffset, ReadTexCoordGen, 4);
+            var texGen2Infos = ReadSection<TexCoordGen>(reader, chunkStart, chunkSize, offsets, 12, ReadTexCoordGen, 4);
 
             /* TEX MATRIX INFO */
-            var texMatrixInfo = ReadSection<TexMatrix>(reader, chunkStart + texMatrixInfoOffset, chunkStart + texMatrixInfo2Offset, ReadTexMatrix, 100);
+            var texMatrixInfo = ReadSection<TexMatrix>(reader, chunkStart, chunkSize, offsets, 13, ReadTexMatrix, 100);
 
             /* POST TRANSFORM MATRIX INFO */
-            var texMatrix2Info = ReadSection<TexMatrix>(reader, chunkStart + texMatrixInfo2Offset, chunkStart + texTableOffset, ReadTexMatrix, 100);
+            var texMatrix2Info = ReadSection<TexMatrix>(reader, chunkStart, chunkSize, offsets, 14, ReadTexMatrix, 100);
 
             /* TEXURE INDEX */
-            var texIndexes = ReadSection<short>(reader, chunkStart + texTableOffset, chunkStart + tevOrderInfoOffset, ReadShort, 2);
+            var texIndexes = ReadSection<short>(reader, chunkStart, chunkSize, offsets, 15, ReadShort, 2);
 
             /* TEV ORDER INFO */
-            var tevOrderInfos = ReadSection<TevOrder>(reader, chunkStart + tevOrderInfoOffset, chunkStart + tevColorOffset, ReadTevOrder, 4);
+            var tevOrderInfos = ReadSection<TevOrder>(reader, chunkStart, chunkSize, offsets, 16, ReadTevOrder, 4);
 
             /* TEV COLORS */
-            var tevColors = ReadSection<Color>(reader, chunkStart + tevColorOffset, chunkStart + tevKColorOffset, ReadColorShort, 8);
+            var tevColors = ReadSection<Color>(reader, chunkStart, chunkSize, offsets, 17, ReadColorShort, 8);
 
             /* TEV KONST COLORS */
-            var tevKonstColors = ReadSection<Color>(reader, chunkStart + tevKColorOffset, chunkStart + tevStageNumInfoOffset, ReadColor32, 4);
+            var tevKonstColors = ReadSection<Color>(reader, chunkStart, chunkSize, offsets, 18, ReadColor32, 4);
 
             /* NUM TEV STAGES */
             // THIS IS A GUESS AT DATA TYPE
-            var numTevStages = ReadSection<byte>(reader, chunkStart + tevStageNumInfoOffset, chunkStart + tevStageInfoOffset, ReadByte, 1);
+            var numTevStages = ReadSection<byte>(reader, chunkStart, chunkSize, offsets, 19, ReadByte, 1);
 
             /* TEV STAGE INFO */
-            var tevStageInfos = ReadSection<TevCombinerStage>(reader, chunkStart + tevStageInfoOffset, chunkStart + tevSwapModeInfoOffset, ReadTevCombinerStage, 20);
+            var tevStageInfos = ReadSection<TevCombinerStage>(reader, chunkStart, chunkSize, offsets, 20, ReadTevCombinerStage, 20);
 
             /* TEV SWAP MODE INFO */
-            var tevSwapModeInfos = ReadSection<TevSwapMode>(reader, chunkStart + tevSwapModeInfoOffset, chunkStart + tevSwapModeTableInfoOffset, ReadTevSwapMode, 4);
+            var tevSwapModeInfos = ReadSection<TevSwapMode>(reader, chunkStart, chunkSize, offsets, 21, ReadTevSwapMode, 4);
 
             /* TEV SWAP MODE TABLE INFO */
-            var tevSwapModeTables = ReadSection<TevSwapModeTable>(reader, chunkStart + tevSwapModeTableInfoOffset, chunkStart + fogInfoOffset, ReadTevSwapModeTable, 4);
+            var tevSwapModeTables = ReadSection<TevSwapModeTable>(reader, chunkStart, chunkSize, offsets, 22, ReadTevSwapModeTable, 4);
 
-            /* FOG INFO */ 
+            /* FOG INFO */
             // THIS IS A GUESS AT DATA TYPE
-            var fogInfos = ReadSection<FogInfo>(reader, chunkStart + fogInfoOffset, chunkStart + alphaCompareInfoOffset, ReadFogInfo, 44);
+            var fogInfos = ReadSection<FogInfo>(reader, chunkStart, chunkSize, offsets, 23, ReadFogInfo, 44);
 
             /* ALPHA COMPARE INFO */
-            var alphaCompares = ReadSection<AlphaCompare>(reader, chunkStart + alphaCompareInfoOffset, chunkStart + blendInfoOffset, ReadAlphaCompare, 4);
-            
+            var alphaCompares = ReadSection<AlphaCompare>(reader, chunkStart, chunkSize, offsets, 24, ReadAlphaCompare, 8);
+
             /* BLEND INFO */
-            List<BlendMode> blendModeInfos = ReadSection<BlendMode>(reader, chunkStart + blendInfoOffset, chunkStart + zModeInfoOffset, ReadBlendMode, 4);
+            List<BlendMode> blendModeInfos = ReadSection<BlendMode>(reader, chunkStart, chunkSize, offsets, 25, ReadBlendMode, 4);
 
             /* ZMODE INFO */
-            List<ZMode> zModeInfos = ReadSection<ZMode>(reader, chunkStart + zModeInfoOffset, chunkStart + ditherInfoOffset, ReadZMode, 4);
+            List<ZMode> zModeInfos = ReadSection<ZMode>(reader, chunkStart, chunkSize, offsets, 26, ReadZMode, 4);
+
+            /* ZCOMP LOC INFO */
+            // THIS IS A GUESS AT DATA TYPE
+            var zCompLocInfos = ReadSection<bool>(reader, chunkStart, chunkSize, offsets, 27, ReadBool, 1);
 
             /* DITHER INFO */
-            // ????
+            // THIS IS A GUESS AT DATA TYPE
+            var ditherInfos = ReadSection<bool>(reader, chunkStart, chunkSize, offsets, 28, ReadBool, 1);
 
             /* NBT SCALE INFO */
             // ????
@@ -385,29 +414,46 @@ namespace WEditor.WindWaker.Loaders.J3D
             for (int m = 0; m < materialCount; m++)
             {
                 // A Material entry is 0x14c long.
-                reader.BaseStream.Position = chunkStart + materialsOffset + (m * 0x14c);
+                reader.BaseStream.Position = chunkStart + offsets[0] + (m * 0x14c);
 
-                // Now that we've read the contents of the material section, we can load their values
-                // into a material class which keeps it nice and tidy and full of class references
-                // and not indexes.
+                // The first byte of a material is some form of flag. Values found so far are 1, 4 and 0. 1 is the most common.
+                // bmdview2 documentation says that means "draw on way down" while 4 means "draw on way up" (of INF1 heirarchy)
+                // However, none of the documentation seems to mention type 0 - if the value is 0, it seems to be some junk/EOF
+                // marker for the material section. On some files (not all) there will be say, 12 materials, but the highest index
+                // in the material remap table only goes up to 10 (so the 11th material) and the 12th will never be referenced. However
+                // if we read it like we do here with a for loop, we'll hit that one and try to parse all the indexes and it'll just all
+                // around kind of explode.
+                //
+                // To resolve this, we'll check if the flag value is zero - if so, skip creating a material for it.
+
+                byte flag = reader.ReadByte();
+                if (flag == 0)
+                    continue;
+
+                // Now that we've read the contents of the material section, we can load their values into a material 
+                // class which keeps it nice and tidy and full of class references and not indexes.
                 WEditor.Common.Nintendo.J3D.Material material = new WEditor.Common.Nintendo.J3D.Material();
                 materialList.Add(material);
 
-                material.Flag = reader.ReadByte();
+                material.Flag = flag;
                 material.CullMode = (GXCullMode)cullModes[reader.ReadByte()];
                 material.NumChannelControls = numChannelControls[reader.ReadByte()];
                 material.NumTexGens = numTexGens[reader.ReadByte()];
                 material.NumTevStages = numTevStages[reader.ReadByte()];
-                material.ZCompareLocIndex = reader.ReadByte();
+                material.ZCompLoc = zCompLocInfos[reader.ReadByte()];
                 material.ZMode = zModeInfos[reader.ReadByte()];
-                material.DitherIndex = reader.ReadByte();
+                material.Dither = ditherInfos[reader.ReadByte()];
 
                 // Not sure what these materials are used for. gxColorMaterial is the function that reads them.
                 material.MaterialColors = new Color[2];
                 for (int i = 0; i < material.MaterialColors.Length; i++)
-                    material.MaterialColors[i] = materialColors[reader.ReadInt16()];
+                {
+                    short index = reader.ReadInt16();
+                    //if (index >= 0)
+                    material.MaterialColors[i] = materialColors[index];
+                }
 
-                material.ChannelControls = new ChannelControl[4];
+                material.ChannelControls = new ChanCtrl[4];
                 for (int i = 0; i < material.ChannelControls.Length; i++)
                     material.ChannelControls[i] = colorChannelInfos[reader.ReadInt16()];
 
@@ -420,8 +466,8 @@ namespace WEditor.WindWaker.Loaders.J3D
                 {
                     // Index will be -1 if there's no Lighting Colors on this material.
                     short index = reader.ReadInt16();
-                    if(index >= 0)
-                        material.LightingColors[i] = lightingColors[index]; 
+                    if (index >= 0)
+                        material.LightingColors[i] = lightingColors[index];
                 }
 
                 material.TexGenInfos = new TexCoordGen[8];
@@ -435,19 +481,36 @@ namespace WEditor.WindWaker.Loaders.J3D
 
                 material.TexGen2Infos = new TexCoordGen[8];
                 for (int i = 0; i < material.TexGen2Infos.Length; i++)
-                    material.TexGen2Infos[i] = texGenInfos[reader.ReadInt16()];
+                {
+                    // Index will be -1 if there's no Tex Gen 2s on this material.
+                    short index = reader.ReadInt16();
+                    if (index >= 0)
+                        material.TexGen2Infos[i] = texGenInfos[index];
+                }
 
                 material.TexMatrices = new TexMatrix[10];
                 for (int i = 0; i < material.TexMatrices.Length; i++)
-                    material.TexMatrices[i] = texMatrixInfo[reader.ReadInt16()];
+                {
+                    short index = reader.ReadInt16();
+                    if (index >= 0)
+                        material.TexMatrices[i] = texMatrixInfo[index];
+                }
 
                 material.DttMatrices = new TexMatrix[20];
                 for (int i = 0; i < material.DttMatrices.Length; i++)
-                    material.DttMatrices[i] = texMatrix2Info[reader.ReadInt16()];
+                {
+                    short index = reader.ReadInt16();
+                    if (index >= 0)
+                        material.DttMatrices[i] = texMatrix2Info[index];
+                }
 
                 material.Textures = new short[8];
                 for (int i = 0; i < material.Textures.Length; i++)
-                    material.Textures[i] = texIndexes[reader.ReadInt16()];
+                {
+                    short index = reader.ReadInt16();
+                    if (index >= 0)
+                        material.Textures[i] = texIndexes[index];
+                }
 
                 material.TevKonstColors = new Color[4];
                 for (int i = 0; i < material.TevKonstColors.Length; i++)
@@ -456,16 +519,20 @@ namespace WEditor.WindWaker.Loaders.J3D
                 // Guessing that this one doesn't index anything else as it's just an enum value and there doesn't seem to be an offset for it in the header.
                 material.KonstColorSels = new GXKonstColorSel[16];
                 for (int i = 0; i < material.KonstColorSels.Length; i++)
-                    material.KonstColorSels[i] = (GXKonstColorSel)reader.ReadInt16();
+                    material.KonstColorSels[i] = (GXKonstColorSel)reader.ReadByte();
 
                 // Guessing that this one doesn't index anything else as it's just an enum value and there doesn't seem to be an offset for it in the header.
                 material.KonstAlphaSels = new GXKonstAlphaSel[16];
                 for (int i = 0; i < material.KonstAlphaSels.Length; i++)
-                    material.KonstAlphaSels[i] = (GXKonstAlphaSel) reader.ReadInt16();
+                    material.KonstAlphaSels[i] = (GXKonstAlphaSel)reader.ReadByte();
 
                 material.TevOrderInfos = new TevOrder[16];
                 for (int i = 0; i < material.TevOrderInfos.Length; i++)
-                    material.TevOrderInfos[i] = tevOrderInfos[reader.ReadInt16()];
+                {
+                    short index = reader.ReadInt16();
+                    if (index >= 0)
+                        material.TevOrderInfos[i] = tevOrderInfos[index];
+                }
 
                 material.TevColor = new Color[4];
                 for (int i = 0; i < material.TevColor.Length; i++)
@@ -473,13 +540,21 @@ namespace WEditor.WindWaker.Loaders.J3D
 
                 material.TevStageInfos = new TevCombinerStage[16];
                 for (int i = 0; i < material.TevStageInfos.Length; i++)
-                    material.TevStageInfos[i] = tevStageInfos[reader.ReadInt16()];
+                {
+                    short index = reader.ReadInt16();
+                    if (index >= 0)
+                        material.TevStageInfos[i] = tevStageInfos[index];
+                }
 
                 material.TevSwapModes = new TevSwapMode[16];
                 for (int i = 0; i < material.TevSwapModes.Length; i++)
-                    material.TevSwapModes[i] = tevSwapModeInfos[reader.ReadInt16()];
+                {
+                    short index = reader.ReadInt16();
+                    if (index >= 0)
+                        material.TevSwapModes[i] = tevSwapModeInfos[index];
+                }
 
-                material.TevSwapModeTables = new TevSwapModeTable[16];
+                material.TevSwapModeTables = new TevSwapModeTable[4];
                 for (int i = 0; i < material.TevSwapModeTables.Length; i++)
                     material.TevSwapModeTables[i] = tevSwapModeTables[reader.ReadInt16()];
 
@@ -487,13 +562,33 @@ namespace WEditor.WindWaker.Loaders.J3D
                 for (int l = 0; l < material.UnknownIndexes.Length; l++)
                     material.UnknownIndexes[l] = reader.ReadInt16();
 
-                material.FogIndex = reader.ReadInt16();
-                material.AlphaCompare = alphaCompares[reader.ReadInt16()];
+                short fogIndex = reader.ReadInt16();
+                material.Fog = fogInfos[fogIndex];
+
+                short alphaCompareIndex = reader.ReadInt16();
+                material.AlphaCompare = alphaCompares[alphaCompareIndex];
                 material.BlendMode = blendModeInfos[reader.ReadInt16()];
                 material.UnknownIndex2 = reader.ReadInt16();
             }
 
             return materialList;
+        }
+
+        private static int GetOffsetLength(int[] dataOffsets, int currentIndex, int endChunkOffset)
+        {
+            int currentOffset = dataOffsets[currentIndex];
+
+            // Find the next available offset in the array, and subtract the two offsets to get the length of the data.
+            for (int i = currentIndex + 1; i < dataOffsets.Length; i++)
+            {
+                if (dataOffsets[i] != 0)
+                {
+                    return dataOffsets[i] - currentOffset;
+                }
+            }
+
+            // If we didn't find a dataOffset that was valid, then we go to the end of the chunk.
+            return endChunkOffset - currentOffset;
         }
     }
 }

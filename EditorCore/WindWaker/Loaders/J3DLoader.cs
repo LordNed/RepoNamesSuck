@@ -100,7 +100,7 @@ namespace WEditor.WindWaker.Loaders
                             LoadSHP1SectionFromFile(vertexData, j3dMesh, reader, chunkStart);
                             break;
                         case "MAT3":
-                            materialList = MAT3Loader.LoadMAT3SectionFromStream(reader, chunkStart, materialRemapIndexs);
+                            materialList = MAT3Loader.LoadMAT3SectionFromStream(reader, chunkStart, chunkSize, materialRemapIndexs);
                             break;
                         case "TEX1":
                             textureList = LoadTEX1FromFile(reader, chunkStart);
