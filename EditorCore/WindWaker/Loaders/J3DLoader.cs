@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using WEditor.Common.Nintendo.J3D;
 using WEditor.Rendering;
 using WEditor.WindWaker.Loaders.J3D;
+using WEditor.Common.Nintendo;
 
 namespace WEditor.WindWaker.Loaders
 {
@@ -65,8 +66,7 @@ namespace WEditor.WindWaker.Loaders
             SceneNode rootNode = new SceneNode();
             List<Texture2D> textureList = new List<Texture2D>();
             List<ushort> materialRemapIndexs = new List<ushort>();
-            List<short> textureRemapIndexs = new List<short>();
-            List<J3DFileResource.MaterialEntry> materialList = new List<J3DFileResource.MaterialEntry>();
+            List<WEditor.Common.Nintendo.J3D.Material> materialList = null;
 
             Mesh j3dMesh = resource.Mesh;
 
@@ -100,7 +100,7 @@ namespace WEditor.WindWaker.Loaders
                             LoadSHP1SectionFromFile(vertexData, j3dMesh, reader, chunkStart);
                             break;
                         case "MAT3":
-                            MAT3Loader.LoadMAT3SectionFromStream(reader, chunkStart, materialList, materialRemapIndexs, textureRemapIndexs);
+                            materialList = MAT3Loader.LoadMAT3SectionFromStream(reader, chunkStart, materialRemapIndexs);
                             break;
                         case "TEX1":
                             textureList = LoadTEX1FromFile(reader, chunkStart);
@@ -113,11 +113,11 @@ namespace WEditor.WindWaker.Loaders
 
             // We're going to do something a little crazy - we're going to read the scene view and apply textures to meshes (for now)
             Texture2D testTexture = Texture2D.GenerateCheckerboard();
-            AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref testTexture, materialList, materialRemapIndexs, textureRemapIndexs);
+            AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref testTexture, materialList, materialRemapIndexs);
             RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
         }
 
-        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Texture2D curTexture, List<J3DFileResource.MaterialEntry> materialList, List<ushort> remapIndexList, List<short> finalTextureIndex)
+        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Texture2D curTexture, List<Material> materialList, List<ushort> remapIndexList)
         {
             if (node.Type == J3DFileResource.HierarchyDataTypes.Material)
             {
@@ -128,18 +128,18 @@ namespace WEditor.WindWaker.Loaders
                 // Apparently it gets one step more complicated. You then have to take the textureIndex provided by the material
                 // and index into the finalTextureIndex list that comes from the MAT3 section, lol.
                 ushort materialIndex = remapIndexList[node.Value];
-                short textureIndex = materialList[materialIndex].texIndex[0];
+                short textureIndex = materialList[materialIndex].Textures[0];
                 
                 // Models that don't use textures will have a textureIndex of -1.
                 if(textureIndex >= 0)
-                    curTexture = textures[finalTextureIndex[textureIndex]];
+                    curTexture = textures[textureIndex];
             }
 
             if (node.Type == J3DFileResource.HierarchyDataTypes.Batch)
                 mesh.SubMeshes[node.Value].Texture = curTexture;
 
             foreach (var child in node.Children)
-                AssignTextureToMeshRecursive(child, mesh, textures, ref curTexture, materialList, remapIndexList, finalTextureIndex);
+                AssignTextureToMeshRecursive(child, mesh, textures, ref curTexture, materialList, remapIndexList);
         }
 
         private static List<Texture2D> LoadTEX1FromFile(EndianBinaryReader reader, long chunkStart)
@@ -347,10 +347,10 @@ namespace WEditor.WindWaker.Loaders
                     {
                         // Jump to the primitives
                         // Primitives
-                        J3DFileResource.GXPrimitiveType type = (J3DFileResource.GXPrimitiveType)reader.ReadByte();
+                        GXPrimitiveType type = (GXPrimitiveType)reader.ReadByte();
                         ushort vertexCount = reader.ReadUInt16();
 
-                        if (type == J3DFileResource.GXPrimitiveType.TriangleFan)
+                        if (type == GXPrimitiveType.TriangleFan)
                         {
                             Console.WriteLine("Unsupported");
                         }
