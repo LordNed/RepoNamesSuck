@@ -111,20 +111,33 @@ namespace WEditor.WindWaker.Loaders
                 }
             }
 
+            // Resolve the texture indexes into actual textures now that we've loaded the TEX1 section.
+            foreach(Material mat in materialList)
+            {
+                for(int i = 0; i < mat.TextureIndexes.Length; i++)
+                {
+                    if (mat.TextureIndexes[i] < 0)
+                        continue;
+
+                    mat.Textures.Add(textureList[mat.TextureIndexes[0]]);
+                }
+            }
+
             // loltests
             for(int i = 0; i < materialList.Count; i++)
             {
                 materialList[i].VtxDesc = j3dMesh.SubMeshes[0].GetVertexDescription();
                 Shader shader = TEVShaderGenerator.GenerateShader(materialList[i]);
+                materialList[i].Shader = shader;
             }
 
             // We're going to do something a little crazy - we're going to read the scene view and apply textures to meshes (for now)
-            Texture2D testTexture = Texture2D.GenerateCheckerboard();
-            AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref testTexture, materialList, materialRemapIndexs);
+            Material curMat = null;
+            AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref curMat, materialList, materialRemapIndexs);
             RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
         }
 
-        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Texture2D curTexture, List<Material> materialList, List<ushort> remapIndexList)
+        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Material curMaterial, List<Material> materialList, List<ushort> remapIndexList)
         {
             if (node.Type == J3DFileResource.HierarchyDataTypes.Material)
             {
@@ -135,18 +148,20 @@ namespace WEditor.WindWaker.Loaders
                 // Apparently it gets one step more complicated. You then have to take the textureIndex provided by the material
                 // and index into the finalTextureIndex list that comes from the MAT3 section, lol.
                 ushort materialIndex = remapIndexList[node.Value];
-                short textureIndex = materialList[materialIndex].Textures[0];
+                short textureIndex = materialList[materialIndex].TextureIndexes[0];
+
+                curMaterial = materialList[materialIndex];
                 
                 // Models that don't use textures will have a textureIndex of -1.
-                if(textureIndex >= 0)
-                    curTexture = textures[textureIndex];
+                //if(textureIndex >= 0)
+                    //curTexture = textures[textureIndex];
             }
 
             if (node.Type == J3DFileResource.HierarchyDataTypes.Batch)
-                mesh.SubMeshes[node.Value].Texture = curTexture;
+                mesh.SubMeshes[node.Value].Material = curMaterial;
 
             foreach (var child in node.Children)
-                AssignTextureToMeshRecursive(child, mesh, textures, ref curTexture, materialList, remapIndexList);
+                AssignTextureToMeshRecursive(child, mesh, textures, ref curMaterial, materialList, remapIndexList);
         }
 
         private static List<Texture2D> LoadTEX1FromFile(EndianBinaryReader reader, long chunkStart)

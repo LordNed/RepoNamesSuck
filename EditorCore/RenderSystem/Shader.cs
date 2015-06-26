@@ -10,17 +10,15 @@ namespace WEditor.Rendering
     public class Shader : IDisposable
     {
         public readonly string Name;
-        public int UniformMVPBlock { get; private set; }
-        public int UniformVertexBlock {get; private set;}
-        //public int UniformModelMtx { get; private set; }
-        //public int UniformViewMtx { get; private set; }
-        //public int UniformProjMtx { get; private set; }
-        //public int UniformTexMtx { get; private set; }
-        //public int UniformPostMtx { get; private set; }
-        //public int UniformColor0Amb { get; private set; }
-        //public int UniformColor0Mat { get; private set; }
-        //public int UniformColor1Amb { get; private set; }
-        //public int UniformColor1Mat { get; private set; }
+        public int UniformModelMtx { get; private set; }
+        public int UniformViewMtx { get; private set; }
+        public int UniformProjMtx { get; private set; }
+        public int UniformTexMtx { get; private set; }
+        public int UniformPostMtx { get; private set; }
+        public int UniformColor0Amb { get; private set; }
+        public int UniformColor0Mat { get; private set; }
+        public int UniformColor1Amb { get; private set; }
+        public int UniformColor1Mat { get; private set; }
         public int UniformNumLights { get; private set; }
         public int UniformLightBlock { get; private set; }
 
@@ -31,6 +29,11 @@ namespace WEditor.Rendering
         public Shader(string name)
         {
             Name = name;
+        }
+
+        public void Bind()
+        {
+            GL.UseProgram(m_programAddress);
         }
 
         public bool CompileSource(string code, ShaderType type)
@@ -109,15 +112,27 @@ namespace WEditor.Rendering
             GL.BindAttribLocation(m_programAddress, (int)ShaderAttributeIds.Tex7, "RawTex7");
 
             GL.LinkProgram(m_programAddress);
-            if(GL.GetError() != ErrorCode.NoError)
+
+            int linkStatus;
+            GL.GetProgram(m_programAddress, GetProgramParameterName.LinkStatus, out linkStatus);
+            if (linkStatus != 1)
             {
                 Console.WriteLine("[ShaderCompiler] Error linking shader. Result: {0}", GL.GetProgramInfoLog(m_programAddress));
             }
 
             // Now that the program is linked, bind to our uniform locations.
-            UniformMVPBlock = GL.GetUniformLocation(m_programAddress, "MVPBlock");
-            UniformVertexBlock = GL.GetUniformLocation(m_programAddress, "VertexBlock");
-            UniformLightBlock = GL.GetUniformLocation(m_programAddress, "LightBlock");
+            UniformModelMtx = GL.GetUniformLocation(m_programAddress, "ModelMtx");
+            UniformViewMtx = GL.GetUniformLocation(m_programAddress, "ViewMtx");
+            UniformProjMtx = GL.GetUniformLocation(m_programAddress, "ProjMtx");
+
+            UniformTexMtx = GL.GetUniformLocation(m_programAddress, "TexMtx");
+            UniformPostMtx = GL.GetUniformLocation(m_programAddress, "PostMtx");
+            UniformColor0Amb = GL.GetUniformLocation(m_programAddress, "COLOR0_Amb");
+            UniformColor0Mat = GL.GetUniformLocation(m_programAddress, "COLOR0_Mat");
+            UniformColor1Amb = GL.GetUniformLocation(m_programAddress, "COLOR1_Amb");
+            UniformColor1Mat = GL.GetUniformLocation(m_programAddress, "COLOR1_Mat");
+
+            UniformLightBlock = GL.GetUniformLocation(m_programAddress, "Lights");
             UniformNumLights = GL.GetUniformLocation(m_programAddress, "NumLights");
 
             // Now that we've (presumably) set both a vertex and a fragment shader and linked them to the program,

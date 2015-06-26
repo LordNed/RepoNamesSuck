@@ -118,7 +118,8 @@ namespace WEditor.Rendering
                 GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
                 GL.Clear(ClearBufferMask.ColorBufferBit|ClearBufferMask.DepthBufferBit);
 
-                Matrix4 viewProjMatrix = camera.ViewMatrix * camera.ProjectionMatrix;
+                Matrix4 viewMatrix = camera.ViewMatrix;
+                Matrix4 projMatrix = camera.ProjectionMatrix;
 
                 for (int m = 0; m < m_meshList.Count; m++)
                 {
@@ -127,22 +128,27 @@ namespace WEditor.Rendering
                     {
                         MeshBatch batch = mesh.SubMeshes[b];
 
+                        // Bind the shader
+                        batch.Material.Shader.Bind();
+
                         // Bind the Shader
-                        GL.UseProgram(m_shader.ProgramId);
+                        //GL.UseProgram(m_shader.ProgramId);
 
                         Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
-                        Matrix4 finalMatrix = modelMatrix * viewProjMatrix;
+                        //Matrix4 finalMatrix = modelMatrix * viewProjMatrix;
 
                         // Bind the VAOs currently associated with this Mesh
                         batch.Bind();
 
                         // Bind our Textures
                         GL.ActiveTexture(TextureUnit.Texture0);
-                        if(batch.Texture != null)
-                            batch.Texture.Bind();
+                        if(batch.Material.Textures[1] != null)
+                            batch.Material.Textures[1].Bind();
 
-                        // Upload the MVP to the GPU
-                        GL.UniformMatrix4(m_shader.UniformMVP, false, ref finalMatrix);
+                        // Upload uniforms to the GPU
+                        GL.UniformMatrix4(batch.Material.Shader.UniformModelMtx, false, ref modelMatrix);
+                        GL.UniformMatrix4(batch.Material.Shader.UniformViewMtx, false, ref viewMatrix);
+                        GL.UniformMatrix4(batch.Material.Shader.UniformProjMtx, false, ref projMatrix);
 
                         // Draw our Mesh.
                         GL.DrawElements(batch.PrimitveType, batch.Indexes.Length, DrawElementsType.UnsignedInt, 0);

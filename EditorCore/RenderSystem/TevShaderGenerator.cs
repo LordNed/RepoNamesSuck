@@ -37,6 +37,8 @@ namespace WEditor.Rendering
                 return null;
             }
 
+            shader.LinkShader();
+
             return shader;
         }
 
@@ -56,10 +58,10 @@ namespace WEditor.Rendering
                 stream.AppendLine("in vec3 Normal;");
 
             if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0))
-                stream.AppendLine("in vec3 Color0;");
+                stream.AppendLine("in vec4 Color0;");
 
             if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color1))
-                stream.AppendLine("in vec3 Color1;");
+                stream.AppendLine("in vec4 Color1;");
 
             for (int texGenStage = 0; texGenStage < mat.NumTexGens; texGenStage++)
             {
@@ -87,7 +89,7 @@ namespace WEditor.Rendering
             // Main Function blahblah
             stream.AppendLine("void main()");
             stream.AppendLine("{");
-            stream.AppendLine("    PixelColor = (texture(Texture, Tex0.xy)" + (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0) ? ") * vec4(Color0,1.0);" : ");"));
+            stream.AppendLine("    PixelColor = texture(Texture, Tex0.xy)" + (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0) ? " * Color0;" : ";"));
             stream.AppendLine("}");
             stream.AppendLine();
 
@@ -157,45 +159,47 @@ namespace WEditor.Rendering
             stream.AppendLine();
             stream.AppendLine("// Uniforms");
             stream.AppendLine(
-                "layout(std140) uniform MVPBlock\n" +
-                "{\n" +
-                "   mat4 ModelMtx;\n" +
-                "   mat4 ViewMtx;\n" +
-                "   mat4 ProjMtx;\n" +
-                "};\n" +
+                "   uniform mat4 ModelMtx;\n" +
+                "   uniform mat4 ViewMtx;\n" +
+                "   uniform mat4 ProjMtx;\n" +
                 "\n" +
-                "layout(std140) uniform VertexBlock\n" +
-                "{\n" +
-                "   mat4 TexMtx[10];\n" +
-                "   mat4 PostMtx[20];\n" +
-                "   vec4 COLOR0_Amb;\n" +
-                "   vec4 COLOR0_Mat;\n" +
-                "   vec4 COLOR1_Amb;\n" +
-                "   vec4 COLOR1_Mat;\n" +
-                "};\n" +
-                "\n" +
+
+                "   uniform mat4 TexMtx[10];\n" +
+                "   uniform mat4 PostMtx[20];\n" +
+                "   uniform vec4 COLOR0_Amb;\n" +
+                "   uniform vec4 COLOR0_Mat;\n" +
+                "   uniform vec4 COLOR1_Amb;\n" +
+                "   uniform vec4 COLOR1_Mat;\n" +
+                "\n"/* +
                 "struct GXLight\n" +
                 "{\n" +
-                "   vec4 Position;\n" +
-                "   vec4 Direction;\n" +
-                "   vec4 Color;\n" +
-                "   vec4 DistAtten;\n" +
-                "   vec4 AngleAtten;\n" +
+                "   uniform vec4 Position;\n" +
+                "   uniform vec4 Direction;\n" +
+                "   uniform vec4 Color;\n" +
+                "   uniform vec4 DistAtten;\n" +
+                "   uniform vec4 AngleAtten;\n" +
                 "};\n" +
                 "\n" + 
-                "layout(std140) uniform LightBlock\n" +
-                "{\n" +
+
                 "   GXLight Lights[8];\n" +
-                "};\n" +
                 "\n" +
-                "uniform int NumLights;\n");
+                "uniform int NumLights;\n"*/);
 
             // Main Shader Code
             stream.AppendLine("// Main");
             stream.AppendLine("void main()");
             stream.AppendLine("{");
-            stream.AppendLine("    mat4 MVP = ModelMtx * ViewMtx * ProjMtx;");
+            stream.AppendLine("    mat4 MVP = ProjMtx * ViewMtx * ModelMtx; //ModelMtx * ViewMtx * ProjMtx;");
             stream.AppendLine("    mat4 MV = ModelMtx * ViewMtx;");
+
+            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Position))
+                stream.AppendLine("    gl_Position = MVP * vec4(RawPosition, 1);");
+            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Normal))
+                stream.AppendLine("    Normal = normalize(RawNormal.xyz * inverse(transpose(mat3(MV))));");
+            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0))
+                stream.AppendLine("    Color0 = RawColor0;");
+            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color1))
+                stream.AppendLine("    Color1 = RawColor1;");
             
             // No Dynamic Lighting (yet)
             stream.AppendLine("    COLOR0A0 = COLOR0_Mat;");

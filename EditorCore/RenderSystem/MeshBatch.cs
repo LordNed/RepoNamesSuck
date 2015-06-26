@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
+using WEditor.Common.Nintendo.J3D;
 
 namespace WEditor.Rendering
 {
@@ -98,9 +99,8 @@ namespace WEditor.Rendering
             }
         }
 
-        public Texture2D Texture;
-
         public PrimitiveType PrimitveType = PrimitiveType.Triangles;
+        public Material Material;
 
         /// <summary> Indicates which vertex attributes are enabled on this mesh. </summary>
         private VertexDescription m_vertexDescription;

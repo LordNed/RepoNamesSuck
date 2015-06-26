@@ -245,6 +245,12 @@ namespace WEditor.Common.Nintendo.J3D
         /// <summary> Associated vertex description which describes the vertex layout. </summary>
         public VertexDescription VtxDesc;
 
+        /// <summary> Compiled shader associated with this materal. </summary>
+        public Shader Shader;
+
+        /// <summary> Actual textures post-resolve. </summary>
+        public List<Texture2D> Textures = new List<Texture2D>();
+
         /// <summary> Unknown usage. BMDView2 specifies that a value of 1 is "Draw on Way Down" while a value of 4 is "Draw on Way Up (guess)",
         /// in reference to the INF1 hierarchy. A value of 0 indicates that the material is end/null - see the loader for detailed desc.
         /// </summary>
@@ -279,7 +285,7 @@ namespace WEditor.Common.Nintendo.J3D
         public TexCoordGen[] TexGen2Infos; // 8
         public TexMatrix[] TexMatrices; // 10
         public TexMatrix[] DttMatrices; // 20 - Post-Transform Matrices
-        public short[] Textures; // 8
+        public short[] TextureIndexes; // 8
         public Color[] TevKonstColors; //4
         public GXKonstColorSel[] KonstColorSels; // 16
         public GXKonstAlphaSel[] KonstAlphaSels; // 16

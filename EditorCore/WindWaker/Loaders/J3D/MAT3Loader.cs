@@ -504,12 +504,12 @@ namespace WEditor.WindWaker.Loaders.J3D
                         material.DttMatrices[i] = texMatrix2Info[index];
                 }
 
-                material.Textures = new short[8];
-                for (int i = 0; i < material.Textures.Length; i++)
+                material.TextureIndexes = new short[8];
+                for (int i = 0; i < material.TextureIndexes.Length; i++)
                 {
                     short index = reader.ReadInt16();
                     if (index >= 0)
-                        material.Textures[i] = texIndexes[index];
+                        material.TextureIndexes[i] = texIndexes[index];
                 }
 
                 material.TevKonstColors = new Color[4];
