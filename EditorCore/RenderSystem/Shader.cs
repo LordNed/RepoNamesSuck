@@ -94,7 +94,6 @@ namespace WEditor.Rendering
             GL.AttachShader(m_programAddress, m_vertexAddress);
             GL.AttachShader(m_programAddress, m_fragmentAddress);
 
-
             // Bind our Attribute locations before we link the program.
             GL.BindAttribLocation(m_programAddress, (int)ShaderAttributeIds.Position, "RawPosition");
             GL.BindAttribLocation(m_programAddress, (int)ShaderAttributeIds.Normal, "RawNormal");
@@ -120,8 +119,6 @@ namespace WEditor.Rendering
             UniformVertexBlock = GL.GetUniformLocation(m_programAddress, "VertexBlock");
             UniformLightBlock = GL.GetUniformLocation(m_programAddress, "LightBlock");
             UniformNumLights = GL.GetUniformLocation(m_programAddress, "NumLights");
-
-
 
             // Now that we've (presumably) set both a vertex and a fragment shader and linked them to the program,
             // we're going to clean up the reference to the shaders as the Program now keeps its own reference.

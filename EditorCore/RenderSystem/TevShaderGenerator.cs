@@ -24,19 +24,17 @@ namespace WEditor.Rendering
             "RawTex7.xy, 1.0"
         };
 
-        public Shader GenerateShader(Material fromMat)
+        public static Shader GenerateShader(Material fromMat)
         {
             Shader shader = new Shader(fromMat.Name);
             bool success = GenerateVertexShader(shader, fromMat);
-
-
 
 
             return shader;
         }
 
 
-        public bool GenerateVertexShader(Shader shader, Material mat)
+        public static bool GenerateVertexShader(Shader shader, Material mat)
         {
             StringBuilder stream = new StringBuilder();
             
@@ -88,10 +86,11 @@ namespace WEditor.Rendering
                     stream.AppendLine(string.Format("out vec3 Tex{0};", texGenStage));
             }
 
-            stream.AppendLine("out vec4 COLORA0;");
+            stream.AppendLine("out vec4 COLOR0A0;");
             stream.AppendLine("out vec4 COLOR1A1;");
 
             // Uniforms
+            stream.AppendLine();
             stream.AppendLine("// Uniforms");
             stream.AppendLine(
                 "layout(std140) uniform MVPBlock\n" +
@@ -119,13 +118,13 @@ namespace WEditor.Rendering
                 "   vec4 DistAtten;\n" +
                 "   vec4 AngleAtten;\n" +
                 "};\n" +
+                "\n" + 
                 "layout(std140) uniform LightBlock\n" +
                 "{\n" +
                 "   GXLight Lights[8];\n" +
                 "};\n" +
                 "\n" +
-                "uniform int NumLights;\n" +
-                "\n");
+                "uniform int NumLights;\n");
 
             // Main Shader Code
             stream.AppendLine("// Main");
@@ -141,20 +140,21 @@ namespace WEditor.Rendering
 
 
             // Texture Coordinate Generation
-            stream.AppendLine("// TexGen");
+            stream.AppendLine("    // TexGen");
             for(int pass = 0; pass < mat.NumTexGens; pass++)
             {
                 if (mat.TexGenInfos[pass] == null)
                     continue;
 
                 // No Animation for right now, but texture matrix animations would come here.
-                stream.AppendLine(string.Format("    Tex{0} = vec3({1}", pass, m_kCoordSrc[mat.TexGenInfos[pass].Source]));
+                stream.AppendLine(string.Format("    Tex{0} = vec3({1});", pass, m_kCoordSrc[mat.TexGenInfos[pass].Source]));
             }
 
             stream.AppendLine("}");
             stream.AppendLine();
 
             // Compile the Vertex Shader and return whether it compiled sucesfully or not.
+            System.IO.File.WriteAllText(mat.Name + "_vert_output", stream.ToString());
             return shader.CompileSource(stream.ToString(), OpenTK.Graphics.OpenGL.ShaderType.VertexShader);
         }
     }

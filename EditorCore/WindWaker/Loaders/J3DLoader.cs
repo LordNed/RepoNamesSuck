@@ -111,6 +111,13 @@ namespace WEditor.WindWaker.Loaders
                 }
             }
 
+            // loltests
+            for(int i = 0; i < materialList.Count; i++)
+            {
+                materialList[i].VtxDesc = j3dMesh.SubMeshes[0].GetVertexDescription();
+                Shader shader = TEVShaderGenerator.GenerateShader(materialList[i]);
+            }
+
             // We're going to do something a little crazy - we're going to read the scene view and apply textures to meshes (for now)
             Texture2D testTexture = Texture2D.GenerateCheckerboard();
             AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref testTexture, materialList, materialRemapIndexs);

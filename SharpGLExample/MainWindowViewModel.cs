@@ -38,7 +38,7 @@ namespace SharpGLExample
             m_control = context;
             m_editorCore.OnGraphicsContextInitialized();
 
-            Map map = MapLoader.Load(@"C:\Users\Matt\Documents\Wind Editor\ma2room_slim");
+            Map map = MapLoader.Load(@"C:\Users\Helios\Documents\Wind Editor\ma2room");
         }
 
         internal void OnOutputResized(float width, float height)

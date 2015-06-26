@@ -163,6 +163,12 @@ namespace WEditor.Rendering
             }
         }
 
+        public VertexDescription GetVertexDescription()
+        {
+            // This should probably return a copy
+            return m_vertexDescription;
+        }
+
         private void UpdateAttributeAndBuffers<T>(ShaderAttributeIds attribute, T[] data) where T : struct
         {
             // See if this attribute is already enabled. If it's not already enabled, we need to generate a buffer for it.
