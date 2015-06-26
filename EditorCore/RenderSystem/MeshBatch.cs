@@ -67,7 +67,7 @@ namespace WEditor.Rendering
                 if (value.Length == 0)
                     return;
 
-                UpdateAttributeAndBuffers(ShaderAttributeIds.TexCoord0, m_texCoord0);
+                UpdateAttributeAndBuffers(ShaderAttributeIds.Tex0, m_texCoord0);
             }
         }
 
@@ -80,7 +80,7 @@ namespace WEditor.Rendering
                 if (value.Length == 0)
                     return;
 
-                UpdateAttributeAndBuffers(ShaderAttributeIds.TexCoord1, m_texCoord1);
+                UpdateAttributeAndBuffers(ShaderAttributeIds.Tex1, m_texCoord1);
             }
         }
 

@@ -10,8 +10,14 @@ namespace WEditor.Rendering
         Normal = 2,
         Color0 = 3,
         Color1 = 4,
-        TexCoord0 = 5,
-        TexCoord1 = 6,
+        Tex0 = 5,
+        Tex1 = 6,
+        Tex2 = 7,
+        Tex3 = 8,
+        Tex4 = 9,
+        Tex5 = 10,
+        Tex6 = 11,
+        Tex7 = 12,
     }
 
     public class ShaderProgram
@@ -29,7 +35,7 @@ namespace WEditor.Rendering
 
             GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.Position, "vertexPos");
             GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.Color0, "color0");
-            GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.TexCoord0, "texCoord0");
+            GL.BindAttribLocation(ProgramId, (int)ShaderAttributeIds.Tex0, "texCoord0");
 
             GL.LinkProgram(ProgramId);
 

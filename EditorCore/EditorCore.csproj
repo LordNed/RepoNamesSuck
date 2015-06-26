@@ -72,7 +72,9 @@
     <Compile Include="RenderSystem\Mesh.cs" />
     <Compile Include="RenderSystem\MeshBatch.cs" />
     <Compile Include="RenderSystem\RenderSystem.cs" />
+    <Compile Include="RenderSystem\Shader.cs" />
     <Compile Include="RenderSystem\ShaderProgram.cs" />
+    <Compile Include="RenderSystem\TEVShaderGenerator.cs" />
     <Compile Include="RenderSystem\Texture2D.cs" />
     <Compile Include="RenderSystem\VertexDescription.cs" />
     <Compile Include="WindWaker\BaseFileResource.cs" />

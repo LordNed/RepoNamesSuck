@@ -242,6 +242,9 @@ namespace WEditor.Common.Nintendo.J3D
         /// <summary> Human readable name of the material, no file references point to this name. </summary>
         public string Name;
 
+        /// <summary> Associated vertex description which describes the vertex layout. </summary>
+        public VertexDescription VtxDesc;
+
         /// <summary> Unknown usage. BMDView2 specifies that a value of 1 is "Draw on Way Down" while a value of 4 is "Draw on Way Up (guess)",
         /// in reference to the INF1 hierarchy. A value of 0 indicates that the material is end/null - see the loader for detailed desc.
         /// </summary>
