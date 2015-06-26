@@ -28,10 +28,74 @@ namespace WEditor.Rendering
         {
             Shader shader = new Shader(fromMat.Name);
             bool success = GenerateVertexShader(shader, fromMat);
+            if (success)
+                success = GenerateFragmentShader(shader, fromMat);
 
+            if(!success)
+            {
+                Console.WriteLine("[ShaderCompiler] Failed to generate shader for material {0}", fromMat.Name);
+                return null;
+            }
 
             return shader;
         }
+
+        private static bool GenerateFragmentShader(Shader shader, Material mat)
+        {
+            StringBuilder stream = new StringBuilder();
+
+            // Shader Header
+            stream.AppendLine("#version 330 core");
+            stream.AppendLine();
+
+            // Configure inputs to match our outputs from VS
+            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Position))
+                stream.AppendLine("in vec3 Position;");
+
+            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Normal))
+                stream.AppendLine("in vec3 Normal;");
+
+            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0))
+                stream.AppendLine("in vec3 Color0;");
+
+            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color1))
+                stream.AppendLine("in vec3 Color1;");
+
+            for (int texGenStage = 0; texGenStage < mat.NumTexGens; texGenStage++)
+            {
+                if (mat.TexGenInfos[texGenStage] != null)
+                    stream.AppendLine(string.Format("in vec3 Tex{0};", texGenStage));
+            }
+
+            stream.AppendLine("in vec4 COLOR0A0;");
+            stream.AppendLine("in vec4 COLOR1A1;");
+            stream.AppendLine();
+            stream.AppendLine("out vec4 PixelColor;");
+            stream.AppendLine();
+            stream.AppendLine("layout(std140) uniform PixelBlock");
+            stream.AppendLine("{");
+            stream.AppendLine("    vec4 KonstColors[4];");
+            stream.AppendLine("    vec4 TevColor;");
+            stream.AppendLine("    vec4 TintColor;");
+            stream.AppendLine("};");
+            stream.AppendLine();
+
+            // Texture Inputs
+            // ...
+            stream.AppendLine("uniform sampler2D Texture;");
+
+            // Main Function blahblah
+            stream.AppendLine("void main()");
+            stream.AppendLine("{");
+            stream.AppendLine("    PixelColor = (texture(Texture, Tex0.xy)" + (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0) ? ") * vec4(Color0,1.0);" : ");"));
+            stream.AppendLine("}");
+            stream.AppendLine();
+
+            // Compile the Fragment Shader and return whether it compiled sucesfully or not.
+            System.IO.File.WriteAllText(mat.Name + "_frag_output", stream.ToString());
+            return shader.CompileSource(stream.ToString(), OpenTK.Graphics.OpenGL.ShaderType.FragmentShader);
+        }
+
 
 
         public static bool GenerateVertexShader(Shader shader, Material mat)
