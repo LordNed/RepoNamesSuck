@@ -55,7 +55,7 @@ namespace WEditor.WindWaker.Loaders
                             Console.WriteLine("[ZArchiveLoader] Loading J3D (3D Model) {0}...", fileName);
                             resource = new J3DFileResource(fileName, folderName, archive);
                             J3DLoader.Load((J3DFileResource)resource, file.FullName);
-                            Console.WriteLine("[ZArchiveLoader] Loading DZB (Map Collision) {0}...", fileName);
+                            Console.WriteLine("[ZArchiveLoader] Loaded {0}.", fileName);
                             break;
 
                         /* Event List */

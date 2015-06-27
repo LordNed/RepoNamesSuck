@@ -198,6 +198,9 @@ namespace WEditor
                 case TextureFormats.C4:
                     return DecodeC4(stream, width, height, imagePalette, paletteFormat);
 
+                case TextureFormats.C8:
+                    return DecodeC8(stream, width, height, imagePalette, paletteFormat);
+
                 case TextureFormats.RGB565:
                     return DecodeRgb565(stream, width, height);
 
@@ -316,6 +319,53 @@ namespace WEditor
             }
 
             return finalDest;
+        }
+
+        private static byte[] DecodeC8(EndianBinaryReader stream, uint width, uint height, Palette imagePalette, PaletteFormats paletteFormat)
+        {
+            //4 bpp, 8 block width/4 block height, block size 32 bytes, possible palettes (IA8, RGB565, RGB5A3)
+            uint numBlocksW = width / 8;
+            uint numBlocksH = height / 4;
+
+            byte[] decodedData = new byte[width * height * 8];
+
+            //Read the indexes from the file
+            for (int yBlock = 0; yBlock < numBlocksH; yBlock++)
+            {
+                for (int xBlock = 0; xBlock < numBlocksW; xBlock++)
+                {
+                    //Inner Loop for pixels
+                    for (int pY = 0; pY < 4; pY++)
+                    {
+                        for (int pX = 0; pX < 8; pX++)
+                        {
+                            //Ensure we're not reading past the end of the image.
+                            if ((xBlock * 8 + pX >= width) || (yBlock * 4 + pY >= height))
+                                continue;
+
+        
+                            byte data = stream.ReadByte();
+                            decodedData[width * ((yBlock * 4) + pY) + (xBlock * 8) + pX] = data;
+                        }
+                    }
+                }
+            }
+
+            //Now look them up in the palette and turn them into actual colors.
+            byte[] finalDest = new byte[decodedData.Length/2];
+
+            int pixelSize = paletteFormat == PaletteFormats.IA8 ? 2 : 4;
+            int destOffset = 0;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    UnpackPixelFromPalette(decodedData[y * width + x], ref finalDest, destOffset, imagePalette.GetBytes(), paletteFormat);
+                    destOffset += pixelSize;
+                }
+            }
+
+            return finalDest;            
         }
 
         private static byte[] DecodeRgb565(EndianBinaryReader stream, uint width, uint height)
@@ -615,6 +665,8 @@ namespace WEditor
                     break;
             }
         }
+
+
 
         /// <summary>
         /// Convert a RGB565 encoded pixel (two bytes in length) to a RGBA (4 byte in length)
