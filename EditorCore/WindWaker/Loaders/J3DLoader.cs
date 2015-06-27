@@ -10,6 +10,7 @@ using WEditor.Common.Nintendo.J3D;
 using WEditor.Rendering;
 using WEditor.WindWaker.Loaders.J3D;
 using WEditor.Common.Nintendo;
+using System.Diagnostics;
 
 namespace WEditor.WindWaker.Loaders
 {
@@ -307,7 +308,7 @@ namespace WEditor.WindWaker.Loaders
             short padding = reader.ReadInt16();
             int batchOffset = reader.ReadInt32();
             int unknownTableOffset = reader.ReadInt32();
-            int alwaysZero = reader.ReadInt32(); // ToDo: Make sure this is actually always zero...
+            int alwaysZero = reader.ReadInt32(); Debug.Assert(alwaysZero == 0);            
             int attributeOffset = reader.ReadInt32();
             int matrixTableOffset = reader.ReadInt32();
             int primitiveDataOffset = reader.ReadInt32();
@@ -335,12 +336,12 @@ namespace WEditor.WindWaker.Loaders
                 long batchStart = reader.BaseStream.Position;
 
                 byte matrixType = reader.ReadByte();
-                byte unknown0 = reader.ReadByte();
+                byte unknown0 = reader.ReadByte(); Debug.Assert(unknown0 == 0xFF);
                 ushort packetCount = reader.ReadUInt16();
                 ushort batchAttributeOffset = reader.ReadUInt16();
                 ushort firstMatrixIndex = reader.ReadUInt16();
                 ushort firstPacketIndex = reader.ReadUInt16();
-                ushort unknownpadding = reader.ReadUInt16();
+                ushort unknownpadding = reader.ReadUInt16(); Debug.Assert(unknownpadding == 0xFFFF);
 
                 float boundingSphereDiameter = reader.ReadSingle();
                 Vector3 boundingBoxMin = new Vector3();
@@ -399,7 +400,7 @@ namespace WEditor.WindWaker.Loaders
 
                         if (type != GXPrimitiveType.TriangleStrip)
                         {
-                            Console.WriteLine("Unsupported");
+                            Console.WriteLine("Unsupported GXPrimitiveType {0}", type);
                         }
 
                         numPrimitiveBytesRead += 0x3; // Advance us by 3 for the Primitive header.
@@ -494,6 +495,21 @@ namespace WEditor.WindWaker.Loaders
                         // After we write a primitive, write a speciall null-terminator
                         meshVertexData.Indexes.Add(0xFFFF);
                     }
+
+
+                    // Now read the matrix data for this packet
+                    reader.BaseStream.Position = chunkStart + matrixDataOffset + (firstMatrixIndex + p) * 0x08;
+                    ushort matrixUnknown0 = reader.ReadUInt16();
+                    ushort matrixCount = reader.ReadUInt16();
+                    uint matrixFirstIndex = reader.ReadUInt32();
+
+                    // Skip ahead to the actual data.
+                    reader.BaseStream.Position = chunkStart + matrixTableOffset + (matrixFirstIndex * 0x2);
+                    List<ushort> matrixTable = new List<ushort>();
+                    for(int m = 0; m < matrixCount; m++)
+                    {
+                        matrixTable.Add(reader.ReadUInt16());
+                    }
                 }
 
                 meshBatch.Vertices = meshVertexData.Position.ToArray();
@@ -508,6 +524,7 @@ namespace WEditor.WindWaker.Loaders
                 meshBatch.TexCoord6 = meshVertexData.Tex0.ToArray();
                 meshBatch.TexCoord7 = meshVertexData.Tex0.ToArray();
                 meshBatch.Indexes = meshVertexData.Indexes.ToArray();
+
             }
         }
 
