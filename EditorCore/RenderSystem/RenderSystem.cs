@@ -131,8 +131,8 @@ namespace WEditor.Rendering
                         // Bind the shader
                         batch.Material.Shader.Bind();
 
-                        // Bind the Shader
-                        //GL.UseProgram(m_shader.ProgramId);
+                        // more tests
+                        //Matrix4 modelMatrix = 
 
                         Matrix4 modelMatrix = Matrix4.Identity; //Identity = doesn't change anything when multiplied.
                         //Matrix4 finalMatrix = modelMatrix * viewProjMatrix;

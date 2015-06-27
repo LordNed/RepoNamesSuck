@@ -81,6 +81,7 @@ namespace WEditor.WindWaker.Loaders
             List<ushort> materialRemapIndexs = new List<ushort>();
             List<WEditor.Common.Nintendo.J3D.Material> materialList = null;
             List<SkeletonBone> joints = new List<SkeletonBone>();
+            List<Matrix3x4> inverseBindPoses = new List<Matrix3x4>();
 
             Mesh j3dMesh = resource.Mesh;
 
@@ -115,7 +116,7 @@ namespace WEditor.WindWaker.Loaders
                             break;
                         // ENVELOPES - Defines vertex weights for skinning.
                         case "EVP1":
-                            LoadEVP1FromStream(reader, chunkStart);
+                            inverseBindPoses = LoadEVP1FromStream(reader, chunkStart);
                             break;
                         // DRAW (Skeletal Animation Data) - Stores which matrices are weighted, and which are used directly.
                         case "DRW1":
@@ -173,8 +174,8 @@ namespace WEditor.WindWaker.Loaders
             List<SkeletonBone> skeleton = new List<SkeletonBone>();
             BuildSkeletonRecursive(rootNode, skeleton, joints, 0);
 
-
-
+            j3dMesh.Skeleton = skeleton;
+            j3dMesh.BindPoses = inverseBindPoses;
 
             RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
         }

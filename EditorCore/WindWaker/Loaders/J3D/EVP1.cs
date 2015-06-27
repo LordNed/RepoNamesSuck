@@ -6,7 +6,7 @@ namespace WEditor.WindWaker.Loaders
 {
     public static partial class J3DLoader
     {
-        private static void LoadEVP1FromStream(EndianBinaryReader reader, long chunkStart)
+        private static List<Matrix3x4> LoadEVP1FromStream(EndianBinaryReader reader, long chunkStart)
         {
             ushort numEnvelopes = reader.ReadUInt16();
             reader.ReadUInt16(); // Padding
@@ -63,6 +63,8 @@ namespace WEditor.WindWaker.Loaders
 
                 inverseBindPose.Add(matrix);
             }
+
+            return inverseBindPose;
         }
     }
 }
