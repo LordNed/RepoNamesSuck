@@ -7,8 +7,9 @@ namespace WEditor.Rendering
         /// <summary> Human-readable name for this bone. </summary>
         public string Name;
 
-        public ushort Unknown1;
-        public ushort Unknown2;
+        /// <summary> This bones parent if it has one. Null if root bone. </summary>
+        public SkeletonBone Parent;
+
         public Vector3 Scale;
         public Quaternion Rotation;
         public Vector3 Translation;
