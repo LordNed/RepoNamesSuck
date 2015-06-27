@@ -8,7 +8,7 @@ namespace WEditor.Rendering
 {
     public class BoneWeight
     {
-        public ushort[] BoneIndexs;
+        public ushort[] BoneIndexes;
         public float[] BoneWeights;
     }
 

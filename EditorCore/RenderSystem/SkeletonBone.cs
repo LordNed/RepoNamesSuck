@@ -17,9 +17,33 @@ namespace WEditor.Rendering
         public Vector3 BoundingBoxMin;
         public Vector3 BoundingBoxMax;
 
+        public SkeletonBone()
+        {
+            Name = "Joint";
+            Parent = null;
+            Scale = Vector3.One;
+            Rotation = Quaternion.Identity;
+            Translation = Vector3.Zero;
+            BoundingSphereDiameter = 0f;
+            BoundingBoxMin = Vector3.Zero;
+            BoundingBoxMax = Vector3.Zero;
+        }
+
+        public SkeletonBone(SkeletonBone other)
+        {
+            Name = other.Name;
+            Parent = other.Parent;
+            Scale = other.Scale;
+            Rotation = other.Rotation;
+            Translation = other.Translation;
+            BoundingSphereDiameter = other.BoundingSphereDiameter;
+            BoundingBoxMin = other.BoundingBoxMin;
+            BoundingBoxMax = other.BoundingBoxMax;
+        }
+
         public override string ToString()
         {
-            return string.IsNullOrEmpty(Name) ? "Joint" : Name;
+            return Name;
         }
     }
 }

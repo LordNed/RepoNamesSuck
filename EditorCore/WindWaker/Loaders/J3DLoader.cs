@@ -214,7 +214,7 @@ namespace WEditor.WindWaker.Loaders
                         if(isWeighted)
                         {
                             ushort numBonesAffecting = envelopes.numBonesAffecting[drw1Index];
-                            weight.BoneIndexs = new ushort[numBonesAffecting];
+                            weight.BoneIndexes = new ushort[numBonesAffecting];
                             weight.BoneWeights = new float[numBonesAffecting];
 
                             // "Much WTFs"
@@ -231,7 +231,7 @@ namespace WEditor.WindWaker.Loaders
                                 ushort boneIndex = envelopes.indexRemap[offset + (k * 0x2)];
                                 float boneWeight = envelopes.weights[(offset / 2) + k];
 
-                                weight.BoneIndexs[k] = boneIndex;
+                                weight.BoneIndexes[k] = boneIndex;
                                 weight.BoneWeights[k] = boneWeight;
 
                                 // This was apaprently a partial thought I never finished or got working in the old one? :S
@@ -248,7 +248,7 @@ namespace WEditor.WindWaker.Loaders
                             // Move the mesh by transforming the position by this much.
 
                             // I think we can just assign full weight to the first bone index and call it good.
-                            weight.BoneIndexs = new[] { drawInfo.Indexes[drw1Index] };
+                            weight.BoneIndexes = new[] { drawInfo.Indexes[drw1Index] };
                             weight.BoneWeights = new [] { 1f };
                         }
 
