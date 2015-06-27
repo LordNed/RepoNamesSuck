@@ -314,23 +314,6 @@ namespace WEditor.WindWaker.Loaders
             int matrixDataOffset = reader.ReadInt32();
             int packetLocationOffset = reader.ReadInt32();
 
-            // We need to figure out how many primitive attributes there are in the SHP1 section. This can differ from the number of
-            // attributes in the VTX1 section, as the SHP1 can also include things like PositionMatrixIndex, so the count can be different.
-            reader.BaseStream.Position = chunkStart + attributeOffset;
-            var shp1Attributes = new List<ShapeAttribute>();
-            do
-            {
-                ShapeAttribute attribute = new ShapeAttribute();
-                attribute.ArrayType = (J3DFileResource.VertexArrayType)reader.ReadInt32();
-                attribute.DataType = (J3DFileResource.VertexDataType)reader.ReadInt32();
-
-                if (attribute.ArrayType == J3DFileResource.VertexArrayType.NullAttr)
-                    break;
-
-                shp1Attributes.Add(attribute);
-
-            } while (true);
-
             // Batches can have different attributes (ie: some have pos, some have normal, some have texcoords, etc.) they're split by batches,
             // where everything in the batch uses the same set of vertex attributes. Each batch then has several packets, which are a collection
             // of primitives.
@@ -370,6 +353,26 @@ namespace WEditor.WindWaker.Loaders
                 boundingBoxMax.Y = reader.ReadSingle();
                 boundingBoxMax.Z = reader.ReadSingle();
 
+
+                // We need to figure out how many primitive attributes there are in the SHP1 section. This can differ from the number of
+                // attributes in the VTX1 section, as the SHP1 can also include things like PositionMatrixIndex, so the count can be different.
+                // This also varies *per batch* as not all batches will have the things like PositionMatrixIndex. Wow.
+                reader.BaseStream.Position = chunkStart + attributeOffset + batchAttributeOffset;
+                var shp1Attributes = new List<ShapeAttribute>();
+                do
+                {
+                    ShapeAttribute attribute = new ShapeAttribute();
+                    attribute.ArrayType = (J3DFileResource.VertexArrayType)reader.ReadInt32();
+                    attribute.DataType = (J3DFileResource.VertexDataType)reader.ReadInt32();
+
+                    if (attribute.ArrayType == J3DFileResource.VertexArrayType.NullAttr)
+                        break;
+
+                    shp1Attributes.Add(attribute);
+
+                } while (true);
+
+
                 for (ushort p = 0; p < packetCount; p++)
                 {
                     // Packet Location
@@ -394,7 +397,7 @@ namespace WEditor.WindWaker.Loaders
 
                         ushort vertexCount = reader.ReadUInt16();
 
-                        if (type == GXPrimitiveType.TriangleFan)
+                        if (type != GXPrimitiveType.TriangleStrip)
                         {
                             Console.WriteLine("Unsupported");
                         }
