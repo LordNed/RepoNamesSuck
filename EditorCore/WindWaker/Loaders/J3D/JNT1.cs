@@ -43,7 +43,7 @@ namespace WEditor.WindWaker.Loaders
                 for (int f = 0; f < 3; f++)
                     bone.Scale[f] = reader.ReadSingle();
                 for (int f = 0; f < 3; f++)
-                    bone.Rotation[f] = reader.ReadInt16();
+                    bone.Rotation[f] = reader.ReadInt16() * (180/32786f);
                 ushort jntPadding = reader.ReadUInt16(); Debug.Assert(jntPadding == 0xFFFF);
                 for (int f = 0; f < 3; f++)
                     bone.Translation[f] = reader.ReadSingle();

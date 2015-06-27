@@ -115,6 +115,7 @@ namespace WEditor.WindWaker.Loaders
                             break;
                         // ENVELOPES - Defines vertex weights for skinning.
                         case "EVP1":
+                            LoadEVP1FromStream(reader, chunkStart);
                             break;
                         // DRAW (Skeletal Animation Data) - Stores which matrices are weighted, and which are used directly.
                         case "DRW1":
@@ -169,8 +170,6 @@ namespace WEditor.WindWaker.Loaders
             AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref curMat, materialList, materialRemapIndexs);
             RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
         }
-
-        
 
         private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Material curMaterial, List<Material> materialList, List<ushort> remapIndexList)
         {

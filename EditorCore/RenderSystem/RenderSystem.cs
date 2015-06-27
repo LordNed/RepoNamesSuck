@@ -142,8 +142,8 @@ namespace WEditor.Rendering
 
                         // Bind our Textures
                         GL.ActiveTexture(TextureUnit.Texture0);
-                        if(batch.Material.Textures[1] != null)
-                            batch.Material.Textures[1].Bind();
+                        if(batch.Material.Textures[0] != null)
+                            batch.Material.Textures[0].Bind();
 
                         // Upload uniforms to the GPU
                         GL.UniformMatrix4(batch.Material.Shader.UniformModelMtx, false, ref modelMatrix);

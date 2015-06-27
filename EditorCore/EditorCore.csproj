@@ -81,6 +81,7 @@
     <Compile Include="WindWaker\BaseFileResource.cs" />
     <Compile Include="WindWaker\J3DFileResource.cs" />
     <Compile Include="WindWaker\Loaders\J3DLoader.cs" />
+    <Compile Include="WindWaker\Loaders\J3D\EVP1.cs" />
     <Compile Include="WindWaker\Loaders\J3D\INF1.cs" />
     <Compile Include="WindWaker\Loaders\J3D\JNT1.cs" />
     <Compile Include="WindWaker\Loaders\J3D\MAT3.cs" />
