@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
+using System.Collections.Generic;
 using WEditor.Common.Nintendo.J3D;
 
 namespace WEditor.Rendering
@@ -201,11 +202,25 @@ namespace WEditor.Rendering
 
         private int m_maxBufferCount;
 
+        // WW Specific Hack to get bone support in before refactor
+        public List<List<ushort>> drawIndexes = new List<List<ushort>>();   // "PacketMatrixData" which I believe is an index into the DRW1 section to get more info for this Packet.
+                                                                            // There's one List<ushort> per Packet, the list is PacketMatrixData.Count long.
+        
+        
+        // A batch can have a PositionMatrixIndex attribute which stores an index
+        // into the SHP1::MatrixTable section which is then used to index into the
+        // DRW1 section to do bone skinning for meshes which have 'complex' weights.
+        // Not all meshes use a PMI per vertex, I think those that don't do PMI per
+        // vertex have an implicit index into the SHP1::MatrixTable based on their
+        // packet which applies to all vertices. 
+        public List<int> PositionMatrixIndexs;
+
         public MeshBatch()
         {
             m_vertexDescription = new VertexDescription();
             m_maxBufferCount = Enum.GetValues(typeof(ShaderAttributeIds)).Length;
             m_attributeBuffers = new int[m_maxBufferCount];
+            PositionMatrixIndexs = new List<int>();
 
             m_vertices = new Vector3[0];
             m_normals = new Vector3[0];

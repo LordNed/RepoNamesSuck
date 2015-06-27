@@ -80,7 +80,7 @@ namespace WEditor.WindWaker.Loaders
             List<Texture2D> textureList = new List<Texture2D>();
             List<ushort> materialRemapIndexs = new List<ushort>();
             List<WEditor.Common.Nintendo.J3D.Material> materialList = null;
-            List<SkeletonBone> skeletonBones;
+            List<SkeletonBone> joints = new List<SkeletonBone>();
 
             Mesh j3dMesh = resource.Mesh;
 
@@ -122,7 +122,7 @@ namespace WEditor.WindWaker.Loaders
                             break;
                         // JOINTS - Stores the skeletal joints (position, rotation, scale, etc.)
                         case "JNT1":
-                            skeletonBones = LoadJNT1SectionFromStream(reader, chunkStart);
+                            joints = LoadJNT1SectionFromStream(reader, chunkStart);
                             break;
                         // SHAPE - Face/Triangle information for model.
                         case "SHP1":
@@ -168,7 +168,36 @@ namespace WEditor.WindWaker.Loaders
             // We're going to do something a little crazy - we're going to read the scene view and apply textures to meshes (for now)
             Material curMat = null;
             AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref curMat, materialList, materialRemapIndexs);
+
+
+            List<SkeletonBone> skeleton = new List<SkeletonBone>();
+            BuildSkeletonRecursive(rootNode, skeleton, joints, 0);
+
+
+
+
             RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
+        }
+
+        private static void BuildSkeletonRecursive(SceneNode node, List<SkeletonBone> skeleton, List<SkeletonBone> rawJoints, int parentJointIndex)
+        {
+            switch(node.Type)
+            {
+                case J3DFileResource.HierarchyDataTypes.NewNode:
+                    parentJointIndex = skeleton.Count - 1;
+                    break;
+
+                case J3DFileResource.HierarchyDataTypes.Joint:
+                    var joint = rawJoints[node.Value];
+
+                    if(parentJointIndex < skeleton.Count)
+                        joint.Parent = skeleton[parentJointIndex];
+                    skeleton.Add(joint);
+                    break;
+            }
+
+            foreach (SceneNode child in node.Children)
+                BuildSkeletonRecursive(child, skeleton, rawJoints, parentJointIndex);
         }
 
         private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Material curMaterial, List<Material> materialList, List<ushort> remapIndexList)
@@ -202,6 +231,11 @@ namespace WEditor.WindWaker.Loaders
         {
             public J3DFileResource.VertexArrayType ArrayType;
             public J3DFileResource.VertexDataType DataType;
+
+            public override string ToString()
+            {
+                return string.Format("{0} - {1}", ArrayType, DataType);
+            }
         }
 
         private static void LoadSHP1SectionFromFile(MeshVertexAttributeHolder vertexData, Mesh j3dMesh, EndianBinaryReader reader, long chunkStart)
@@ -209,7 +243,7 @@ namespace WEditor.WindWaker.Loaders
             short batchCount = reader.ReadInt16();
             short padding = reader.ReadInt16();
             int batchOffset = reader.ReadInt32();
-            int unknownTableOffset = reader.ReadInt32();
+            int unknownTableOffset = reader.ReadInt32(); // Another one of those 0->(n-1) counters. I think all sections have it? Might be part of the way they used inheritance to write files.
             int alwaysZero = reader.ReadInt32(); Debug.Assert(alwaysZero == 0);            
             int attributeOffset = reader.ReadInt32();
             int matrixTableOffset = reader.ReadInt32();
@@ -238,7 +272,7 @@ namespace WEditor.WindWaker.Loaders
                 long batchStart = reader.BaseStream.Position;
 
                 byte matrixType = reader.ReadByte();
-                byte unknown0 = reader.ReadByte(); Debug.Assert(unknown0 == 0xFF);
+                Debug.Assert(reader.ReadByte() == 0xFF); // Padding
                 ushort packetCount = reader.ReadUInt16();
                 ushort batchAttributeOffset = reader.ReadUInt16();
                 ushort firstMatrixIndex = reader.ReadUInt16();
@@ -259,7 +293,7 @@ namespace WEditor.WindWaker.Loaders
 
                 // We need to figure out how many primitive attributes there are in the SHP1 section. This can differ from the number of
                 // attributes in the VTX1 section, as the SHP1 can also include things like PositionMatrixIndex, so the count can be different.
-                // This also varies *per batch* as not all batches will have the things like PositionMatrixIndex. Wow.
+                // This also varies *per batch* as not all batches will have the things like PositionMatrixIndex.
                 reader.BaseStream.Position = chunkStart + attributeOffset + batchAttributeOffset;
                 var shp1Attributes = new List<ShapeAttribute>();
                 do
@@ -394,10 +428,9 @@ namespace WEditor.WindWaker.Loaders
                             }
                         }
 
-                        // After we write a primitive, write a special null-terminator
+                        // After we write a primitive, write a special null-terminator which signifies the GPU to do a primitive restart for the next tri-strip.
                         meshVertexData.Indexes.Add(0xFFFF);
                     }
-
 
                     // Now read the matrix data for this packet
                     reader.BaseStream.Position = chunkStart + matrixDataOffset + (firstMatrixIndex + p) * 0x08;
@@ -412,6 +445,8 @@ namespace WEditor.WindWaker.Loaders
                     {
                         matrixTable.Add(reader.ReadUInt16());
                     }
+
+                    meshBatch.drawIndexes.Add(matrixTable);
                 }
 
                 meshBatch.Vertices = meshVertexData.Position.ToArray();
@@ -426,7 +461,7 @@ namespace WEditor.WindWaker.Loaders
                 meshBatch.TexCoord6 = meshVertexData.Tex0.ToArray();
                 meshBatch.TexCoord7 = meshVertexData.Tex0.ToArray();
                 meshBatch.Indexes = meshVertexData.Indexes.ToArray();
-
+                meshBatch.PositionMatrixIndexs = meshVertexData.PositionMatrixIndexes;
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using GameFormatReader.Common;
 using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using WEditor.Common.Nintendo.J3D;
@@ -39,8 +40,13 @@ namespace WEditor.WindWaker.Loaders
                 SkeletonBone bone = new SkeletonBone();
 
                 bone.Name = jointNames[j];
-                bone.Unknown1 = reader.ReadUInt16();
-                bone.Unknown2 = reader.ReadUInt16();
+                ushort unknown1 = reader.ReadUInt16();  // Values of 0, 2 or 1. yaz0r calls it Matrix Type (referring to 'MatrixTable' which is an index into DRW1 - Draw type?
+                                                        // If value is 1 or 2 then Bounding Box / Radius is Vector3.Zero / 0f
+                                                        // And seems to be 0 if a joint has direct non-joint children (Maybe 0 is a 'bone with children' and the BBMin/Max contain
+                                                        // the bounds of children?
+                ushort unknown2 = reader.ReadUInt16();  // No one seems to know what it is, often 0xFF or 0 or 1. May be two individual bytes with a pad afterwards.
+
+                Console.WriteLine("Joint: {0} U1: {1} U2: {2}", j, unknown1, unknown2);
                 for (int f = 0; f < 3; f++)
                     bone.Scale[f] = reader.ReadSingle();
 
@@ -49,7 +55,7 @@ namespace WEditor.WindWaker.Loaders
                     boneRot[f] = reader.ReadInt16() * (180 / 32786f);
 
                 bone.Rotation = Quaternion.FromAxisAngle(boneRot, 0);
-                ushort jntPadding = reader.ReadUInt16(); Debug.Assert(jntPadding == 0xFFFF);
+                Debug.Assert(reader.ReadUInt16() == 0xFFFF); // Padding
                 for (int f = 0; f < 3; f++)
                     bone.Translation[f] = reader.ReadSingle();
                 bone.BoundingSphereDiameter = reader.ReadSingle();
