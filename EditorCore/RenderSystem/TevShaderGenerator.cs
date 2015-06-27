@@ -63,10 +63,10 @@ namespace WEditor.Rendering
             if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color1))
                 stream.AppendLine("in vec4 Color1;");
 
-            for (int texGenStage = 0; texGenStage < mat.NumTexGens; texGenStage++)
+            for (int texGen = 0; texGen < mat.NumTexGens; texGen++)
             {
-                if (mat.TexGenInfos[texGenStage] != null)
-                    stream.AppendLine(string.Format("in vec3 Tex{0};", texGenStage));
+                if (mat.TexGenInfos[texGen] != null)
+                    stream.AppendLine(string.Format("in vec3 Tex{0};", texGen));
             }
 
             stream.AppendLine("in vec4 COLOR0A0;");
@@ -89,6 +89,19 @@ namespace WEditor.Rendering
             // Main Function blahblah
             stream.AppendLine("void main()");
             stream.AppendLine("{");
+            stream.AppendLine("    vec4 TevInA = vec4(0, 0, 0, 0), TevInB = vec4(0, 0, 0, 0), TevInC = vec4(0, 0, 0, 0), TevInD = vec4(0, 0, 0, 0);");
+            stream.AppendLine("    vec4 Prev = vec4(0, 0, 0, 0), C0 = TevColor, C1 = C0, C2 = C0;");
+            stream.AppendLine("    vec4 Ras = vec4(0, 0, 0, 1), Tex = vec4(0, 0, 0, 0);");
+            stream.AppendLine("    vec4 Kosnt = vec4(1, 1, 1, 1);");
+            stream.AppendLine("    vec2 TevCoord = vec2(0, 0);");
+            stream.AppendLine();
+
+            for(int tevStage = 0; tevStage < mat.NumTevStages; tevStage++)
+            {
+                stream.AppendLine(string.Format("    // TEV Stage {0} - ClrOp: {1}", tevStage, mat.TevStageInfos[tevStage].ColorOp));
+                
+            }
+
             stream.AppendLine("    PixelColor = texture(Texture, Tex0.xy)" + (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0) ? " * Color0;" : ";"));
             stream.AppendLine("}");
             stream.AppendLine();
@@ -146,10 +159,10 @@ namespace WEditor.Rendering
             if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color1))
                 stream.AppendLine("out vec4 Color1");
 
-            for(int texGenStage = 0; texGenStage < mat.NumTexGens; texGenStage++)
+            for(int texGen = 0; texGen < mat.NumTexGens; texGen++)
             {
-                if (mat.TexGenInfos[texGenStage] != null)
-                    stream.AppendLine(string.Format("out vec3 Tex{0};", texGenStage));
+                if (mat.TexGenInfos[texGen] != null)
+                    stream.AppendLine(string.Format("out vec3 Tex{0};", texGen));
             }
 
             stream.AppendLine("out vec4 COLOR0A0;");
@@ -170,27 +183,27 @@ namespace WEditor.Rendering
                 "   uniform vec4 COLOR0_Mat;\n" +
                 "   uniform vec4 COLOR1_Amb;\n" +
                 "   uniform vec4 COLOR1_Mat;\n" +
-                "\n"/* +
+                "\n" +
                 "struct GXLight\n" +
                 "{\n" +
-                "   uniform vec4 Position;\n" +
-                "   uniform vec4 Direction;\n" +
-                "   uniform vec4 Color;\n" +
-                "   uniform vec4 DistAtten;\n" +
-                "   uniform vec4 AngleAtten;\n" +
+                "   vec4 Position;\n" +
+                "   vec4 Direction;\n" +
+                "   vec4 Color;\n" +
+                "   vec4 DistAtten;\n" +
+                "   vec4 AngleAtten;\n" +
                 "};\n" +
                 "\n" + 
 
                 "   GXLight Lights[8];\n" +
                 "\n" +
-                "uniform int NumLights;\n"*/);
+                "uniform int NumLights;\n");
 
             // Main Shader Code
             stream.AppendLine("// Main");
             stream.AppendLine("void main()");
             stream.AppendLine("{");
-            stream.AppendLine("    mat4 MVP = ProjMtx * ViewMtx * ModelMtx; //ModelMtx * ViewMtx * ProjMtx;");
-            stream.AppendLine("    mat4 MV = ModelMtx * ViewMtx;");
+            stream.AppendLine("    mat4 MVP = ProjMtx * ViewMtx * ModelMtx;");
+            stream.AppendLine("    mat4 MV = ViewMtx * ModelMtx;");
 
             if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Position))
                 stream.AppendLine("    gl_Position = MVP * vec4(RawPosition, 1);");
@@ -209,13 +222,13 @@ namespace WEditor.Rendering
 
             // Texture Coordinate Generation
             stream.AppendLine("    // TexGen");
-            for(int pass = 0; pass < mat.NumTexGens; pass++)
+            for(int texGen = 0; texGen < mat.NumTexGens; texGen++)
             {
-                if (mat.TexGenInfos[pass] == null)
+                if (mat.TexGenInfos[texGen] == null)
                     continue;
 
                 // No Animation for right now, but texture matrix animations would come here.
-                stream.AppendLine(string.Format("    Tex{0} = vec3({1});", pass, m_kCoordSrc[mat.TexGenInfos[pass].Source]));
+                //stream.AppendLine(string.Format("    Tex{0} = vec3({1});", texGen, m_kCoordSrc[mat.TexGenInfos[texGen].Source]));
             }
 
             stream.AppendLine("}");

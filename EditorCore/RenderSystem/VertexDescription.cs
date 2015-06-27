@@ -46,6 +46,12 @@ namespace WEditor.Rendering
                 case ShaderAttributeIds.Color1:
                 case ShaderAttributeIds.Tex0:
                 case ShaderAttributeIds.Tex1:
+                case ShaderAttributeIds.Tex2:
+                case ShaderAttributeIds.Tex3:
+                case ShaderAttributeIds.Tex4:
+                case ShaderAttributeIds.Tex5:
+                case ShaderAttributeIds.Tex6:
+                case ShaderAttributeIds.Tex7:
                     return VertexAttribPointerType.Float;
 
                 default:
@@ -66,6 +72,12 @@ namespace WEditor.Rendering
                     return 4 * 4;
                 case ShaderAttributeIds.Tex0:
                 case ShaderAttributeIds.Tex1:
+                case ShaderAttributeIds.Tex2:
+                case ShaderAttributeIds.Tex3:
+                case ShaderAttributeIds.Tex4:
+                case ShaderAttributeIds.Tex5:
+                case ShaderAttributeIds.Tex6:
+                case ShaderAttributeIds.Tex7:
                     return 4 * 2;
                 default:
                     Console.WriteLine("[VertexDescription] Unsupported ShaderAttributeId: " + attribute);

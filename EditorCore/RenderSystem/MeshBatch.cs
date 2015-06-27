@@ -7,6 +7,7 @@ namespace WEditor.Rendering
 {
     public class MeshBatch
     {
+        #region Properties
         public Vector3[] Vertices
         {
             get { return m_vertices; }
@@ -85,6 +86,79 @@ namespace WEditor.Rendering
             }
         }
 
+        public Vector2[] TexCoord2
+        {
+            get { return m_texCoord2; }
+            set
+            {
+                m_texCoord2 = value;
+                if (value.Length == 0)
+                    return;
+
+                UpdateAttributeAndBuffers(ShaderAttributeIds.Tex2, m_texCoord2);
+            }
+        }
+        public Vector2[] TexCoord3
+        {
+            get { return m_texCoord3; }
+            set
+            {
+                m_texCoord3 = value;
+                if (value.Length == 0)
+                    return;
+
+                UpdateAttributeAndBuffers(ShaderAttributeIds.Tex3, m_texCoord3);
+            }
+        }
+        public Vector2[] TexCoord4
+        {
+            get { return m_texCoord4; }
+            set
+            {
+                m_texCoord4 = value;
+                if (value.Length == 0)
+                    return;
+
+                UpdateAttributeAndBuffers(ShaderAttributeIds.Tex4, m_texCoord4);
+            }
+        }
+        public Vector2[] TexCoord5
+        {
+            get { return m_texCoord5; }
+            set
+            {
+                m_texCoord5 = value;
+                if (value.Length == 0)
+                    return;
+
+                UpdateAttributeAndBuffers(ShaderAttributeIds.Tex5, m_texCoord5);
+            }
+        }
+        public Vector2[] TexCoord6
+        {
+            get { return m_texCoord6; }
+            set
+            {
+                m_texCoord6 = value;
+                if (value.Length == 0)
+                    return;
+
+                UpdateAttributeAndBuffers(ShaderAttributeIds.Tex6, m_texCoord6);
+            }
+        }
+        public Vector2[] TexCoord7
+        {
+            get { return m_texCoord7; }
+            set
+            {
+                m_texCoord7 = value;
+                if (value.Length == 0)
+                    return;
+
+                UpdateAttributeAndBuffers(ShaderAttributeIds.Tex7, m_texCoord7);
+            }
+        }
+
         public int[] Indexes
         {
             get { return m_indexes; }
@@ -98,6 +172,7 @@ namespace WEditor.Rendering
                 GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(m_indexes.Length * 4), m_indexes, BufferUsageHint.StaticDraw);
             }
         }
+        #endregion
 
         public PrimitiveType PrimitveType = PrimitiveType.Triangles;
         public Material Material;
@@ -116,6 +191,12 @@ namespace WEditor.Rendering
         private Color[] m_colors1;
         private Vector2[] m_texCoord0;
         private Vector2[] m_texCoord1;
+        private Vector2[] m_texCoord2;
+        private Vector2[] m_texCoord3;
+        private Vector2[] m_texCoord4;
+        private Vector2[] m_texCoord5;
+        private Vector2[] m_texCoord6;
+        private Vector2[] m_texCoord7;
         private int[] m_indexes;
 
         private int m_maxBufferCount;
@@ -132,6 +213,12 @@ namespace WEditor.Rendering
             m_colors1 = new Color[0];
             m_texCoord0 = new Vector2[0];
             m_texCoord1 = new Vector2[0];
+            m_texCoord2 = new Vector2[0];
+            m_texCoord3 = new Vector2[0];
+            m_texCoord4 = new Vector2[0];
+            m_texCoord5 = new Vector2[0];
+            m_texCoord6 = new Vector2[0];
+            m_texCoord7 = new Vector2[0];
 
             // Generate our element array buffer
             GL.GenBuffers(1, out m_elementArrayBuffer);

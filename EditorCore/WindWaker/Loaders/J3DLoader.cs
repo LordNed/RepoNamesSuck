@@ -20,8 +20,16 @@ namespace WEditor.WindWaker.Loaders
             public List<Vector3> Position;
             public List<Vector3> Normal;
             public List<Color> Color0;
+            public List<Color> Color1;
             public List<Vector2> Tex0;
             public List<Vector2> Tex1;
+            public List<Vector2> Tex2;
+            public List<Vector2> Tex3;
+            public List<Vector2> Tex4;
+            public List<Vector2> Tex5;
+            public List<Vector2> Tex6;
+            public List<Vector2> Tex7;
+            public List<int> PositionMatrixIndexes;
             public List<int> Indexes;
 
             public List<J3DFileResource.VertexFormat> Attributes;
@@ -31,9 +39,18 @@ namespace WEditor.WindWaker.Loaders
                 Position = new List<Vector3>();
                 Normal = new List<Vector3>();
                 Color0 = new List<Color>();
+                Color1 = new List<Color>();
                 Tex0 = new List<Vector2>();
                 Tex1 = new List<Vector2>();
+                Tex2 = new List<Vector2>();
+                Tex3 = new List<Vector2>();
+                Tex4 = new List<Vector2>();
+                Tex5 = new List<Vector2>();
+                Tex6 = new List<Vector2>();
+                Tex7 = new List<Vector2>();
                 Attributes = new List<J3DFileResource.VertexFormat>();
+
+                PositionMatrixIndexes = new List<int>();
                 Indexes = new List<int>();
             }
         }
@@ -112,9 +129,9 @@ namespace WEditor.WindWaker.Loaders
             }
 
             // Resolve the texture indexes into actual textures now that we've loaded the TEX1 section.
-            foreach(Material mat in materialList)
+            foreach (Material mat in materialList)
             {
-                for(int i = 0; i < mat.TextureIndexes.Length; i++)
+                for (int i = 0; i < mat.TextureIndexes.Length; i++)
                 {
                     if (mat.TextureIndexes[i] < 0)
                         continue;
@@ -124,7 +141,7 @@ namespace WEditor.WindWaker.Loaders
             }
 
             // loltests
-            for(int i = 0; i < materialList.Count; i++)
+            for (int i = 0; i < materialList.Count; i++)
             {
                 materialList[i].VtxDesc = j3dMesh.SubMeshes[0].GetVertexDescription();
                 Shader shader = TEVShaderGenerator.GenerateShader(materialList[i]);
@@ -151,10 +168,10 @@ namespace WEditor.WindWaker.Loaders
                 short textureIndex = materialList[materialIndex].TextureIndexes[0];
 
                 curMaterial = materialList[materialIndex];
-                
+
                 // Models that don't use textures will have a textureIndex of -1.
                 //if(textureIndex >= 0)
-                    //curTexture = textures[textureIndex];
+                //curTexture = textures[textureIndex];
             }
 
             if (node.Type == J3DFileResource.HierarchyDataTypes.Batch)
@@ -276,7 +293,7 @@ namespace WEditor.WindWaker.Loaders
             }
 
             return 0;
-        }       
+        }
 
         private struct ShapeAttribute
         {
@@ -311,6 +328,7 @@ namespace WEditor.WindWaker.Loaders
                     break;
 
                 shp1Attributes.Add(attribute);
+
             } while (true);
 
             // Batches can have different attributes (ie: some have pos, some have normal, some have texcoords, etc.) they're split by batches,
@@ -358,8 +376,8 @@ namespace WEditor.WindWaker.Loaders
                     reader.BaseStream.Position = chunkStart + packetLocationOffset;
                     reader.BaseStream.Position += (firstPacketIndex + p) * 0x8; // A Packet Location is 0x8 long, so we skip ahead to the right one.
 
-                    uint packetSize = reader.ReadUInt32();
-                    uint packetOffset = reader.ReadUInt32();
+                    int packetSize = reader.ReadInt32();
+                    int packetOffset = reader.ReadInt32();
 
                     // Jump the read head to the location of the primitives for this packet.
                     reader.BaseStream.Position = chunkStart + primitiveDataOffset + packetOffset;
@@ -370,6 +388,10 @@ namespace WEditor.WindWaker.Loaders
                         // Jump to the primitives
                         // Primitives
                         GXPrimitiveType type = (GXPrimitiveType)reader.ReadByte();
+                        // Game pads the chunks out with zeros, so this is the signal for an early break;
+                        if (type == 0 || numPrimitiveBytesRead >= packetSize)
+                            break;
+
                         ushort vertexCount = reader.ReadUInt16();
 
                         if (type == GXPrimitiveType.TriangleFan)
@@ -379,9 +401,7 @@ namespace WEditor.WindWaker.Loaders
 
                         numPrimitiveBytesRead += 0x3; // Advance us by 3 for the Primitive header.
 
-                        // Game pads the chunks out with zeros, so this is the signal for an early break;
-                        if (type == 0)
-                            break;
+            
 
                         for (int v = 0; v < vertexCount; v++)
                         {
@@ -394,24 +414,24 @@ namespace WEditor.WindWaker.Loaders
                             for (int attrib = 0; attrib < shp1Attributes.Count; attrib++)
                             {
                                 // Jump to primitive location
-                                reader.BaseStream.Position = chunkStart + primitiveDataOffset + numPrimitiveBytesRead + packetOffset;
+                                //reader.BaseStream.Position = chunkStart + primitiveDataOffset + numPrimitiveBytesRead + packetOffset;
 
                                 // Now that we know how big the vertex type is stored in (either a Signed8 or a Signed16) we can read that much data
                                 // and then we can use that index and index into 
-                                int attributeArrayIndex = 0;
+                                int val = 0;
                                 uint numBytesRead = 0;
                                 switch (shp1Attributes[attrib].DataType)
                                 {
                                     case J3DFileResource.VertexDataType.Signed8:
-                                        attributeArrayIndex = reader.ReadByte();
+                                        val = reader.ReadByte();
                                         numBytesRead = 1;
                                         break;
                                     case J3DFileResource.VertexDataType.Signed16:
-                                        attributeArrayIndex = reader.ReadInt16();
+                                        val = reader.ReadInt16();
                                         numBytesRead = 2;
                                         break;
                                     default:
-                                        Console.WriteLine("[J3DLoader] Unknown Batch Index Type");
+                                        Console.WriteLine("[J3DLoader] Unknown Batch Index Type: {0}", shp1Attributes[attrib].DataType);
                                         break;
                                 }
 
@@ -421,28 +441,44 @@ namespace WEditor.WindWaker.Loaders
                                 switch (shp1Attributes[attrib].ArrayType)
                                 {
                                     case J3DFileResource.VertexArrayType.Position:
-                                        meshVertexData.Position.Add(vertexData.Position[attributeArrayIndex]);
+                                        meshVertexData.Position.Add(vertexData.Position[val]);
+                                        break;
+                                    case J3DFileResource.VertexArrayType.PositionMatrixIndex:
+                                        meshVertexData.PositionMatrixIndexes.Add(val);
+                                        break;
+                                    case J3DFileResource.VertexArrayType.Normal:
+                                        meshVertexData.Normal.Add(vertexData.Normal[val]);
                                         break;
                                     case J3DFileResource.VertexArrayType.Color0:
-                                        meshVertexData.Color0.Add(vertexData.Color0[attributeArrayIndex]);
+                                        meshVertexData.Color0.Add(vertexData.Color0[val]);
+                                        break;
+                                    case J3DFileResource.VertexArrayType.Color1:
+                                        meshVertexData.Color1.Add(vertexData.Color1[val]);
                                         break;
                                     case J3DFileResource.VertexArrayType.Tex0:
-                                        meshVertexData.Tex0.Add(vertexData.Tex0[attributeArrayIndex]);
+                                        meshVertexData.Tex0.Add(vertexData.Tex0[val]);
                                         break;
-
-                                    case J3DFileResource.VertexArrayType.Normal:
-                                        meshVertexData.Normal.Add(vertexData.Normal[attributeArrayIndex]);
-                                        break;
-
-                                    case J3DFileResource.VertexArrayType.Color1:
                                     case J3DFileResource.VertexArrayType.Tex1:
-
+                                        meshVertexData.Tex1.Add(vertexData.Tex1[val]);
+                                        break;
                                     case J3DFileResource.VertexArrayType.Tex2:
+                                        meshVertexData.Tex2.Add(vertexData.Tex2[val]);
+                                        break;
                                     case J3DFileResource.VertexArrayType.Tex3:
+                                        meshVertexData.Tex3.Add(vertexData.Tex3[val]);
+                                        break;
                                     case J3DFileResource.VertexArrayType.Tex4:
+                                        meshVertexData.Tex4.Add(vertexData.Tex4[val]);
+                                        break;
                                     case J3DFileResource.VertexArrayType.Tex5:
+                                        meshVertexData.Tex5.Add(vertexData.Tex5[val]);
+                                        break;
                                     case J3DFileResource.VertexArrayType.Tex6:
+                                        meshVertexData.Tex6.Add(vertexData.Tex6[val]);
+                                        break;
                                     case J3DFileResource.VertexArrayType.Tex7:
+                                        meshVertexData.Tex7.Add(vertexData.Tex7[val]);
+                                        break;
                                     default:
                                         Console.WriteLine("[J3DLoader] Unsupported attribType {0}", shp1Attributes[attrib].ArrayType);
                                         break;
@@ -459,7 +495,15 @@ namespace WEditor.WindWaker.Loaders
 
                 meshBatch.Vertices = meshVertexData.Position.ToArray();
                 meshBatch.Color0 = meshVertexData.Color0.ToArray();
+                meshBatch.Color1 = meshVertexData.Color1.ToArray();
                 meshBatch.TexCoord0 = meshVertexData.Tex0.ToArray();
+                meshBatch.TexCoord1 = meshVertexData.Tex0.ToArray();
+                meshBatch.TexCoord2 = meshVertexData.Tex0.ToArray();
+                meshBatch.TexCoord3 = meshVertexData.Tex0.ToArray();
+                meshBatch.TexCoord4 = meshVertexData.Tex0.ToArray();
+                meshBatch.TexCoord5 = meshVertexData.Tex0.ToArray();
+                meshBatch.TexCoord6 = meshVertexData.Tex0.ToArray();
+                meshBatch.TexCoord7 = meshVertexData.Tex0.ToArray();
                 meshBatch.Indexes = meshVertexData.Indexes.ToArray();
             }
         }
@@ -529,6 +573,8 @@ namespace WEditor.WindWaker.Loaders
 
                     // Color 1 Data (presumed)
                     case 4:
+                         vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Color1);
+                        dataHolder.Color1 = LoadVertexAttribute<Color>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Color1, J3DFileResource.VertexDataType.None, vertexFormat.ColorDataType);
                         break;
 
                     // Tex 0 Data
@@ -543,14 +589,40 @@ namespace WEditor.WindWaker.Loaders
                         dataHolder.Tex1 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex1, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
                         break;
 
-                    // Other Tex data
+                    // Tex 2 Data
                     case 7:
-                    case 8:
-                    case 9:
-                    case 10:
-                    case 11:
-                    case 12:
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex2);
+                        dataHolder.Tex2 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex2, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
+                        break;
 
+                    // Tex 3 Data
+                    case 8:
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex3);
+                        dataHolder.Tex3 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex3, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
+                        break;
+
+                    // Tex 4 Data
+                    case 9:
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex4);
+                        dataHolder.Tex4 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex4, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
+                        break;
+
+                    // Tex 5 Data
+                    case 10:
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex5);
+                        dataHolder.Tex5 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex5, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
+                        break;
+
+                    // Tex 6 Data
+                    case 11:
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex6);
+                        dataHolder.Tex6 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex6, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
+                        break;
+
+                    // Tex 7 Data
+                    case 12:
+                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex7);
+                        dataHolder.Tex7 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex7, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
                         break;
                 }
             }
