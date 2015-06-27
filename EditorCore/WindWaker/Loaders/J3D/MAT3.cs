@@ -445,7 +445,6 @@ namespace WEditor.WindWaker.Loaders
                 for (int i = 0; i < material.MaterialColors.Length; i++)
                 {
                     short index = reader.ReadInt16();
-                    //if (index >= 0)
                     material.MaterialColors[i] = materialColors[index];
                 }
 
@@ -500,7 +499,7 @@ namespace WEditor.WindWaker.Loaders
                         material.DttMatrices[i] = texMatrix2Info[index];
                 }
 
-                material.TextureIndexes = new short[8];
+                material.TextureIndexes = new short[8] { -1, -1, -1, -1, -1, -1, -1, -1 };
                 for (int i = 0; i < material.TextureIndexes.Length; i++)
                 {
                     short index = reader.ReadInt16();

@@ -165,10 +165,11 @@ namespace WEditor.WindWaker.Loaders
             {
                 for (int i = 0; i < mat.TextureIndexes.Length; i++)
                 {
-                    if (mat.TextureIndexes[i] < 0)
+                    short index = mat.TextureIndexes[i];
+                    if (index < 0)
                         continue;
 
-                    mat.Textures.Add(textureList[mat.TextureIndexes[0]]);
+                    mat.Textures[i] = textureList[index];
                 }
             }
 
@@ -208,11 +209,24 @@ namespace WEditor.WindWaker.Loaders
                         // already done and now our drawIndexes array should be one-index-for-every-vertex-in-batch and it should be the index into
                         // the draw section we need.
                         ushort drw1Index = batch.drawIndexes[j];
+
+                        // The drw1Index can be set as 0xFFFF - if so, this means that you need to use the dr1Index of the previous one.
+                        // until it is no longer 0xFFFF.
+                        int counter = 0;
+                        while (drw1Index == 0xFFFF)
+                        {
+                            drw1Index = batch.drawIndexes[j - counter];
+                            counter++;
+                        }
+
+
                         bool isWeighted = drawInfo.IsWeighted[drw1Index];
                         BoneWeight weight = new BoneWeight();
 
                         if(isWeighted)
                         {
+                            // Something on this doesn't work for models that actually specify a PositionMatrixIndex.
+                            // So... some math is off somewhere and I don't know where for the moment.
                             ushort numBonesAffecting = envelopes.numBonesAffecting[drw1Index];
                             weight.BoneIndexes = new ushort[numBonesAffecting];
                             weight.BoneWeights = new float[numBonesAffecting];

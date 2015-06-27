@@ -249,7 +249,7 @@ namespace WEditor.Common.Nintendo.J3D
         public Shader Shader;
 
         /// <summary> Actual textures post-resolve. </summary>
-        public List<Texture2D> Textures = new List<Texture2D>();
+        public Texture2D[] Textures;
 
         /// <summary> Unknown usage. BMDView2 specifies that a value of 1 is "Draw on Way Down" while a value of 4 is "Draw on Way Up (guess)",
         /// in reference to the INF1 hierarchy. A value of 0 indicates that the material is end/null - see the loader for detailed desc.
@@ -301,5 +301,16 @@ namespace WEditor.Common.Nintendo.J3D
         public AlphaCompare AlphaCompare;
         public BlendMode BlendMode;
         public short UnknownIndex2;
+
+        public Material()
+        {
+            Name = "Unnamed Material";
+            Textures = new Texture2D[8];
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
