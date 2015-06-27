@@ -68,6 +68,18 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
+        private class DrawInfo
+        {
+            public List<bool> IsWeighted;
+            public List<ushort> Indexes;
+
+            public DrawInfo()
+            {
+                IsWeighted = new List<bool>();
+                Indexes = new List<ushort>();
+            }
+        }
+
         public static void Load(J3DFileResource resource, string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
@@ -81,7 +93,8 @@ namespace WEditor.WindWaker.Loaders
             List<ushort> materialRemapIndexs = new List<ushort>();
             List<WEditor.Common.Nintendo.J3D.Material> materialList = null;
             List<SkeletonBone> joints = new List<SkeletonBone>();
-            List<Matrix3x4> inverseBindPoses = new List<Matrix3x4>();
+            DrawInfo drawInfo = null;
+            Envelopes envelopes = null;
 
             Mesh j3dMesh = resource.Mesh;
 
@@ -116,10 +129,11 @@ namespace WEditor.WindWaker.Loaders
                             break;
                         // ENVELOPES - Defines vertex weights for skinning.
                         case "EVP1":
-                            inverseBindPoses = LoadEVP1FromStream(reader, chunkStart);
+                            envelopes = LoadEVP1FromStream(reader, chunkStart);
                             break;
                         // DRAW (Skeletal Animation Data) - Stores which matrices are weighted, and which are used directly.
                         case "DRW1":
+                            drawInfo = LoadDRW1FromStream(reader, chunkStart);
                             break;
                         // JOINTS - Stores the skeletal joints (position, rotation, scale, etc.)
                         case "JNT1":
@@ -175,60 +189,79 @@ namespace WEditor.WindWaker.Loaders
             BuildSkeletonRecursive(rootNode, skeleton, joints, 0);
 
             j3dMesh.Skeleton = skeleton;
-            j3dMesh.BindPoses = inverseBindPoses;
+            j3dMesh.BindPoses = envelopes.inverseBindPose;
+
+            // Let's do some ugly post-processing here to see if we can't resolve all of the cross-references and turn it into
+            // a normal computer-readable format that we can digest in our RenderSytem.
+            {
+                for (int i = 0; i < j3dMesh.SubMeshes.Count; i++)
+                {
+                    MeshBatch batch = j3dMesh.SubMeshes[i];
+                    Console.WriteLine("Batch {0} PMIs: {1}", i, batch.PositionMatrixIndexs.Count);
+
+                    batch.BoneWeights = new BoneWeight[batch.Vertices.Length];
+
+                    for (int j = 0; j < batch.PositionMatrixIndexs.Count; j++)
+                    {
+                        // Okay so this is where it gets more complicated. The PMI gives us an index into the MatrixTable for the packet, which we
+                        // resolve and call "drawIndexes" - however we have to divide the number they give us by three for some reason, so that is 
+                        // already done and now our drawIndexes array should be one-index-for-every-vertex-in-batch and it should be the index into
+                        // the draw section we need.
+                        ushort drw1Index = batch.drawIndexes[j];
+                        bool isWeighted = drawInfo.IsWeighted[drw1Index];
+                        BoneWeight weight = new BoneWeight();
+
+                        if(isWeighted)
+                        {
+                            ushort numBonesAffecting = envelopes.numBonesAffecting[drw1Index];
+                            weight.BoneIndexs = new ushort[numBonesAffecting];
+                            weight.BoneWeights = new float[numBonesAffecting];
+
+                            // "Much WTFs"
+                            ushort offset = 0;
+                            for(ushort e = 0; e < envelopes.indexRemap[drw1Index]; e++)
+                            {
+                                offset += envelopes.numBonesAffecting[e];
+                            }
+
+                            offset *= 2;
+                            Matrix4 finalTransform = Matrix4.Identity;
+                            for(ushort k = 0; k < numBonesAffecting; k++)
+                            {
+                                ushort boneIndex = envelopes.indexRemap[offset + (k * 0x2)];
+                                float boneWeight = envelopes.weights[(offset / 2) + k];
+
+                                weight.BoneIndexs[k] = boneIndex;
+                                weight.BoneWeights[k] = boneWeight;
+
+                                // This was apaprently a partial thought I never finished or got working in the old one? :S
+                            }
+                        }
+                        else
+                        {
+                            // If the vertex isn't weighted, we just use the position from the bone matrix.
+                            SkeletonBone joint = skeleton[drawInfo.Indexes[drw1Index]];
+                            Matrix4 translation = Matrix4.CreateTranslation(joint.Translation);
+                            Matrix4 rotation = Matrix4.CreateFromQuaternion(joint.Rotation);
+                            Matrix4 finalMatrix = rotation * translation;
+
+                            // Move the mesh by transforming the position by this much.
+
+                            // I think we can just assign full weight to the first bone index and call it good.
+                            weight.BoneIndexs = new[] { drawInfo.Indexes[drw1Index] };
+                            weight.BoneWeights = new [] { 1f };
+                        }
+
+                        batch.BoneWeights[j] = weight;
+                    }
+
+                }
+            }
 
             RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
         }
 
-        private static void BuildSkeletonRecursive(SceneNode node, List<SkeletonBone> skeleton, List<SkeletonBone> rawJoints, int parentJointIndex)
-        {
-            switch(node.Type)
-            {
-                case J3DFileResource.HierarchyDataTypes.NewNode:
-                    parentJointIndex = skeleton.Count - 1;
-                    break;
-
-                case J3DFileResource.HierarchyDataTypes.Joint:
-                    var joint = rawJoints[node.Value];
-
-                    if(parentJointIndex < skeleton.Count)
-                        joint.Parent = skeleton[parentJointIndex];
-                    skeleton.Add(joint);
-                    break;
-            }
-
-            foreach (SceneNode child in node.Children)
-                BuildSkeletonRecursive(child, skeleton, rawJoints, parentJointIndex);
-        }
-
-        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Material curMaterial, List<Material> materialList, List<ushort> remapIndexList)
-        {
-            if (node.Type == J3DFileResource.HierarchyDataTypes.Material)
-            {
-                // Don't ask me why this is so complicated. The node.Value has an index into the remapIndexList,
-                // which gives an index into the MaterialList, which finally gives an index into the Textures list.
-                // And no, I dont' know why texIndex is an array.
-                //
-                // Apparently it gets one step more complicated. You then have to take the textureIndex provided by the material
-                // and index into the finalTextureIndex list that comes from the MAT3 section, lol.
-                ushort materialIndex = remapIndexList[node.Value];
-                short textureIndex = materialList[materialIndex].TextureIndexes[0];
-
-                curMaterial = materialList[materialIndex];
-
-                // Models that don't use textures will have a textureIndex of -1.
-                //if(textureIndex >= 0)
-                //curTexture = textures[textureIndex];
-            }
-
-            if (node.Type == J3DFileResource.HierarchyDataTypes.Batch)
-                mesh.SubMeshes[node.Value].Material = curMaterial;
-
-            foreach (var child in node.Children)
-                AssignTextureToMeshRecursive(child, mesh, textures, ref curMaterial, materialList, remapIndexList);
-        }
-
-        private struct ShapeAttribute
+        private class ShapeAttribute
         {
             public J3DFileResource.VertexArrayType ArrayType;
             public J3DFileResource.VertexDataType DataType;
@@ -245,7 +278,7 @@ namespace WEditor.WindWaker.Loaders
             short padding = reader.ReadInt16();
             int batchOffset = reader.ReadInt32();
             int unknownTableOffset = reader.ReadInt32(); // Another one of those 0->(n-1) counters. I think all sections have it? Might be part of the way they used inheritance to write files.
-            int alwaysZero = reader.ReadInt32(); Debug.Assert(alwaysZero == 0);            
+            int alwaysZero = reader.ReadInt32(); Debug.Assert(alwaysZero == 0);
             int attributeOffset = reader.ReadInt32();
             int matrixTableOffset = reader.ReadInt32();
             int primitiveDataOffset = reader.ReadInt32();
@@ -296,7 +329,7 @@ namespace WEditor.WindWaker.Loaders
                 // attributes in the VTX1 section, as the SHP1 can also include things like PositionMatrixIndex, so the count can be different.
                 // This also varies *per batch* as not all batches will have the things like PositionMatrixIndex.
                 reader.BaseStream.Position = chunkStart + attributeOffset + batchAttributeOffset;
-                var shp1Attributes = new List<ShapeAttribute>();
+                var batchAttributes = new List<ShapeAttribute>();
                 do
                 {
                     ShapeAttribute attribute = new ShapeAttribute();
@@ -306,7 +339,7 @@ namespace WEditor.WindWaker.Loaders
                     if (attribute.ArrayType == J3DFileResource.VertexArrayType.NullAttr)
                         break;
 
-                    shp1Attributes.Add(attribute);
+                    batchAttributes.Add(attribute);
 
                 } while (true);
 
@@ -320,8 +353,23 @@ namespace WEditor.WindWaker.Loaders
                     int packetSize = reader.ReadInt32();
                     int packetOffset = reader.ReadInt32();
 
+                    // Read the matrix data for this packet
+                    reader.BaseStream.Position = chunkStart + matrixDataOffset + (firstMatrixIndex + p) * 0x08;
+                    ushort matrixUnknown0 = reader.ReadUInt16();
+                    ushort matrixCount = reader.ReadUInt16();
+                    uint matrixFirstIndex = reader.ReadUInt32();
+
+                    // Skip ahead to the actual data.
+                    reader.BaseStream.Position = chunkStart + matrixTableOffset + (matrixFirstIndex * 0x2);
+                    List<ushort> matrixTable = new List<ushort>();
+                    for (int m = 0; m < matrixCount; m++)
+                    {
+                        matrixTable.Add(reader.ReadUInt16());
+                    }
+
                     // Jump the read head to the location of the primitives for this packet.
                     reader.BaseStream.Position = chunkStart + primitiveDataOffset + packetOffset;
+                    int numVertexesAtPacketStart = meshVertexData.PositionMatrixIndexes.Count;
 
                     uint numPrimitiveBytesRead = 0;
                     while (numPrimitiveBytesRead < packetSize)
@@ -342,8 +390,6 @@ namespace WEditor.WindWaker.Loaders
 
                         numPrimitiveBytesRead += 0x3; // Advance us by 3 for the Primitive header.
 
-            
-
                         for (int v = 0; v < vertexCount; v++)
                         {
                             meshVertexData.Indexes.Add(overallVertexCount);
@@ -352,7 +398,7 @@ namespace WEditor.WindWaker.Loaders
                             // Iterate through the attribute types. I think the actual vertices are stored in interleaved format,
                             // ie: there's say 13 vertexes but those 13 vertexes will have a pos/color/tex index listed after it
                             // depending on the overall attributes of the file.
-                            for (int attrib = 0; attrib < shp1Attributes.Count; attrib++)
+                            for (int attrib = 0; attrib < batchAttributes.Count; attrib++)
                             {
                                 // Jump to primitive location
                                 //reader.BaseStream.Position = chunkStart + primitiveDataOffset + numPrimitiveBytesRead + packetOffset;
@@ -361,7 +407,7 @@ namespace WEditor.WindWaker.Loaders
                                 // and then we can use that index and index into 
                                 int val = 0;
                                 uint numBytesRead = 0;
-                                switch (shp1Attributes[attrib].DataType)
+                                switch (batchAttributes[attrib].DataType)
                                 {
                                     case J3DFileResource.VertexDataType.Signed8:
                                         val = reader.ReadByte();
@@ -372,14 +418,14 @@ namespace WEditor.WindWaker.Loaders
                                         numBytesRead = 2;
                                         break;
                                     default:
-                                        Console.WriteLine("[J3DLoader] Unknown Batch Index Type: {0}", shp1Attributes[attrib].DataType);
+                                        Console.WriteLine("[J3DLoader] Unknown Batch Index Type: {0}", batchAttributes[attrib].DataType);
                                         break;
                                 }
 
                                 // Now that we know what the index is, we can retrieve it from the appropriate array
                                 // and stick it into our vertex. The J3D format removes all duplicate vertex attributes
                                 // so we need to re-duplicate them here so that we can feed them to a PC GPU in a normal fashion.
-                                switch (shp1Attributes[attrib].ArrayType)
+                                switch (batchAttributes[attrib].ArrayType)
                                 {
                                     case J3DFileResource.VertexArrayType.Position:
                                         meshVertexData.Position.Add(vertexData.Position[val]);
@@ -421,11 +467,19 @@ namespace WEditor.WindWaker.Loaders
                                         meshVertexData.Tex7.Add(vertexData.Tex7[val]);
                                         break;
                                     default:
-                                        Console.WriteLine("[J3DLoader] Unsupported attribType {0}", shp1Attributes[attrib].ArrayType);
+                                        Console.WriteLine("[J3DLoader] Unsupported attribType {0}", batchAttributes[attrib].ArrayType);
                                         break;
                                 }
 
                                 numPrimitiveBytesRead += numBytesRead;
+                            }
+
+                            // Gonna try a weird hack, where if the mesh doesn't have PMI values, we're going to use just use the packet index into the matrixtable
+                            // so that all meshes always have PMI values, to abstract out the ones that don't seem to (but still have matrixtable) junk. It's a guess
+                            // here. 
+                            if (batchAttributes.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.PositionMatrixIndex) == null)
+                            {
+                                meshVertexData.PositionMatrixIndexes.Add(p);
                             }
                         }
 
@@ -433,21 +487,13 @@ namespace WEditor.WindWaker.Loaders
                         meshVertexData.Indexes.Add(0xFFFF);
                     }
 
-                    // Now read the matrix data for this packet
-                    reader.BaseStream.Position = chunkStart + matrixDataOffset + (firstMatrixIndex + p) * 0x08;
-                    ushort matrixUnknown0 = reader.ReadUInt16();
-                    ushort matrixCount = reader.ReadUInt16();
-                    uint matrixFirstIndex = reader.ReadUInt32();
-
-                    // Skip ahead to the actual data.
-                    reader.BaseStream.Position = chunkStart + matrixTableOffset + (matrixFirstIndex * 0x2);
-                    List<ushort> matrixTable = new List<ushort>();
-                    for(int m = 0; m < matrixCount; m++)
+                    // The Matrix Table is per-packet, so we need to reach into the the matrix table after processing each packet
+                    // and transform the indexes. Yuck. Yay.
+                    for (int j = numVertexesAtPacketStart; j < meshVertexData.PositionMatrixIndexes.Count; j++)
                     {
-                        matrixTable.Add(reader.ReadUInt16());
+                        // Yes you divide this by 3. No, no one knows why. $20 to the person who figures out why.
+                        meshBatch.drawIndexes.Add(matrixTable[meshVertexData.PositionMatrixIndexes[j] / 3]);
                     }
-
-                    meshBatch.drawIndexes.Add(matrixTable);
                 }
 
                 meshBatch.Vertices = meshVertexData.Position.ToArray();
@@ -462,293 +508,58 @@ namespace WEditor.WindWaker.Loaders
                 meshBatch.TexCoord6 = meshVertexData.Tex0.ToArray();
                 meshBatch.TexCoord7 = meshVertexData.Tex0.ToArray();
                 meshBatch.Indexes = meshVertexData.Indexes.ToArray();
-                meshBatch.PositionMatrixIndexs = meshVertexData.PositionMatrixIndexes;
+                meshBatch.PositionMatrixIndexs = meshVertexData.PositionMatrixIndexes; // This should be obsolete as they should be transformed already.
             }
         }
 
-        private static MeshVertexAttributeHolder LoadVTX1FromFile(J3DFileResource resource, EndianBinaryReader reader, long chunkStart, int chunkSize)
+        private static void BuildSkeletonRecursive(SceneNode node, List<SkeletonBone> skeleton, List<SkeletonBone> rawJoints, int parentJointIndex)
         {
-            MeshVertexAttributeHolder dataHolder = new MeshVertexAttributeHolder();
-
-            //long headerStart = reader.BaseStream.Position;
-            int vertexFormatOffset = reader.ReadInt32();
-            int[] vertexDataOffsets = new int[13];
-            for (int k = 0; k < vertexDataOffsets.Length; k++)
-                vertexDataOffsets[k] = reader.ReadInt32();
-
-            reader.BaseStream.Position = chunkStart + vertexFormatOffset;
-            List<J3DFileResource.VertexFormat> vertexFormats = new List<J3DFileResource.VertexFormat>();
-            J3DFileResource.VertexFormat curFormat = null;
-            do
+            switch (node.Type)
             {
-                curFormat = new J3DFileResource.VertexFormat();
-                curFormat.ArrayType = (J3DFileResource.VertexArrayType)reader.ReadInt32();
-                curFormat.ComponentCount = reader.ReadInt32();
-                curFormat.DataType = (J3DFileResource.VertexDataType)reader.ReadInt32();
-                curFormat.ColorDataType = (J3DFileResource.VertexColorType)curFormat.DataType;
-                curFormat.DecimalPoint = reader.ReadByte();
-                reader.ReadBytes(3); // Padding
-                vertexFormats.Add(curFormat);
-            } while (curFormat.ArrayType != J3DFileResource.VertexArrayType.NullAttr);
+                case J3DFileResource.HierarchyDataTypes.NewNode:
+                    parentJointIndex = skeleton.Count - 1;
+                    break;
 
-            // Don't count the last vertexFormat as it's the NullAttr one.
-            dataHolder.Attributes = vertexFormats.GetRange(0, vertexFormats.Count - 1);
+                case J3DFileResource.HierarchyDataTypes.Joint:
+                    var joint = rawJoints[node.Value];
 
-            // Now that we know how the vertexes are described, we can get the various data.
-            for (int k = 0; k < vertexDataOffsets.Length; k++)
-            {
-                if (vertexDataOffsets[k] == 0)
-                    continue;
-
-                // Get the total length of this block of data.
-                int totalLength = GetVertexDataLength(vertexDataOffsets, k, (int)(chunkSize));
-                J3DFileResource.VertexFormat vertexFormat = null;
-                reader.BaseStream.Position = chunkStart + vertexDataOffsets[k];
-
-                switch (k)
-                {
-                    // Position Data
-                    case 0:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Position);
-                        dataHolder.Position = LoadVertexAttribute<Vector3>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Position, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-
-                    // Normal Data
-                    case 1:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Normal);
-                        dataHolder.Normal = LoadVertexAttribute<Vector3>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Normal, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-
-                    // Normal Binormal Tangent Data (presumed)
-                    case 2:
-                        break;
-
-                    // Color 0 Data
-                    case 3:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Color0);
-                        dataHolder.Color0 = LoadVertexAttribute<Color>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Color0, J3DFileResource.VertexDataType.None, vertexFormat.ColorDataType);
-                        break;
-
-                    // Color 1 Data (presumed)
-                    case 4:
-                         vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Color1);
-                        dataHolder.Color1 = LoadVertexAttribute<Color>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Color1, J3DFileResource.VertexDataType.None, vertexFormat.ColorDataType);
-                        break;
-
-                    // Tex 0 Data
-                    case 5:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex0);
-                        dataHolder.Tex0 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex0, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-
-                    // Tex 1 Data
-                    case 6:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex1);
-                        dataHolder.Tex1 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex1, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-
-                    // Tex 2 Data
-                    case 7:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex2);
-                        dataHolder.Tex2 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex2, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-
-                    // Tex 3 Data
-                    case 8:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex3);
-                        dataHolder.Tex3 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex3, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-
-                    // Tex 4 Data
-                    case 9:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex4);
-                        dataHolder.Tex4 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex4, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-
-                    // Tex 5 Data
-                    case 10:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex5);
-                        dataHolder.Tex5 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex5, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-
-                    // Tex 6 Data
-                    case 11:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex6);
-                        dataHolder.Tex6 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex6, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-
-                    // Tex 7 Data
-                    case 12:
-                        vertexFormat = vertexFormats.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.Tex7);
-                        dataHolder.Tex7 = LoadVertexAttribute<Vector2>(reader, totalLength, vertexFormat.DecimalPoint, J3DFileResource.VertexArrayType.Tex7, vertexFormat.DataType, J3DFileResource.VertexColorType.None);
-                        break;
-                }
+                    if (parentJointIndex < skeleton.Count)
+                        joint.Parent = skeleton[parentJointIndex];
+                    skeleton.Add(joint);
+                    break;
             }
 
-            return dataHolder;
+            foreach (SceneNode child in node.Children)
+                BuildSkeletonRecursive(child, skeleton, rawJoints, parentJointIndex);
         }
 
-        private static List<T> LoadVertexAttribute<T>(EndianBinaryReader reader, int totalAttributeDataLength, byte decimalPoint, J3DFileResource.VertexArrayType arrayType, J3DFileResource.VertexDataType dataType, J3DFileResource.VertexColorType colorType) where T : new()
+        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Material curMaterial, List<Material> materialList, List<ushort> remapIndexList)
         {
-            int componentCount = 0;
-            switch (arrayType)
+            if (node.Type == J3DFileResource.HierarchyDataTypes.Material)
             {
-                case J3DFileResource.VertexArrayType.Position:
-                case J3DFileResource.VertexArrayType.Normal:
-                    componentCount = 3;
-                    break;
-                case J3DFileResource.VertexArrayType.Color0:
-                case J3DFileResource.VertexArrayType.Color1:
-                    componentCount = 4;
-                    break;
-                case J3DFileResource.VertexArrayType.Tex0:
-                case J3DFileResource.VertexArrayType.Tex1:
-                case J3DFileResource.VertexArrayType.Tex2:
-                case J3DFileResource.VertexArrayType.Tex3:
-                case J3DFileResource.VertexArrayType.Tex4:
-                case J3DFileResource.VertexArrayType.Tex5:
-                case J3DFileResource.VertexArrayType.Tex6:
-                case J3DFileResource.VertexArrayType.Tex7:
-                    componentCount = 2;
-                    break;
-                default:
-                    Console.WriteLine("[J3DLoader] Unsupported ArrayType \"{0}\" found while loading VTX1!", arrayType);
-                    break;
+                // Don't ask me why this is so complicated. The node.Value has an index into the remapIndexList,
+                // which gives an index into the MaterialList, which finally gives an index into the Textures list.
+                // And no, I dont' know why texIndex is an array.
+                //
+                // Apparently it gets one step more complicated. You then have to take the textureIndex provided by the material
+                // and index into the finalTextureIndex list that comes from the MAT3 section, lol.
+                ushort materialIndex = remapIndexList[node.Value];
+                short textureIndex = materialList[materialIndex].TextureIndexes[0];
+
+                curMaterial = materialList[materialIndex];
+
+                // Models that don't use textures will have a textureIndex of -1.
+                //if(textureIndex >= 0)
+                //curTexture = textures[textureIndex];
             }
 
+            if (node.Type == J3DFileResource.HierarchyDataTypes.Batch)
+                mesh.SubMeshes[node.Value].Material = curMaterial;
 
-            // We need to know the length of each 'vertex' (which can vary based on how many attributes and what types there are)
-            int vertexSize = 0;
-            switch (dataType)
-            {
-                case J3DFileResource.VertexDataType.Float32:
-                    vertexSize = componentCount * 4;
-                    break;
-
-                case J3DFileResource.VertexDataType.Unsigned16:
-                case J3DFileResource.VertexDataType.Signed16:
-                    vertexSize = componentCount * 2;
-                    break;
-
-                case J3DFileResource.VertexDataType.Signed8:
-                case J3DFileResource.VertexDataType.Unsigned8:
-                    vertexSize = componentCount * 1;
-                    break;
-
-                case J3DFileResource.VertexDataType.None:
-                    break;
-
-                default:
-                    Console.WriteLine("[J3DLoader] Unsupported DataType \"{0}\" found while loading VTX1!", dataType);
-                    break;
-            }
-
-            switch (colorType)
-            {
-                case J3DFileResource.VertexColorType.RGB8:
-                    vertexSize = 3;
-                    break;
-                case J3DFileResource.VertexColorType.RGBX8:
-                case J3DFileResource.VertexColorType.RGBA8:
-                    vertexSize = 4;
-                    break;
-
-                case J3DFileResource.VertexColorType.None:
-                    break;
-
-                case J3DFileResource.VertexColorType.RGB565:
-                case J3DFileResource.VertexColorType.RGBA4:
-                case J3DFileResource.VertexColorType.RGBA6:
-                default:
-                    Console.WriteLine("[J3DLoader] Unsupported Color Data Type: {0}!", colorType);
-                    break;
-            }
-
-
-            int sectionSize = totalAttributeDataLength / vertexSize;
-            List<T> values = new List<T>(sectionSize);
-            float scaleFactor = (float)Math.Pow(0.5, decimalPoint);
-
-            for (int v = 0; v < sectionSize; v++)
-            {
-                // Create a default version of the object and then fill it up depending on our component count and its data type...
-                dynamic value = new T();
-
-                for (int i = 0; i < componentCount; i++)
-                {
-                    switch (dataType)
-                    {
-                        case J3DFileResource.VertexDataType.Float32:
-                            value[i] = reader.ReadSingle() * scaleFactor;
-                            break;
-
-                        case J3DFileResource.VertexDataType.Unsigned16:
-                            value[i] = (float)reader.ReadUInt16() * scaleFactor;
-                            break;
-
-                        case J3DFileResource.VertexDataType.Signed16:
-                            value[i] = (float)reader.ReadInt16() * scaleFactor;
-                            break;
-
-                        case J3DFileResource.VertexDataType.Unsigned8:
-                            value[i] = (float)reader.ReadByte() * scaleFactor;
-                            break;
-
-                        case J3DFileResource.VertexDataType.Signed8:
-                            value[i] = (float)reader.ReadSByte() * scaleFactor;
-                            break;
-
-                        case J3DFileResource.VertexDataType.None:
-                            // Let the next switch statement get it.
-                            break;
-
-                        default:
-                            Console.WriteLine("[J3DLoader] Unsupported Data Type: {0}!", dataType);
-                            break;
-                    }
-
-
-                    switch (colorType)
-                    {
-                        case J3DFileResource.VertexColorType.RGBX8:
-                        case J3DFileResource.VertexColorType.RGB8:
-                        case J3DFileResource.VertexColorType.RGBA8:
-                            value[i] = reader.ReadByte() / 255f;
-                            break;
-
-                        case J3DFileResource.VertexColorType.None:
-                            break;
-
-                        case J3DFileResource.VertexColorType.RGB565:
-                        case J3DFileResource.VertexColorType.RGBA4:
-                        case J3DFileResource.VertexColorType.RGBA6:
-                        default:
-                            Console.WriteLine("[J3DLoader] Unsupported Color Data Type: {0}!", colorType);
-                            break;
-                    }
-                }
-                values.Add(value);
-            }
-
-            return values;
-        }
-
-
-        private static int GetVertexDataLength(int[] dataOffsets, int currentIndex, int endChunkOffset)
-        {
-            int currentOffset = dataOffsets[currentIndex];
-
-            // Find the next available offset in the array, and subtract the two offsets to get the length of the data.
-            for (int i = currentIndex + 1; i < dataOffsets.Length; i++)
-            {
-                if (dataOffsets[i] != 0)
-                {
-                    return dataOffsets[i] - currentOffset;
-                }
-            }
-
-            // If we didn't find a dataOffset that was valid, then we go to the end of the chunk.
-            return endChunkOffset - currentOffset;
+            foreach (var child in node.Children)
+                AssignTextureToMeshRecursive(child, mesh, textures, ref curMaterial, materialList, remapIndexList);
         }
     }
+
+
 }

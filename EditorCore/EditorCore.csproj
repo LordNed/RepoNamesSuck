@@ -82,10 +82,12 @@
     <Compile Include="WindWaker\J3DFileResource.cs" />
     <Compile Include="WindWaker\Loaders\J3DLoader.cs" />
     <Compile Include="WindWaker\Loaders\J3D\EVP1.cs" />
+    <Compile Include="WindWaker\Loaders\J3D\DRW1.cs" />
     <Compile Include="WindWaker\Loaders\J3D\TEX1.cs" />
     <Compile Include="WindWaker\Loaders\J3D\INF1.cs" />
     <Compile Include="WindWaker\Loaders\J3D\JNT1.cs" />
     <Compile Include="WindWaker\Loaders\J3D\MAT3.cs" />
+    <Compile Include="WindWaker\Loaders\J3D\VTX1.cs" />
     <Compile Include="WindWaker\Loaders\MapEntityLoader.cs" />
     <Compile Include="WindWaker\Loaders\MapLoader.cs" />
     <Compile Include="WindWaker\Loaders\ZArchiveLoader.cs" />

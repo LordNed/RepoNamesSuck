@@ -6,8 +6,25 @@ namespace WEditor.WindWaker.Loaders
 {
     public static partial class J3DLoader
     {
-        private static List<Matrix3x4> LoadEVP1FromStream(EndianBinaryReader reader, long chunkStart)
+        private class Envelopes
         {
+            public List<ushort> numBonesAffecting;
+            public List<ushort> indexRemap;
+            public List<float> weights;
+            public List<Matrix3x4> inverseBindPose;
+
+            public Envelopes()
+            {
+                numBonesAffecting = new List<ushort>();
+                indexRemap = new List<ushort>();
+                weights = new List<float>();
+                inverseBindPose = new List<Matrix3x4>();
+            }
+        }
+
+        private static Envelopes LoadEVP1FromStream(EndianBinaryReader reader, long chunkStart)
+        {
+            Envelopes envelopes = new Envelopes();
             ushort numEnvelopes = reader.ReadUInt16();
             reader.ReadUInt16(); // Padding
 
@@ -23,35 +40,31 @@ namespace WEditor.WindWaker.Loaders
 
             // - Is this the number of bones which influence the vert?
             reader.BaseStream.Position = chunkStart + boneCountOffset;
-            List<byte> boneCounts = new List<byte>();
             for (int b = 0; b < numEnvelopes; b++)
-                boneCounts.Add(reader.ReadByte());
+                envelopes.numBonesAffecting.Add(reader.ReadByte());
 
             // ???
             reader.BaseStream.Position = chunkStart + indexDataOffset;
-            List<ushort> indexes = new List<ushort>();
-            for (int m = 0; m < boneCounts.Count; m++)
+            for (int m = 0; m < envelopes.numBonesAffecting.Count; m++)
             {
-                for (int j = 0; j < boneCounts[m]; j++)
+                for (int j = 0; j < envelopes.numBonesAffecting[m]; j++)
                 {
-                    indexes.Add(reader.ReadUInt16());
+                    envelopes.indexRemap.Add(reader.ReadUInt16());
                 }
             }
 
             // Bone Weights
             reader.BaseStream.Position = chunkStart + weightOffset;
-            List<float> weights = new List<float>();
-            for (int w = 0; w < boneCounts.Count; w++)
+            for (int w = 0; w < envelopes.numBonesAffecting.Count; w++)
             {
-                for (int j = 0; j < boneCounts[w]; j++)
+                for (int j = 0; j < envelopes.numBonesAffecting[w]; j++)
                 {
-                    weights.Add(reader.ReadSingle());
+                    envelopes.weights.Add(reader.ReadSingle());
                 }
             }
 
             // Inverse Bind Pose Matrices
             reader.BaseStream.Position = chunkStart + boneMatrixOffset;
-            List<Matrix3x4> inverseBindPose = new List<Matrix3x4>();
             for (int w = 0; w < numEnvelopes; w++)
             {
                 Matrix3x4 matrix = new Matrix3x4();
@@ -61,10 +74,10 @@ namespace WEditor.WindWaker.Loaders
                         matrix[j, k] = reader.ReadSingle();
                 }
 
-                inverseBindPose.Add(matrix);
+                envelopes.inverseBindPose.Add(matrix);
             }
 
-            return inverseBindPose;
+            return envelopes;
         }
     }
 }

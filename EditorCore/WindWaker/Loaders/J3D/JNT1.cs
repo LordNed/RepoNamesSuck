@@ -46,7 +46,6 @@ namespace WEditor.WindWaker.Loaders
                                                         // the bounds of children?
                 ushort unknown2 = reader.ReadUInt16();  // No one seems to know what it is, often 0xFF or 0 or 1. May be two individual bytes with a pad afterwards.
 
-                Console.WriteLine("Joint: {0} U1: {1} U2: {2}", j, unknown1, unknown2);
                 for (int f = 0; f < 3; f++)
                     bone.Scale[f] = reader.ReadSingle();
 

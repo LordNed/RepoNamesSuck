@@ -6,6 +6,12 @@ using WEditor.Common.Nintendo.J3D;
 
 namespace WEditor.Rendering
 {
+    public class BoneWeight
+    {
+        public ushort[] BoneIndexs;
+        public float[] BoneWeights;
+    }
+
     public class MeshBatch
     {
         #region Properties
@@ -180,7 +186,9 @@ namespace WEditor.Rendering
         public Material Material;
 
         // WW Specific Hack to get bone support in before refactor
-        public List<List<ushort>> drawIndexes = new List<List<ushort>>();   // "PacketMatrixData" which I believe is an index into the DRW1 section to get more info for this Packet.
+        public List<ushort> drawIndexes = new List<ushort>();   // "PacketMatrixData" which I believe is an index into the DRW1 section to get more info for this Packet.
+
+        public BoneWeight[] BoneWeights;
         // There's one List<ushort> per Packet, the list is PacketMatrixData.Count long.
 
 
