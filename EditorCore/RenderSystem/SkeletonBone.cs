@@ -1,9 +1,4 @@
 ﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WEditor.Rendering
 {
@@ -15,7 +10,7 @@ namespace WEditor.Rendering
         public ushort Unknown1;
         public ushort Unknown2;
         public Vector3 Scale;
-        public Vector3 Rotation;
+        public Quaternion Rotation;
         public Vector3 Translation;
         public float BoundingSphereDiameter;
         public Vector3 BoundingBoxMin;
