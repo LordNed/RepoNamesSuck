@@ -74,13 +74,16 @@
     <Compile Include="RenderSystem\RenderSystem.cs" />
     <Compile Include="RenderSystem\Shader.cs" />
     <Compile Include="RenderSystem\ShaderProgram.cs" />
+    <Compile Include="RenderSystem\SkeletonBone.cs" />
     <Compile Include="RenderSystem\TEVShaderGenerator.cs" />
     <Compile Include="RenderSystem\Texture2D.cs" />
     <Compile Include="RenderSystem\VertexDescription.cs" />
     <Compile Include="WindWaker\BaseFileResource.cs" />
     <Compile Include="WindWaker\J3DFileResource.cs" />
     <Compile Include="WindWaker\Loaders\J3DLoader.cs" />
-    <Compile Include="WindWaker\Loaders\J3D\MAT3Loader.cs" />
+    <Compile Include="WindWaker\Loaders\J3D\INF1.cs" />
+    <Compile Include="WindWaker\Loaders\J3D\JNT1.cs" />
+    <Compile Include="WindWaker\Loaders\J3D\MAT3.cs" />
     <Compile Include="WindWaker\Loaders\MapEntityLoader.cs" />
     <Compile Include="WindWaker\Loaders\MapLoader.cs" />
     <Compile Include="WindWaker\Loaders\ZArchiveLoader.cs" />

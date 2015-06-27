@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using WEditor.Common.Nintendo.J3D;
 using WEditor.Rendering;
 
-namespace WEditor.WindWaker.Loaders.J3D
+namespace WEditor.WindWaker.Loaders
 {
-    public static class MAT3Loader
+    public static partial class J3DLoader
     {
         /// <summary> Delegate defines a function that decodes one instance of type T.</summary>
         /// <param name="stream">The stream to decode the instance from</param>
