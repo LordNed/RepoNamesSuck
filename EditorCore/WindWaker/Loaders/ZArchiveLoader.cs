@@ -35,27 +35,27 @@ namespace WEditor.WindWaker.Loaders
                     {
                         /* Map Collision Format */
                         case ".dzb":
-                            WLog.Warning(LogCategory.ArchiveLoading, archive, "Loading DZB (Map Collision) {0}...", fileName);
+                            WLog.Info(LogCategory.ArchiveLoading, archive, "Loading DZB (Map Collision) {0}...", fileName);
                             resource = new UnsupportedFileResource(fileName, folderName, archive);
-                            WLog.Warning(LogCategory.ArchiveLoading, archive, "Loaded {0}.", fileName);
+                            WLog.Info(LogCategory.ArchiveLoading, archive, "Loaded {0}.", fileName);
                             break;
 
                         /* Room and Stage Entity Data */
                         case ".dzr":
                         case ".dzs":
-                            WLog.Warning(LogCategory.ArchiveLoading, archive, "Loading DZR/DZS (Map Entity Data) {0}...", fileName);
+                            WLog.Info(LogCategory.ArchiveLoading, archive, "Loading DZR/DZS (Map Entity Data) {0}...", fileName);
                             resource = new MapEntityResource(fileName, folderName, archive);
                             MapEntityLoader.Load((MapEntityResource) resource, map, file.FullName);
-                            WLog.Warning(LogCategory.ArchiveLoading, archive, "Loaded {0}.", fileName);
+                            WLog.Info(LogCategory.ArchiveLoading, archive, "Loaded {0}.", fileName);
                             break;
 
                         /* 3D Model Formats */
                         case ".bmd":
                         case ".bdl":
-                            WLog.Warning(LogCategory.ArchiveLoading, archive, "Loading J3D (3D Model) {0}...", fileName);
+                            WLog.Info(LogCategory.ArchiveLoading, archive, "Loading J3D (3D Model) {0}...", fileName);
                             resource = new J3DFileResource(fileName, folderName, archive);
                             J3DLoader.Load((J3DFileResource)resource, file.FullName);
-                            WLog.Warning(LogCategory.ArchiveLoading, archive, "Loaded {0}.", fileName);
+                            WLog.Info(LogCategory.ArchiveLoading, archive, "Loaded {0}.", fileName);
                             break;
 
                         /* Event List */
