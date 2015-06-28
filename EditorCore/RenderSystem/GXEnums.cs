@@ -298,4 +298,31 @@ namespace WEditor.Rendering
         Set = 15,
         XOr = 6
     }
+
+    public enum GXTexCoordSlot
+    {
+        TexCoord0 = 0,
+        TexCoord1 = 1,
+        TexCoord2 = 2,
+        TexCoord3 = 3,
+        TexCoord4 = 4,
+        TexCoord5 = 5,
+        TexCoord6 = 6,
+        TexCoord7 = 7,
+        Null = 0xFF
+    }
+
+    public enum GXColorChannelId
+    {
+        Color0 = 0,
+        Color1 = 1,
+        Alpha0 = 2,
+        Alpha1 = 3,
+        Color0A0 = 4,
+        Color1A1 = 5,
+        ColorZero = 6,
+        AlphaBump = 7,
+        AlphaBumpN = 8,
+        ColorNull = 0xFF,
+    }
 }

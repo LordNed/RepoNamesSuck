@@ -162,9 +162,9 @@ namespace WEditor.Common.Nintendo.J3D
 
     public class TevOrder
     {
-        public byte TexCoordId;
+        public GXTexCoordSlot TexCoordId;
         public byte TexMap;
-        public byte ChannelId;
+        public GXColorChannelId ChannelId;
     }
 
     public class TevIndirect
@@ -192,6 +192,11 @@ namespace WEditor.Common.Nintendo.J3D
         public byte G;
         public byte B;
         public byte A;
+
+        public override string ToString()
+        {
+            return string.Format("[{0}, {1}, {2}, {3}]", R, G, B, A);
+        }
     }
 
     public class IndTexOrder
@@ -212,27 +217,28 @@ namespace WEditor.Common.Nintendo.J3D
         public byte ScaleExponent;
     }
 
-    public class TevCombinerStage
+    public class TevStage
     {
-        public byte Unknown0;
-        //public TevIn ColorIn;
-        //public TevOp ColorOp;
-        //public TevIn AlphaIn;
-        //public TevOp AlphaOp;
-
-        public byte ColorIn;
+        public byte Unknown0; // Always 0xFF
+        public byte[] ColorIn; // 4
         public byte ColorOp;
         public byte ColorBias;
         public byte ColorScale;
         public byte ColorClamp;
         public byte ColorRegId;
-        public byte AlphaIn;
+        public byte[] AlphaIn; // 4
         public byte AlphaOp;
         public byte AlphaBias;
         public byte AlphaScale;
         public byte AlphaClamp;
         public byte AlphaRegId;
-        public byte Unknown1;
+        public byte Unknown1; // Always 0xFF
+
+        public TevStage()
+        {
+            ColorIn = new byte[4];
+            AlphaIn = new byte[4];
+        }
     }
 
     public class FogInfo
@@ -304,7 +310,7 @@ namespace WEditor.Common.Nintendo.J3D
 
         /// <summary> Might be the colors the TEV registers are initialized with - prev, color0, color1 and color2. </summary>
         public Color[] TevColor; // 4 - er... which color? There's lots of colors!
-        public TevCombinerStage[] TevStageInfos; // 16
+        public TevStage[] TevStageInfos; // 16
         public TevSwapMode[] TevSwapModes; // 16
         public TevSwapModeTable[] TevSwapModeTables; // 4
         public short[] UnknownIndexes; // 12
