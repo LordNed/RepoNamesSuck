@@ -42,52 +42,148 @@ namespace WEditor.Rendering
             if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Normal))
                 stream.AppendLine("in vec3 Normal;");
 
-            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0))
-                stream.AppendLine("in vec4 Color0;");
-
-            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color1))
-                stream.AppendLine("in vec4 Color1;");
+            for (int i = 0; i < mat.NumChannelControls; i++)
+                stream.AppendLine(string.Format("in vec4 Color{0};", i));
 
             for (int texGen = 0; texGen < mat.NumTexGens; texGen++)
-            {
-                if (mat.TexGenInfos[texGen] != null)
-                    stream.AppendLine(string.Format("in vec3 Tex{0};", texGen));
-            }
+                stream.AppendLine(string.Format("in vec3 Tex{0};", texGen));
 
-            stream.AppendLine("in vec4 COLOR0A0;");
-            stream.AppendLine("in vec4 COLOR1A1;");
             stream.AppendLine();
+
+            // Final Output
+            stream.AppendLine("// Final Output");
             stream.AppendLine("out vec4 PixelColor;");
-            stream.AppendLine();
-            stream.AppendLine("layout(std140) uniform PixelBlock");
-            stream.AppendLine("{");
-            stream.AppendLine("    vec4 KonstColors[4];");
-            stream.AppendLine("    vec4 TevColor;");
-            stream.AppendLine("    vec4 TintColor;");
-            stream.AppendLine("};");
-            stream.AppendLine();
 
             // Texture Inputs
-            // ...
-            stream.AppendLine("uniform sampler2D Texture;");
-
-            // Main Function blahblah
-            stream.AppendLine("void main()");
-            stream.AppendLine("{");
-            stream.AppendLine("    vec4 TevInA = vec4(0, 0, 0, 0), TevInB = vec4(0, 0, 0, 0), TevInC = vec4(0, 0, 0, 0), TevInD = vec4(0, 0, 0, 0);");
-            stream.AppendLine("    vec4 Prev = vec4(0, 0, 0, 0), C0 = TevColor, C1 = C0, C2 = C0;");
-            stream.AppendLine("    vec4 Ras = vec4(0, 0, 0, 1), Tex = vec4(0, 0, 0, 0);");
-            stream.AppendLine("    vec4 Kosnt = vec4(1, 1, 1, 1);");
-            stream.AppendLine("    vec2 TevCoord = vec2(0, 0);");
-            stream.AppendLine();
-
-            for (int tevStage = 0; tevStage < mat.NumTevStages; tevStage++)
+            for (int i = 0; i < 8; i++)
             {
-                stream.AppendLine(string.Format("    // TEV Stage {0} - ClrOp: {1}", tevStage, mat.TevStageInfos[tevStage].ColorOp));
+                if (mat.Textures[i] == null)
+                    continue;
 
+                stream.AppendLine(string.Format("uniform sampler2D Texture{0}", i));
             }
 
-            stream.AppendLine("    PixelColor = texture(Texture, Tex0.xy)" + (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0) ? " * Color0;" : ";"));
+            // Main Function
+            stream.AppendLine("void main()");
+            stream.AppendLine("{");
+
+            // Default initial values of the TEV registers.
+            // ToDo: Does this need swizzling? themikelester has it marked as mat.registerColor[i==0?3:i-1]]
+            stream.AppendLine("    // Initial TEV Register Values");
+            stream.AppendLine(string.Format("    vec4 {0} = vec4({1}, {2}, {3}, {4});", "prev", mat.TevColor[0].R, mat.TevColor[0].G, mat.TevColor[0].B, mat.TevColor[0].A));
+            stream.AppendLine(string.Format("    vec4 {0} = vec4({1}, {2}, {3}, {4});", "color0", mat.TevColor[1].R, mat.TevColor[1].G, mat.TevColor[1].B, mat.TevColor[1].A));
+            stream.AppendLine(string.Format("    vec4 {0} = vec4({1}, {2}, {3}, {4});", "color1", mat.TevColor[2].R, mat.TevColor[2].G, mat.TevColor[2].B, mat.TevColor[2].A));
+            stream.AppendLine(string.Format("    vec4 {0} = vec4({1}, {2}, {3}, {4});", "color2", mat.TevColor[3].R, mat.TevColor[3].G, mat.TevColor[3].B, mat.TevColor[3].A));
+            stream.AppendLine();
+
+            // Constant Color Registers
+            stream.AppendLine("    // Konst TEV Colors");
+            for (int i = 0; i < 4; i++)
+            {
+                stream.AppendLine(string.Format("    vec4 konst{0} = vec4({0}, {1}, {2}, {3});", i, mat.TevKonstColors[i].R, mat.TevKonstColors[i].G, mat.TevKonstColors[i].B, mat.TevKonstColors[i].A));
+            }
+            stream.AppendLine();
+
+            // Texture Samples
+            bool[] oldCombos = new bool[256];
+            for (int i = 0, j = 0; i < mat.NumTevStages; i++)
+            {
+                TevOrder order = mat.TevOrderInfos[i];
+                int tex = order.TexMap;
+                GXTexCoordSlot coord = order.TexCoordId;
+
+                // This TEV probably doesn't use textures.
+                if (tex == 0xFF || coord == GXTexCoordSlot.Null)
+                    continue;
+
+                if (IsNewTexCombo(tex, (int)coord, oldCombos))
+                {
+                    string swizzle = ""; // Uhh I don't know if we need to swizzle since everyone's been converted into ARGB
+                    stream.AppendLine(string.Format("    vec4 texCol{0} = texture(Texture{0}, {1}){2};", tex, coord, swizzle));
+                }
+            }
+            stream.AppendLine();
+
+            // ToDo: Implement indirect texturing.
+            stream.AppendLine("    // TEV Stages");
+            stream.AppendLine();
+            stream.AppendLine();
+
+            for (int i = 0; i < mat.NumTevStages; i++)
+            {
+                stream.AppendLine(string.Format("    // TEV Stage {0}", i));
+                TevOrder order = mat.TevOrderInfos[i];
+                TevStage stage = mat.TevStageInfos[i];
+
+                TevSwapMode swap = mat.TevSwapModes[i];
+                TevSwapModeTable rasTable = mat.TevSwapModeTables[swap.RasSel];
+                TevSwapModeTable texTable = mat.TevSwapModeTables[swap.TexSel];
+
+                // There's swapping involved in the ras table.
+                stream.AppendLine(string.Format("    // Rasterization Swap Table: {0}", rasTable));
+                if (!(rasTable.R == 0 && rasTable.G == 1 && rasTable.B == 2 && rasTable.A == 3))
+                {
+                    stream.AppendLine(string.Format("    {0} = {1}{2};", GetVertColorString(order), GetVertColorString(order), GetSwapModeSwizzleString(rasTable)));
+                }
+                stream.AppendLine();
+
+
+                // There's swapping involved in the texture table.
+                stream.AppendLine(string.Format("    // Texture Swap Table: {0}", texTable));
+                if (!(texTable.R == 0 && texTable.G == 1 && texTable.B == 2 && texTable.A == 3))
+                {
+                    stream.AppendLine(string.Format("    {0} = {1}{2};", GetTexTapString(order), GetTexTapString(order), GetSwapModeSwizzleString(rasTable)));
+                }
+                stream.AppendLine();
+
+                /*string[] colorInputs = new string[4];
+                colorInputs[0] = GetColorInString(mat.TevColor[0], mat.KonstColorSels[i], order);
+                colorInputs[1] = GetColorInString(stage.ColorOp, mat.KonstColorSels[i], order);
+                colorInputs[2] = GetColorInString(stage.ColorBias, mat.KonstColorSels[i], order);
+                colorInputs[3] = GetColorInString(stage.ColorScale, mat.KonstColorSels[i], order);
+
+                stream.AppendLine("    // Color and Alpha Operations");
+                stream.AppendLine(string.Format("    {0}", GetColorOpString(stage.ColorOp, stage.ColorBias, stage.ColorScale, stage.ColorClamp, colorInputs)));
+
+                string[] alphaInputs = new string[4];
+                alphaInputs[0] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
+                alphaInputs[1] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
+                alphaInputs[2] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
+                alphaInputs[3] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
+
+                stream.AppendLine(string.Format("    {0}", GetAlphaOpString(stage.AlphaOp, stage.AlphaBias, stage.AlphaScale, stage.AlphaClamp, alphaInputs)));
+                stream.AppendLine();*/
+            }
+            stream.AppendLine();
+
+            // Alpha Compare
+            stream.AppendLine("    // Alpa Compare Op");
+            AlphaCompare alphaCompare = mat.AlphaCompare;
+            string alphaOp;
+            switch (alphaCompare.Operation)
+            {
+                case GXAlphaOp.And: alphaOp = "&&"; break;
+                case GXAlphaOp.Or: alphaOp = "||"; break;
+                case GXAlphaOp.XOR: alphaOp = "^"; break; // Not really tested, unsupported in some examples but I don't see why.
+                case GXAlphaOp.XNOR: alphaOp = "=="; break;  // Not really tested. ^
+                default:
+                    WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unsupported alpha compare operation: {0}", alphaCompare.Operation);
+                    alphaOp = "||";
+                    break;
+            }
+
+            // clip(result.a < 0.5 && result a > 0.2 ? -1 : 1)
+            string ifContents = string.Format("({0} {1} {2})",
+                GetCompareString(alphaCompare.Comp0, "result.a", alphaCompare.Reference0),
+                alphaOp,
+                GetCompareString(alphaCompare.Comp1, "result.a", alphaCompare.Reference1));
+
+            // clip equivelent
+            stream.AppendLine("    // Clip");
+            stream.AppendLine("    if{0}\n\t\tdiscard");
+
+            stream.AppendLine("    PixelColor = result;");
+
             stream.AppendLine("}");
             stream.AppendLine();
 
@@ -139,19 +235,15 @@ namespace WEditor.Rendering
             stream.AppendLine("// Output");
             if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Normal))
                 stream.AppendLine("out vec3 Normal;");
-            //if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0)) // These two technically should be optional, but ChanCtrlers can specify Color out not from Vert attrib.
-                stream.AppendLine("out vec4 Color0;");
-            //if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color1))
-                stream.AppendLine("out vec4 Color1;");
+
+            for (int i = 0; i < mat.NumChannelControls; i++)
+                stream.AppendLine(string.Format("out vec4 Color{0};", i));
 
             for (int texGen = 0; texGen < mat.NumTexGens; texGen++)
             {
                 if (mat.TexGenInfos[texGen] != null)
                     stream.AppendLine(string.Format("out vec3 Tex{0};", texGen));
             }
-
-            stream.AppendLine("out vec4 COLOR0A0;");
-            stream.AppendLine("out vec4 COLOR1A1;");
 
             // Uniforms
             stream.AppendLine();
@@ -195,10 +287,10 @@ namespace WEditor.Rendering
                 stream.AppendLine("    gl_Position = MVP * vec4(RawPosition, 1);");
             if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Normal))
                 stream.AppendLine("    Normal = normalize(RawNormal.xyz * inverse(transpose(mat3(MV))));");
-            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0))
-                stream.AppendLine("    Color0 = RawColor0;");
-            if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color1))
-                stream.AppendLine("    Color1 = RawColor1;");
+            //if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0))
+            //  stream.AppendLine("    Color0 = RawColor0;");
+            //if (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color1))
+            //stream.AppendLine("    Color1 = RawColor1;");
 
             stream.AppendLine();
             stream.AppendLine("    // Ambient Colors & Material Colors");
@@ -290,8 +382,8 @@ namespace WEditor.Rendering
                     case GXTexGenSrc.TexCoord4: texGenSrc = "Tex4"; break;
                     case GXTexGenSrc.TexCoord5: texGenSrc = "Tex5"; break;
                     case GXTexGenSrc.TexCoord6: texGenSrc = "Tex6"; break;
-                   
-                    case GXTexGenSrc.Tangent: 
+
+                    case GXTexGenSrc.Tangent:
                     case GXTexGenSrc.Binormal:
                     default:
                         WLog.Warning(LogCategory.TEVShaderGenerator, shader, "Unsupported TexGenSrc: {0}, defaulting to TEXCOORD0.", texGen.Source);
@@ -299,12 +391,12 @@ namespace WEditor.Rendering
                         break;
                 }
 
-                if(texGen.TexMatrixSource == GXTexMatrix.Identity)
+                if (texGen.TexMatrixSource == GXTexMatrix.Identity)
                 {
                     switch (texGen.Type)
                     {
-                        case GXTexGenType.Matrix2x4: 
-                            stream.AppendLine(string.Format("    Tex{0} = vec3({1}.xy, 0);", i, texGenSrc)); 
+                        case GXTexGenType.Matrix2x4:
+                            stream.AppendLine(string.Format("    Tex{0} = vec3({1}.xy, 0);", i, texGenSrc));
                             break;
                         case GXTexGenType.Matrix3x4:
                             stream.AppendLine(string.Format("    float3 uvw = {0}.xyz;", texGenSrc));
@@ -404,6 +496,192 @@ namespace WEditor.Rendering
                 default:
                     break;
             }*/
+        }
+
+        private static bool IsNewTexCombo(int texMap, int texCoordId, bool[] oldCombos)
+        {
+            int index = (texMap << 4 | texCoordId);
+            if (oldCombos[index])
+                return false;
+
+            oldCombos[index] = true;
+            return true;
+        }
+
+        private static string GetVertColorString(TevOrder orderInfo)
+        {
+            switch (orderInfo.ChannelId)
+            {
+                case GXColorChannelId.Color0: return "Color0.rgb";
+                case GXColorChannelId.Color1: return "Color1.rgb";
+                case GXColorChannelId.Alpha0: return "Color0.aaaa";
+                case GXColorChannelId.Alpha1: return "Color1.aaaa";
+                case GXColorChannelId.Color0A0: return "Color0.rgba";
+                case GXColorChannelId.Color1A1: return "Color1.rgba";
+                case GXColorChannelId.ColorZero: return "0.rrrr";
+                case GXColorChannelId.AlphaBump:
+                case GXColorChannelId.AlphaBumpN:
+                case GXColorChannelId.ColorNull:
+                default:
+                    WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unsupported ChannelId: {0}", orderInfo.ChannelId);
+                    return "vec4(0.0, 1.0, 0.0, 1.0)";
+            }
+        }
+
+        private static string GetSwapModeSwizzleString(TevSwapModeTable table)
+        {
+            return string.Format(".{0}{1}{2}{3}", table.R, table.G, table.B, table.A);
+        }
+
+        private static string GetTexTapString(TevOrder info)
+        {
+            return string.Format("texCol{0}{1}", info.TexMap, (int)info.TexCoordId);
+        }
+
+        private static string GetCompareString(GXCompareType compare, string a, byte refVal)
+        {
+            string outStr = "";
+            float fRef = refVal / 255f;
+
+            if (compare != GXCompareType.Always)
+                WLog.Warning(LogCategory.TEVShaderGenerator, null, "Untested alpha-test functionality: {0}", compare);
+
+            switch (compare)
+            {
+                case GXCompareType.Never: outStr = "false"; break;
+                case GXCompareType.Less: outStr = "<"; break;
+                case GXCompareType.Equal: outStr = "=="; break;
+                case GXCompareType.LEqual: outStr = "<="; break;
+                case GXCompareType.Greater: outStr = ">"; break;
+                case GXCompareType.NEqual: outStr = "!="; break;
+                case GXCompareType.GEqual: outStr = ">="; break;
+                case GXCompareType.Always: outStr = "true"; break;
+                default:
+                    WLog.Warning(LogCategory.TEVShaderGenerator, null, "Invalid comparison function, defaulting to always.");
+                    outStr = "true";
+                    break;
+            }
+
+            if (string.Compare(outStr, "false") == 0 || string.Compare(outStr, "true") == 0)
+                return outStr;
+
+            return string.Format("{0} {1} {2}", a, outStr, fRef);
+        }
+
+        private static string GetColorInString(GXCombineColorInput inputType, GXKonstColorSel konst, TevOrder texMapping)
+        {
+            switch (inputType)
+            {
+                case GXCombineColorInput.ColorPrev: return "result.rgb";
+                case GXCombineColorInput.AlphaPrev: return "result.aaa";
+                case GXCombineColorInput.C0: return "color0.rgb";
+                case GXCombineColorInput.A0: return "color0.aaa";
+                case GXCombineColorInput.C1: return "color1.rgb";
+                case GXCombineColorInput.A1: return "color1.aaa";
+                case GXCombineColorInput.C2: return "color2.rgb";
+                case GXCombineColorInput.A2: return "color2.aaa";
+                case GXCombineColorInput.TexColor: return GetTexTapString(texMapping) + ".rgb";
+                case GXCombineColorInput.TexAlpha: return GetTexTapString(texMapping) + ".aaa";
+                case GXCombineColorInput.RasColor: return GetVertColorString(texMapping) + ".rgb";
+                case GXCombineColorInput.RasAlpha: return GetVertColorString(texMapping) + ".aaa";
+                case GXCombineColorInput.One: return "1.0f.rrr";
+                case GXCombineColorInput.Half: return "0.5f.rrr";
+                case GXCombineColorInput.Konst: return GetKonstColorString(konst) + ".rgb";
+                case GXCombineColorInput.Zero: return "0.0f.rrr";
+                default:
+                    WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unknown Color Input type: {0}", inputType);
+                    return "0.0f.rrr";
+            }
+        }
+
+        private static string GetAlphaInString(GXCombineAlphaInput inputType, GXKonstAlphaSel konst, TevOrder texMapping)
+        {
+            switch (inputType)
+            {
+                case GXCombineAlphaInput.AlphaPrev: return "result.a";
+                case GXCombineAlphaInput.A0: return "color0.a";
+                case GXCombineAlphaInput.A1: return "color1.a";
+                case GXCombineAlphaInput.A2: return "color2.a";
+                case GXCombineAlphaInput.TexAlpha: return GetTexTapString(texMapping) + ".a";
+                case GXCombineAlphaInput.RasAlpha: return GetVertColorString(texMapping) + ".a";
+                case GXCombineAlphaInput.Konst: return GetKonstAlphaString(konst) + ".a";
+                case GXCombineAlphaInput.Zero: return "0.0f";
+                default:
+                    WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unknown Alpha Input type: {0}", inputType);
+                    return "0.0f";
+            }
+        }
+
+        private static string GetKonstAlphaString(GXKonstAlphaSel konst)
+        {
+            switch (konst)
+            {
+                case GXKonstAlphaSel.KASel_1: return "1.0";
+                case GXKonstAlphaSel.KASel_7_8: return "0.875";
+                case GXKonstAlphaSel.KASel_3_4: return "0.75";
+                case GXKonstAlphaSel.KASel_5_8: return "0.625";
+                case GXKonstAlphaSel.KASel_1_2: return "0.5";
+                case GXKonstAlphaSel.KASel_3_8: return "0.375";
+                case GXKonstAlphaSel.KASel_1_4: return "0.25";
+                case GXKonstAlphaSel.KASel_1_8: return "0.125";
+                case GXKonstAlphaSel.KASel_K0_R: return "konst0.r";
+                case GXKonstAlphaSel.KASel_K1_R: return "konst1.r";
+                case GXKonstAlphaSel.KASel_K2_R: return "konst2.r";
+                case GXKonstAlphaSel.KASel_K3_R: return "konst3.r";
+                case GXKonstAlphaSel.KASel_K0_G: return "konst0.g";
+                case GXKonstAlphaSel.KASel_K1_G: return "konst1.g";
+                case GXKonstAlphaSel.KASel_K2_G: return "konst2.g";
+                case GXKonstAlphaSel.KASel_K3_G: return "konst3.g";
+                case GXKonstAlphaSel.KASel_K0_B: return "konst0.b";
+                case GXKonstAlphaSel.KASel_K1_B: return "konst1.b";
+                case GXKonstAlphaSel.KASel_K2_B: return "konst2.b";
+                case GXKonstAlphaSel.KASel_K3_B: return "konst3.b";
+                case GXKonstAlphaSel.KASel_K0_A: return "konst0.a";
+                case GXKonstAlphaSel.KASel_K1_A: return "konst1.a";
+                case GXKonstAlphaSel.KASel_K2_A: return "konst2.a";
+                case GXKonstAlphaSel.KASel_K3_A: return "konst3.a";
+                default:
+                    WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unsupported GXKonstAlphaSel: {0}, returning 1.0", konst);
+                    return "1.0";
+            }
+        }
+
+        private static string GetKonstColorString(GXKonstColorSel konst)
+        {
+            switch (konst)
+            {
+                case GXKonstColorSel.KCSel_1: return "1.0.rrrr";
+                case GXKonstColorSel.KCSel_7_8: return "0.875.rrrr";
+                case GXKonstColorSel.KCSel_3_4: return "0.75.rrrr";
+                case GXKonstColorSel.KCSel_5_8: return "0.625.rrrr";
+                case GXKonstColorSel.KCSel_1_2: return "0.5.rrrr";
+                case GXKonstColorSel.KCSel_3_8: return "0.375.rrrr";
+                case GXKonstColorSel.KCSel_1_4: return "0.25.rrrr";
+                case GXKonstColorSel.KCSel_1_8: return "0.125.rrrr";
+                case GXKonstColorSel.KCSel_K0: return "konst0.rgba";
+                case GXKonstColorSel.KCSel_K1: return "konst1.rgba";
+                case GXKonstColorSel.KCSel_K2: return "konst2.rgba";
+                case GXKonstColorSel.KCSel_K3: return "konst3.rgba";
+                case GXKonstColorSel.KCSel_K0_R: return "konst0.rrrr";
+                case GXKonstColorSel.KCSel_K1_R: return "konst1.rrrr";
+                case GXKonstColorSel.KCSel_K2_R: return "konst2.rrrr";
+                case GXKonstColorSel.KCSel_K3_R: return "konst3.rrrr";
+                case GXKonstColorSel.KCSel_K0_G: return "konst0.gggg";
+                case GXKonstColorSel.KCSel_K1_G: return "konst1.gggg";
+                case GXKonstColorSel.KCSel_K2_G: return "konst2.gggg";
+                case GXKonstColorSel.KCSel_K3_G: return "konst3.gggg";
+                case GXKonstColorSel.KCSel_K0_B: return "konst0.bbbb";
+                case GXKonstColorSel.KCSel_K1_B: return "konst1.bbbb";
+                case GXKonstColorSel.KCSel_K2_B: return "konst2.bbbb";
+                case GXKonstColorSel.KCSel_K3_B: return "konst3.bbbb";
+                case GXKonstColorSel.KCSel_K0_A: return "konst0.aaaa";
+                case GXKonstColorSel.KCSel_K1_A: return "konst1.aaaa";
+                case GXKonstColorSel.KCSel_K2_A: return "konst2.aaaa";
+                case GXKonstColorSel.KCSel_K3_A: return "konst3.aaaa";
+                default:
+                    WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unsupported GXKonstColorSel: {0}, returning 1.0", konst);
+                    return "1.0";
+            }
         }
     }
 }
