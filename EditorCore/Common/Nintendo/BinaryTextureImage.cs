@@ -170,7 +170,7 @@ namespace WEditor
             using(Bitmap bmp = new Bitmap(Width, Height))
             {
                 Rectangle rect = new Rectangle(0, 0, Width, Height);
-                BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
+                BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
 
                 //Lock the bitmap for writing, copy the bits and then unlock for saving.
                 IntPtr ptr = bmpData.Scan0;
