@@ -142,8 +142,8 @@ namespace WEditor.WindWaker.Loaders
             var retVal = new TexCoordGen
             {
                 Type = (GXTexGenType) stream.ReadByte(),
-                Source = (GXTexCoordSource) stream.ReadByte(),
-                TexMatrixSource = (GXTexGenMatrix) stream.ReadByte()
+                Source = (GXTexGenSrc) stream.ReadByte(),
+                TexMatrixSource = (GXTexMatrix) stream.ReadByte()
             };
 
             stream.ReadByte(); // Padding

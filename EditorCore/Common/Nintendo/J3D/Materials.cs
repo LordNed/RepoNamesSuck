@@ -91,7 +91,7 @@ namespace WEditor.Common.Nintendo.J3D
     /// </summary>
     public class ChanCtrl
     {
-        /// <summary> Whether or not to enable lighting for this channel. If false, the material source color is passed through as the mateiral output color.</summary>
+        /// <summary> Whether or not to enable lighting for this channel. If false, the material source color is passed through as the material output color.</summary>
         public bool Enable;
 
         /// <summary> Source for the Material color. When set to <see cref="GXColorSrc.Register"/> the color set by GX_SetChanMatColor is used. </summary>
@@ -123,9 +123,9 @@ namespace WEditor.Common.Nintendo.J3D
         /// <summary> Generation Type </summary>
         public GXTexGenType Type;
         /// <summary> Texture Coordinate Source </summary>
-        public GXTexCoordSource Source;
+        public GXTexGenSrc Source;
         /// <summary> Texture Matrix Index </summary>
-        public GXTexGenMatrix TexMatrixSource;
+        public GXTexMatrix TexMatrixSource;
     }
 
     public class TexMatrix
