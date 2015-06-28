@@ -1,5 +1,6 @@
 ﻿using GameFormatReader.Common;
 using System.Collections.Generic;
+using System.Diagnostics;
 using WEditor.Common.Nintendo.J3D;
 using WEditor.Rendering;
 
@@ -126,11 +127,11 @@ namespace WEditor.WindWaker.Loaders
             var retVal = new ChanCtrl
             {
                 Enable = stream.ReadBoolean(),
-                MaterialSrc = (GXColorSrc) stream.ReadByte(),
-                LitMask = (GXLightId) stream.ReadByte(),
-                DiffuseFunction = (GXDiffuseFn) stream.ReadByte(),
-                AttenuationFunction = (GXAttenuationFn) stream.ReadByte(),
-                AmbientSrc = (GXColorSrc) stream.ReadByte()
+                MaterialSrc = (GXColorSrc)stream.ReadByte(),
+                LitMask = (GXLightId)stream.ReadByte(),
+                DiffuseFunction = (GXDiffuseFn)stream.ReadByte(),
+                AttenuationFunction = (GXAttenuationFn)stream.ReadByte(),
+                AmbientSrc = (GXColorSrc)stream.ReadByte()
             };
 
             stream.ReadBytes(2); // Padding
@@ -141,9 +142,9 @@ namespace WEditor.WindWaker.Loaders
         {
             var retVal = new TexCoordGen
             {
-                Type = (GXTexGenType) stream.ReadByte(),
-                Source = (GXTexGenSrc) stream.ReadByte(),
-                TexMatrixSource = (GXTexMatrix) stream.ReadByte()
+                Type = (GXTexGenType)stream.ReadByte(),
+                Source = (GXTexGenSrc)stream.ReadByte(),
+                TexMatrixSource = (GXTexMatrix)stream.ReadByte()
             };
 
             stream.ReadByte(); // Padding
@@ -198,35 +199,37 @@ namespace WEditor.WindWaker.Loaders
         {
             var retVal = new TevOrder
             {
-                TexCoordId = stream.ReadByte(),
+                TexCoordId = (GXTexCoordSlot)stream.ReadByte(),
                 TexMap = stream.ReadByte(),
-                ChannelId = stream.ReadByte()
+                ChannelId = (GXColorChannelId)stream.ReadByte()
             };
 
             stream.ReadByte(); // Padding
             return retVal;
         }
 
-        private static TevCombinerStage ReadTevCombinerStage(EndianBinaryReader stream)
+        private static TevStage ReadTevCombinerStage(EndianBinaryReader stream)
         {
-            var retVal = new TevCombinerStage
-            {
-                Unknown0 = stream.ReadByte(),
-                ColorIn = stream.ReadByte(),
-                ColorOp = stream.ReadByte(),
-                ColorBias = stream.ReadByte(),
-                ColorScale = stream.ReadByte(),
-                ColorClamp = stream.ReadByte(),
-                ColorRegId = stream.ReadByte(),
-                AlphaIn = stream.ReadByte(),
-                AlphaOp = stream.ReadByte(),
-                AlphaBias = stream.ReadByte(),
-                AlphaScale = stream.ReadByte(),
-                AlphaClamp = stream.ReadByte(),
-                AlphaRegId = stream.ReadByte(),
-                Unknown1 = stream.ReadByte()
-            };
+            var retVal = new TevStage();
+            retVal.Unknown0 = stream.ReadByte();
+            for (int i = 0; i < 4; i++)
+                retVal.ColorIn[i] = stream.ReadByte();
+            retVal.ColorOp = stream.ReadByte();
+            retVal.ColorBias = stream.ReadByte();
+            retVal.ColorScale = stream.ReadByte();
+            retVal.ColorClamp = stream.ReadByte();
+            retVal.ColorRegId = stream.ReadByte();
+            for (int i = 0; i < 4; i++)
+                retVal.AlphaIn[i] = stream.ReadByte();
+            retVal.AlphaOp = stream.ReadByte();
+            retVal.AlphaBias = stream.ReadByte();
+            retVal.AlphaScale = stream.ReadByte();
+            retVal.AlphaClamp = stream.ReadByte();
+            retVal.AlphaRegId = stream.ReadByte();
+            retVal.Unknown1 = stream.ReadByte();
 
+            Debug.Assert(retVal.Unknown0 == 0xFF);
+            Debug.Assert(retVal.Unknown1 == 0xFF);
             return retVal;
         }
 
@@ -342,7 +345,6 @@ namespace WEditor.WindWaker.Loaders
             var lightingColors = ReadSection<Color>(reader, chunkStart, chunkSize, offsets, 9, ReadColorShort, 8);
 
             /* TEX GEN NUMBER */
-            // THIS IS A GUESS AT DATA TYPE
             var numTexGens = ReadSection<byte>(reader, chunkStart, chunkSize, offsets, 10, ReadByte, 1);
 
             /* TEX GEN INFO */
@@ -374,7 +376,7 @@ namespace WEditor.WindWaker.Loaders
             var numTevStages = ReadSection<byte>(reader, chunkStart, chunkSize, offsets, 19, ReadByte, 1);
 
             /* TEV STAGE INFO */
-            var tevStageInfos = ReadSection<TevCombinerStage>(reader, chunkStart, chunkSize, offsets, 20, ReadTevCombinerStage, 20);
+            var tevStageInfos = ReadSection<TevStage>(reader, chunkStart, chunkSize, offsets, 20, ReadTevCombinerStage, 20);
 
             /* TEV SWAP MODE INFO */
             var tevSwapModeInfos = ReadSection<TevSwapMode>(reader, chunkStart, chunkSize, offsets, 21, ReadTevSwapMode, 4);
@@ -533,7 +535,7 @@ namespace WEditor.WindWaker.Loaders
                 for (int i = 0; i < material.TevColor.Length; i++)
                     material.TevColor[i] = tevColors[reader.ReadInt16()];
 
-                material.TevStageInfos = new TevCombinerStage[16];
+                material.TevStageInfos = new TevStage[16];
                 for (int i = 0; i < material.TevStageInfos.Length; i++)
                 {
                     short index = reader.ReadInt16();
