@@ -15,6 +15,9 @@ namespace WEditor
         /// <summary> Used to calculate the delta time of the Tick loop. </summary>
         private Stopwatch m_dtStopwatch;
 
+        /// <summary> Used to print all log messages to the Console for now. </summary>
+        private StandardOutLogger m_stdOutLogger;
+
         public List<Component> HackyComponents;
 
         public EditorCore()
@@ -22,7 +25,10 @@ namespace WEditor
             HackyInstance = this;
             m_dtStopwatch = new Stopwatch();
             HackyComponents = new List<Component>();
+            m_stdOutLogger = new StandardOutLogger();
             Console.WriteLine("[EditorCore] Initialized.");
+
+            WLog.Warning(LogCategory.Rendering, this, "Hello World");
         }
 
         public void Tick()
