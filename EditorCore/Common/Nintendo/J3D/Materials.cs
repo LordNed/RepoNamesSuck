@@ -110,11 +110,22 @@ namespace WEditor.Common.Nintendo.J3D
         public GXColorSrc AmbientSrc;
     }
 
+    /// <summary>
+    /// Specifies how texture coordinates are generated.
+    /// 
+    /// Output texture coordinates are usually the result of some transform of an input attribute; either position, normal, or texture coordinate.
+    /// You can also generate texture coordinates from the output color channel of the per-vertex lighting calculations.
+    /// 
+    /// TexMatrixSource idenitfies a default set of texture matrix names that can be supplied.
+    /// </summary>
     public class TexCoordGen
     {
-        public byte Type;
-        public byte Source;
-        public byte TexMatrix;
+        /// <summary> Generation Type </summary>
+        public GXTexGenType Type;
+        /// <summary> Texture Coordinate Source </summary>
+        public GXTexCoordSource Source;
+        /// <summary> Texture Matrix Index </summary>
+        public GXTexGenMatrix TexMatrixSource;
     }
 
     public class TexMatrix

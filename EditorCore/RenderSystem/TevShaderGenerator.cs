@@ -8,12 +8,12 @@ namespace WEditor.Rendering
 {
     public class TEVShaderGenerator
     {
-        private static readonly string[] m_kCoordSrc = new string[]
+        private static readonly string[] m_kTexCoordSrc = new string[]
         {
             "RawPosition.xyz",
             "RawNormal.xyz",
-            "0.0, 0.0, 0.0",
-            "0.0, 0.0, 0.0",
+            "RawBinormal.xyz",
+            "RawTangent.xyz",
             "RawTex0.xy, 1.0",
             "RawTex1.xy, 1.0",
             "RawTex2.xy, 1.0",
@@ -21,7 +21,16 @@ namespace WEditor.Rendering
             "RawTex4.xy, 1.0",
             "RawTex5.xy, 1.0",
             "RawTex6.xy, 1.0",
-            "RawTex7.xy, 1.0"
+            "RawTex7.xy, 1.0",
+            "RawTexCoord0.xy, 1.0",
+            "RawTexCoord1.xy, 1.0",
+            "RawTexCoord2.xy, 1.0",
+            "RawTexCoord3.xy, 1.0",
+            "RawTexCoord4.xy, 1.0",
+            "RawTexCoord5.xy, 1.0",
+            "RawTexCoord6.xy, 1.0",
+            "RawColor0.xyz",
+            "RawColor1.xyz",
         };
 
         public static Shader GenerateShader(Material fromMat)
@@ -228,7 +237,7 @@ namespace WEditor.Rendering
                     continue;
 
                 // No Animation for right now, but texture matrix animations would come here.
-                //stream.AppendLine(string.Format("    Tex{0} = vec3({1});", texGen, m_kCoordSrc[mat.TexGenInfos[texGen].Source]));
+                stream.AppendLine(string.Format("    Tex{0} = vec3({1});", pass, m_kTexCoordSrc[(int)mat.TexGenInfos[pass].Source]));
             }
 
             stream.AppendLine("}");
