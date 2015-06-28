@@ -198,8 +198,6 @@ namespace WEditor.WindWaker.Loaders
                 for (int i = 0; i < j3dMesh.SubMeshes.Count; i++)
                 {
                     MeshBatch batch = j3dMesh.SubMeshes[i];
-                    Console.WriteLine("Batch {0} PMIs: {1}", i, batch.PositionMatrixIndexs.Count);
-
                     batch.BoneWeights = new BoneWeight[batch.Vertices.Length];
 
                     for (int j = 0; j < batch.PositionMatrixIndexs.Count; j++)
@@ -399,7 +397,7 @@ namespace WEditor.WindWaker.Loaders
 
                         if (type != GXPrimitiveType.TriangleStrip)
                         {
-                            Console.WriteLine("Unsupported GXPrimitiveType {0}", type);
+                            WLog.Warning(LogCategory.ModelLoading, null, "Unsupported GXPrimitiveType {0}", type);
                         }
 
                         numPrimitiveBytesRead += 0x3; // Advance us by 3 for the Primitive header.
@@ -432,7 +430,7 @@ namespace WEditor.WindWaker.Loaders
                                         numBytesRead = 2;
                                         break;
                                     default:
-                                        Console.WriteLine("[J3DLoader] Unknown Batch Index Type: {0}", batchAttributes[attrib].DataType);
+                                        WLog.Warning(LogCategory.ModelLoading, null, "Unknown Batch Index Type: {0}", batchAttributes[attrib].DataType);
                                         break;
                                 }
 
@@ -481,7 +479,7 @@ namespace WEditor.WindWaker.Loaders
                                         meshVertexData.Tex7.Add(vertexData.Tex7[val]);
                                         break;
                                     default:
-                                        Console.WriteLine("[J3DLoader] Unsupported attribType {0}", batchAttributes[attrib].ArrayType);
+                                        WLog.Warning(LogCategory.ModelLoading, null, "Unsupported attribType {0}", batchAttributes[attrib].ArrayType);
                                         break;
                                 }
 

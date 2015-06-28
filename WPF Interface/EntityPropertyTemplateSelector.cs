@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using WEditor;
 
 namespace WPF_Interface
 {

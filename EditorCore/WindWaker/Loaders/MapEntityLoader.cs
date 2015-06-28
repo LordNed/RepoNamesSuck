@@ -71,7 +71,7 @@ namespace WEditor.WindWaker.Loaders
 
                     if(template == null)
                     {
-                        Console.WriteLine("Unsupported entity format: " + chunk.FourCC);
+                        WLog.Warning(LogCategory.EntityLoading, resource, "Unsupported entity format: " + chunk.FourCC);
                         continue;
                     }
 
@@ -154,7 +154,7 @@ namespace WEditor.WindWaker.Loaders
                 {
                     if (!templateOrder.Contains(unsortedChunk.FourCC))
                     {
-                        Console.WriteLine("[MapEntityLoader] TemplateOrder is missing type {0}, adding to end of list.", unsortedChunk.FourCC);
+                        WLog.Warning(LogCategory.EntityLoading, null, "TemplateOrder is missing type {0}, adding to end of list.", unsortedChunk.FourCC);
                         sortedChunks.Add(unsortedChunk);
                     }
                 }

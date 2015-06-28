@@ -89,7 +89,7 @@ namespace WEditor
                 if (prop != null)
                     prop.Value = value;
                 else
-                    Console.WriteLine("Unsupported property {0}", val);
+                    WLog.Warning(LogCategory.EntityLoading, this, "Unsupported property {0}", val);
             }
         }
 

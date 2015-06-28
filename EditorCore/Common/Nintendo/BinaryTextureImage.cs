@@ -217,7 +217,7 @@ namespace WEditor
                     return DecodeRgb5A3(stream, width, height);
 
                 default:
-                    Console.WriteLine("[BinaryTextureImage] Unsupported BTI format {0}, unable to decode!", format);
+                    WLog.Warning(LogCategory.Textures, null, "Unsupported Binary Texture Image format {0}, unable to decode!", format);
                     return new byte[0];
             }
         }

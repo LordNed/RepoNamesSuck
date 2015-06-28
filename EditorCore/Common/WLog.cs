@@ -14,13 +14,18 @@ namespace WEditor
         // Rendering System
         Rendering,
         // Shader Compiling (not shader generator)
-        ShaderCompiling,
+        ShaderCompiler,
         // Automatic Shader Generation
         TEVShaderGenerator,
         // Model Loading
         ModelLoading,
         // Entity Loading
         EntityLoading,
+        // Editor Messages
+        EditorCore,
+        // Texture Decoding/Encoding
+        Textures,
+        ArchiveLoading,
     }
 
     public enum LogSeverity

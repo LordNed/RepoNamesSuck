@@ -153,7 +153,7 @@ namespace WEditor.WindWaker.Loaders
                     componentCount = 2;
                     break;
                 default:
-                    Console.WriteLine("[J3DLoader] Unsupported ArrayType \"{0}\" found while loading VTX1!", arrayType);
+                    WLog.Warning(LogCategory.ModelLoading, null, "Unsupported ArrayType \"{0}\" found while loading VTX1!", arrayType);
                     break;
             }
 
@@ -180,7 +180,7 @@ namespace WEditor.WindWaker.Loaders
                     break;
 
                 default:
-                    Console.WriteLine("[J3DLoader] Unsupported DataType \"{0}\" found while loading VTX1!", dataType);
+                    WLog.Warning(LogCategory.ModelLoading, null, "Unsupported DataType \"{0}\" found while loading VTX1!", dataType);
                     break;
             }
 
@@ -201,7 +201,7 @@ namespace WEditor.WindWaker.Loaders
                 case J3DFileResource.VertexColorType.RGBA4:
                 case J3DFileResource.VertexColorType.RGBA6:
                 default:
-                    Console.WriteLine("[J3DLoader] Unsupported Color Data Type: {0}!", colorType);
+                    WLog.Warning(LogCategory.ModelLoading, null, "Unsupported Color Data Type: {0}!", colorType);
                     break;
             }
 
@@ -244,7 +244,7 @@ namespace WEditor.WindWaker.Loaders
                             break;
 
                         default:
-                            Console.WriteLine("[J3DLoader] Unsupported Data Type: {0}!", dataType);
+                            WLog.Warning(LogCategory.ModelLoading, null, "Unsupported Data Type: {0}!", dataType);
                             break;
                     }
 
@@ -264,7 +264,7 @@ namespace WEditor.WindWaker.Loaders
                         case J3DFileResource.VertexColorType.RGBA4:
                         case J3DFileResource.VertexColorType.RGBA6:
                         default:
-                            Console.WriteLine("[J3DLoader] Unsupported Color Data Type: {0}!", colorType);
+                            WLog.Warning(LogCategory.ModelLoading, null, "Unsupported Color Data Type: {0}!", colorType);
                             break;
                     }
                 }

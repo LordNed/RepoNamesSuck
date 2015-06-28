@@ -26,9 +26,7 @@ namespace WEditor
             m_dtStopwatch = new Stopwatch();
             HackyComponents = new List<Component>();
             m_stdOutLogger = new StandardOutLogger();
-            Console.WriteLine("[EditorCore] Initialized.");
-
-            WLog.Warning(LogCategory.Rendering, this, "Hello World");
+            WLog.Info(LogCategory.EditorCore, null, "Initialized.");
         }
 
         public void Tick()
@@ -50,9 +48,9 @@ namespace WEditor
 
         public void OnGraphicsContextInitialized()
         {
-            Console.WriteLine("[EditorCore] Initializing RenderSystem.");
+            WLog.Info(LogCategory.EditorCore, null, "Initializing RenderSystem.");
             m_renderSystem = new RenderSystem();
-            Console.WriteLine("[EditorCore] RenderSystem Initialized.");
+            WLog.Info(LogCategory.EditorCore, null, "[EditorCore] RenderSystem Initialized.");
         }
 
         public void OnOutputResized(float width, float height)

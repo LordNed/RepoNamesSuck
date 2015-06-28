@@ -81,7 +81,7 @@ namespace WEditor.WindWaker.Loaders
                         break;
 
                     default:
-                        Console.WriteLine("[J3DLoader] Unsupported HierarchyDataType \"{0}\" in model!", curNode.Type);
+                        WLog.Warning(LogCategory.ModelLoading, null, "Unsupported HierarchyDataType \"{0}\" in model!", curNode.Type);
                         break;
                 }
             }

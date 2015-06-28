@@ -55,7 +55,7 @@ namespace WEditor.Rendering
                     return VertexAttribPointerType.Float;
 
                 default:
-                    Console.WriteLine("[VertexDescription] Unsupported ShaderAttributeId: " + attribute);
+                    WLog.Warning(LogCategory.Rendering, this, "Unsupported ShaderAttributeId: {0}", attribute);
                     return VertexAttribPointerType.Float;
             }
         }
@@ -80,7 +80,7 @@ namespace WEditor.Rendering
                 case ShaderAttributeIds.Tex7:
                     return 4 * 2;
                 default:
-                    Console.WriteLine("[VertexDescription] Unsupported ShaderAttributeId: " + attribute);
+                    WLog.Warning(LogCategory.Rendering, this, "Unsupported ShaderAttributeId: {0}", attribute);
                     return 0;
             }
         }

@@ -89,7 +89,7 @@ namespace WEditor
                     return 2;
             }
 
-            Console.WriteLine("Unknown Mouse Button enum {0}, returning Left!");
+            WLog.Warning(LogCategory.EditorCore, null, "Unknown Mouse Button enum {0}, returning Left!", button);
             return 0;
         }
     }

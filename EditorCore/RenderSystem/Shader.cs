@@ -46,7 +46,7 @@ namespace WEditor.Rendering
                 case ShaderType.FragmentShader:
                     if (m_fragmentAddress >= 0)
                     {
-                        Console.WriteLine("[ShaderCompiler] Shader \"{0}\" called CompileSource for ShaderType: {1} twice before linking! Disposing old shader.", Name, type);
+                        WLog.Warning(LogCategory.ShaderCompiler, this, "Shader \"{0}\" called CompileSource for ShaderType: {1} twice before linking! Disposing old shader.", Name, type);
                         GL.DeleteShader(m_fragmentAddress);
                     }
                     m_fragmentAddress = GL.CreateShader(type);
@@ -55,7 +55,7 @@ namespace WEditor.Rendering
                 case ShaderType.VertexShader:
                     if (m_vertexAddress >= 0)
                     {
-                        Console.WriteLine("[ShaderCompiler] Shader \"{0}\" called CompileSource for ShaderType: {1} twice before linking! Disposing old shader.", Name, type);
+                        WLog.Warning(LogCategory.ShaderCompiler, this, "Shader \"{0}\" called CompileSource for ShaderType: {1} twice before linking! Disposing old shader.", Name, type);
                         GL.DeleteShader(m_fragmentAddress);
                     }
                     m_vertexAddress = GL.CreateShader(type);
@@ -73,7 +73,7 @@ namespace WEditor.Rendering
 
             if (compileStatus != 1)
             {
-                Console.WriteLine("[ShaderCompiler] Failed to compile shader {0}. Log:\n{1}", Name, GL.GetShaderInfoLog(shaderAddress));
+                WLog.Warning(LogCategory.ShaderCompiler, this, "Failed to compile shader {0}. Log:\n{1}", Name, GL.GetShaderInfoLog(shaderAddress));
                 return false;
             }
 
@@ -85,7 +85,7 @@ namespace WEditor.Rendering
         {
             if(m_programAddress >= 0)
             {
-                Console.WriteLine("[ShaderCompiler] Shader \"{0}\" called LinkShader for already linked shader! Disposing old program.", Name);
+                WLog.Warning(LogCategory.ShaderCompiler, this, "Shader \"{0}\" called LinkShader for already linked shader! Disposing old program.", Name);
                 GL.DeleteProgram(m_programAddress);
             }
 
@@ -117,7 +117,7 @@ namespace WEditor.Rendering
             GL.GetProgram(m_programAddress, GetProgramParameterName.LinkStatus, out linkStatus);
             if (linkStatus != 1)
             {
-                Console.WriteLine("[ShaderCompiler] Error linking shader. Result: {0}", GL.GetProgramInfoLog(m_programAddress));
+                WLog.Warning(LogCategory.ShaderCompiler, this, "Error linking shader. Result: {0}", GL.GetProgramInfoLog(m_programAddress));
             }
 
             // Now that the program is linked, bind to our uniform locations.

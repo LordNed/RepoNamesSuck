@@ -17,8 +17,9 @@ namespace WEditor.Rendering
 
             if (!success)
             {
-                Console.WriteLine("[ShaderCompiler] Failed to generate shader for material {0}", fromMat.Name);
-                return null;
+                WLog.Warning(LogCategory.ShaderCompiler, shader, "Failed to generate shader for material {0}", fromMat.Name);
+                // ToDo: Generate stub-shader here that expects Pos/UV and single texture.
+                return shader;
             }
 
             shader.LinkShader();
@@ -236,7 +237,7 @@ namespace WEditor.Rendering
                     case /* Color1 */ 2: chan = "1"; swizzle = ".rgb"; alpha = false; break;
                     case /* Alpha1 */ 3: chan = "1"; swizzle = ".a"; alpha = true; break;
                     default:
-                        Console.WriteLine("[TEVShaderGen] Unknown vertex output color channel {0}, skipping.", chanSel);
+                        WLog.Warning(LogCategory.TEVShaderGenerator, shader, "Unknown vertex output color channel {0}, skipping.", chanSel);
                         continue;
                 }
 
@@ -293,7 +294,7 @@ namespace WEditor.Rendering
                     case GXTexGenSrc.Tangent: 
                     case GXTexGenSrc.Binormal:
                     default:
-                        Console.WriteLine("[TEVShaderGen] Unsupported TexGenSrc: {0}, defaulting to TEXCOORD0.", texGen.Source);
+                        WLog.Warning(LogCategory.TEVShaderGenerator, shader, "Unsupported TexGenSrc: {0}, defaulting to TEXCOORD0.", texGen.Source);
                         texGenSrc = "Tex0";
                         break;
                 }
@@ -322,7 +323,7 @@ namespace WEditor.Rendering
                         case GXTexGenType.Bump6:
                         case GXTexGenType.Bump7:
                         default:
-                            Console.WriteLine("[TEVShaderGen] Unsupported TexMatrixSource: {0}, Defaulting to Matrix2x4", texGen.TexMatrixSource);
+                            WLog.Warning(LogCategory.TEVShaderGenerator, shader, "Unsupported TexMatrixSource: {0}, Defaulting to Matrix2x4", texGen.TexMatrixSource);
                             stream.AppendLine(string.Format("    Tex{0} = vec3({1}.xy, 0);", i, texGenSrc));
                             break;
                     }
@@ -334,7 +335,7 @@ namespace WEditor.Rendering
                     switch (texGen.Type)
                     {
                         default:
-                            Console.WriteLine("[TEVShaderGen] Unsupported TexMatrixSource");
+                            WLog.Warning(LogCategory.TEVShaderGenerator, shader, "Unsupported TexMatrixSource");
                             break;
                     }
                 }
