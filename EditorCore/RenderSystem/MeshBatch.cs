@@ -10,6 +10,12 @@ namespace WEditor.Rendering
     {
         public ushort[] BoneIndexes;
         public float[] BoneWeights;
+
+        public BoneWeight()
+        {
+            BoneIndexes = new ushort[0];
+            BoneWeights = new float[0];
+        }
     }
 
     public class MeshBatch

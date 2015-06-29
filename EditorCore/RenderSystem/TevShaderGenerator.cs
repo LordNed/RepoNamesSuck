@@ -183,14 +183,14 @@ namespace WEditor.Rendering
             }
 
             // clip(result.a < 0.5 && result a > 0.2 ? -1 : 1)
-            string ifContents = string.Format("({0} {1} {2})",
+            string ifContents = string.Format("(!({0} {1} {2}))",
                 GetCompareString(alphaCompare.Comp0, m_tevOutputRegs[0] + ".a", alphaCompare.Reference0),
                 alphaOp,
                 GetCompareString(alphaCompare.Comp1, m_tevOutputRegs[0] + ".a", alphaCompare.Reference1));
 
             // clip equivelent
             stream.AppendLine("    // Clip");
-            stream.AppendLine(string.Format("    if{0}\n\t\tdiscard", ifContents));
+            stream.AppendLine(string.Format("    if{0}\n\t\tdiscard;", ifContents));
 
             stream.AppendLine(string.Format("    PixelColor = {0};", m_tevOutputRegs[0]));
 
@@ -453,7 +453,7 @@ namespace WEditor.Rendering
         {
             // If the lighting channel is disabled, the material color for that channel will be passed through unmodified.
             if (!chanInfo.Enable)
-                return "1f";
+                return "0.5f";
 
             //string matColorSrc = (chanInfo.MaterialSrc == GXColorSrc.Vertex) ? "RawColor" : "matColor";
 
@@ -538,12 +538,13 @@ namespace WEditor.Rendering
 
         private static string GetSwapModeSwizzleString(TevSwapModeTable table)
         {
-            return string.Format(".{0}{1}{2}{3}", table.R, table.G, table.B, table.A);
+            char[] swizzleChars = new[] { 'r', 'g', 'b', 'a' };
+            return string.Format(".{0}{1}{2}{3}", swizzleChars[table.R], swizzleChars[table.G], swizzleChars[table.B], swizzleChars[table.A]);
         }
 
         private static string GetTexTapString(TevOrder info)
         {
-            return string.Format("texCol{0}{1}", info.TexMap, (int)info.TexCoordId);
+            return string.Format("texCol{0}", (int)info.TexCoordId);
         }
 
         private static string GetCompareString(GXCompareType compare, string a, byte refVal)
