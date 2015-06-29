@@ -167,7 +167,7 @@ namespace WEditor.Rendering
             stream.AppendLine();
 
             // Alpha Compare
-            stream.AppendLine("    // Alpa Compare Op");
+            stream.AppendLine("    // Alpha Compare Test");
             AlphaCompare alphaCompare = mat.AlphaCompare;
             string alphaOp;
             switch (alphaCompare.Operation)
@@ -189,10 +189,12 @@ namespace WEditor.Rendering
                 GetCompareString(alphaCompare.Comp1, m_tevOutputRegs[0] + ".a", alphaCompare.Reference1));
 
             // clip equivelent
-            stream.AppendLine("    // Clip");
-            stream.AppendLine(string.Format("    if{0}\n\t\tdiscard;", ifContents));
+            //stream.AppendLine("    // Clip");
+            //stream.AppendLine(string.Format("    if{0}\n\t\tdiscard;", ifContents));
 
-            stream.AppendLine(string.Format("    PixelColor = {0};", m_tevOutputRegs[0]));
+            string output = "PixelColor = texCol0" + (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0) ? " * Color0;" : ";");
+            stream.AppendLine(output);
+            //stream.AppendLine(string.Format("    PixelColor = {0};", m_tevOutputRegs[0]));
 
             stream.AppendLine("}");
             stream.AppendLine();
