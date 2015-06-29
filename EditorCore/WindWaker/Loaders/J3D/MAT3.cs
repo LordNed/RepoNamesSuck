@@ -67,6 +67,11 @@ namespace WEditor.WindWaker.Loaders
 
         private static List<T> ReadSection<T>(EndianBinaryReader stream, long chunkStart, int chunkSize, int[] offsets, int offset, LoadFromStream<T> function, int itemSize)
         {
+            // If there's none of this value, early out and return an empty list, otherwise it parses
+            // everything from the chunk start up to the next one as the requested section.
+            if (offsets[offset] == 0)
+                return new List<T>();
+
             stream.BaseStream.Position = chunkStart + offsets[offset];
             return Collect<T>(stream, function, GetOffsetLength(offsets, offset, chunkSize) / itemSize);
         }
@@ -213,18 +218,18 @@ namespace WEditor.WindWaker.Loaders
             var retVal = new TevStage();
             retVal.Unknown0 = stream.ReadByte();
             for (int i = 0; i < 4; i++)
-                retVal.ColorIn[i] = stream.ReadByte();
-            retVal.ColorOp = stream.ReadByte();
-            retVal.ColorBias = stream.ReadByte();
-            retVal.ColorScale = stream.ReadByte();
-            retVal.ColorClamp = stream.ReadByte();
+                retVal.ColorIn[i] = (GXCombineColorInput) stream.ReadByte();
+            retVal.ColorOp = (GXTevOp) stream.ReadByte();
+            retVal.ColorBias = (GXTevBias) stream.ReadByte();
+            retVal.ColorScale = (GXTevScale) stream.ReadByte();
+            retVal.ColorClamp = stream.ReadBoolean();
             retVal.ColorRegId = stream.ReadByte();
             for (int i = 0; i < 4; i++)
-                retVal.AlphaIn[i] = stream.ReadByte();
-            retVal.AlphaOp = stream.ReadByte();
-            retVal.AlphaBias = stream.ReadByte();
-            retVal.AlphaScale = stream.ReadByte();
-            retVal.AlphaClamp = stream.ReadByte();
+                retVal.AlphaIn[i] = (GXCombineAlphaInput) stream.ReadByte();
+            retVal.AlphaOp = (GXTevOp)stream.ReadByte();
+            retVal.AlphaBias = (GXTevBias) stream.ReadByte();
+            retVal.AlphaScale = (GXTevScale)stream.ReadByte();
+            retVal.AlphaClamp = stream.ReadBoolean();
             retVal.AlphaRegId = stream.ReadByte();
             retVal.Unknown1 = stream.ReadByte();
 

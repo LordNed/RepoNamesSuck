@@ -220,24 +220,24 @@ namespace WEditor.Common.Nintendo.J3D
     public class TevStage
     {
         public byte Unknown0; // Always 0xFF
-        public byte[] ColorIn; // 4
-        public byte ColorOp;
-        public byte ColorBias;
-        public byte ColorScale;
-        public byte ColorClamp;
+        public GXCombineColorInput[] ColorIn; // 4
+        public GXTevOp ColorOp;
+        public GXTevBias ColorBias;
+        public GXTevScale ColorScale;
+        public bool ColorClamp;
         public byte ColorRegId;
-        public byte[] AlphaIn; // 4
-        public byte AlphaOp;
-        public byte AlphaBias;
-        public byte AlphaScale;
-        public byte AlphaClamp;
+        public GXCombineAlphaInput[] AlphaIn; // 4
+        public GXTevOp AlphaOp;
+        public GXTevBias AlphaBias;
+        public GXTevScale AlphaScale;
+        public bool AlphaClamp;
         public byte AlphaRegId;
         public byte Unknown1; // Always 0xFF
 
         public TevStage()
         {
-            ColorIn = new byte[4];
-            AlphaIn = new byte[4];
+            ColorIn = new GXCombineColorInput[4];
+            AlphaIn = new GXCombineAlphaInput[4];
         }
     }
 

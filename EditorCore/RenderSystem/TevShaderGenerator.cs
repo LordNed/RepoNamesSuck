@@ -8,6 +8,16 @@ namespace WEditor.Rendering
 {
     public class TEVShaderGenerator
     {
+        // Variable names used in generated shaders to describe the tev output
+        // stages, for which there are 4 of.
+        private static string[] m_tevOutputRegs = new[]
+        {
+            "result",
+            "color0",
+            "color1",
+            "color2"
+        };
+
         public static Shader GenerateShader(Material fromMat)
         {
             Shader shader = new Shader(fromMat.Name);
@@ -60,7 +70,7 @@ namespace WEditor.Rendering
                 if (mat.Textures[i] == null)
                     continue;
 
-                stream.AppendLine(string.Format("uniform sampler2D Texture{0}", i));
+                stream.AppendLine(string.Format("uniform sampler2D Texture{0};", i));
             }
 
             // Main Function
@@ -70,10 +80,10 @@ namespace WEditor.Rendering
             // Default initial values of the TEV registers.
             // ToDo: Does this need swizzling? themikelester has it marked as mat.registerColor[i==0?3:i-1]]
             stream.AppendLine("    // Initial TEV Register Values");
-            stream.AppendLine(string.Format("    vec4 {0} = vec4({1}, {2}, {3}, {4});", "prev", mat.TevColor[0].R, mat.TevColor[0].G, mat.TevColor[0].B, mat.TevColor[0].A));
-            stream.AppendLine(string.Format("    vec4 {0} = vec4({1}, {2}, {3}, {4});", "color0", mat.TevColor[1].R, mat.TevColor[1].G, mat.TevColor[1].B, mat.TevColor[1].A));
-            stream.AppendLine(string.Format("    vec4 {0} = vec4({1}, {2}, {3}, {4});", "color1", mat.TevColor[2].R, mat.TevColor[2].G, mat.TevColor[2].B, mat.TevColor[2].A));
-            stream.AppendLine(string.Format("    vec4 {0} = vec4({1}, {2}, {3}, {4});", "color2", mat.TevColor[3].R, mat.TevColor[3].G, mat.TevColor[3].B, mat.TevColor[3].A));
+            for (int i = 0; i < 4; i++)
+            {
+                stream.AppendLine(string.Format("    vec4 {0} = vec4({1}, {2}, {3}, {4});", m_tevOutputRegs[i], mat.TevColor[i].R, mat.TevColor[i].G, mat.TevColor[i].B, mat.TevColor[i].A));
+            }
             stream.AppendLine();
 
             // Constant Color Registers
@@ -99,7 +109,7 @@ namespace WEditor.Rendering
                 if (IsNewTexCombo(tex, (int)coord, oldCombos))
                 {
                     string swizzle = ""; // Uhh I don't know if we need to swizzle since everyone's been converted into ARGB
-                    stream.AppendLine(string.Format("    vec4 texCol{0} = texture(Texture{0}, {1}){2};", tex, coord, swizzle));
+                    stream.AppendLine(string.Format("    vec4 texCol{0} = texture(Texture{0}, Tex{1}.xy){2};", tex, (int)coord, swizzle));
                 }
             }
             stream.AppendLine();
@@ -136,14 +146,14 @@ namespace WEditor.Rendering
                 }
                 stream.AppendLine();
 
-                /*string[] colorInputs = new string[4];
-                colorInputs[0] = GetColorInString(mat.TevColor[0], mat.KonstColorSels[i], order);
-                colorInputs[1] = GetColorInString(stage.ColorOp, mat.KonstColorSels[i], order);
-                colorInputs[2] = GetColorInString(stage.ColorBias, mat.KonstColorSels[i], order);
-                colorInputs[3] = GetColorInString(stage.ColorScale, mat.KonstColorSels[i], order);
+                string[] colorInputs = new string[4];
+                colorInputs[0] = GetColorInString(stage.ColorIn[0], mat.KonstColorSels[i], order);
+                colorInputs[1] = GetColorInString(stage.ColorIn[1], mat.KonstColorSels[i], order);
+                colorInputs[2] = GetColorInString(stage.ColorIn[2], mat.KonstColorSels[i], order);
+                colorInputs[3] = GetColorInString(stage.ColorIn[3], mat.KonstColorSels[i], order);
 
                 stream.AppendLine("    // Color and Alpha Operations");
-                stream.AppendLine(string.Format("    {0}", GetColorOpString(stage.ColorOp, stage.ColorBias, stage.ColorScale, stage.ColorClamp, colorInputs)));
+                stream.AppendLine(string.Format("    {0}", GetColorOpString(stage.ColorOp, stage.ColorBias, stage.ColorScale, stage.ColorClamp, stage.ColorRegId, colorInputs)));
 
                 string[] alphaInputs = new string[4];
                 alphaInputs[0] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
@@ -151,8 +161,8 @@ namespace WEditor.Rendering
                 alphaInputs[2] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
                 alphaInputs[3] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
 
-                stream.AppendLine(string.Format("    {0}", GetAlphaOpString(stage.AlphaOp, stage.AlphaBias, stage.AlphaScale, stage.AlphaClamp, alphaInputs)));
-                stream.AppendLine();*/
+                stream.AppendLine(string.Format("    {0}", GetAlphaOpString(stage.AlphaOp, stage.AlphaBias, stage.AlphaScale, stage.AlphaClamp, stage.AlphaRegId, alphaInputs)));
+                stream.AppendLine();
             }
             stream.AppendLine();
 
@@ -174,15 +184,15 @@ namespace WEditor.Rendering
 
             // clip(result.a < 0.5 && result a > 0.2 ? -1 : 1)
             string ifContents = string.Format("({0} {1} {2})",
-                GetCompareString(alphaCompare.Comp0, "result.a", alphaCompare.Reference0),
+                GetCompareString(alphaCompare.Comp0, m_tevOutputRegs[0] + ".a", alphaCompare.Reference0),
                 alphaOp,
-                GetCompareString(alphaCompare.Comp1, "result.a", alphaCompare.Reference1));
+                GetCompareString(alphaCompare.Comp1, m_tevOutputRegs[0] + ".a", alphaCompare.Reference1));
 
             // clip equivelent
             stream.AppendLine("    // Clip");
-            stream.AppendLine("    if{0}\n\t\tdiscard");
+            stream.AppendLine(string.Format("    if{0}\n\t\tdiscard", ifContents));
 
-            stream.AppendLine("    PixelColor = result;");
+            stream.AppendLine(string.Format("    PixelColor = {0};", m_tevOutputRegs[0]));
 
             stream.AppendLine("}");
             stream.AppendLine();
@@ -191,8 +201,6 @@ namespace WEditor.Rendering
             System.IO.File.WriteAllText("ShaderDump/" + mat.Name + "_frag_output", stream.ToString());
             return shader.CompileSource(stream.ToString(), OpenTK.Graphics.OpenGL.ShaderType.FragmentShader);
         }
-
-
 
         public static bool GenerateVertexShader(Shader shader, Material mat)
         {
@@ -572,14 +580,14 @@ namespace WEditor.Rendering
         {
             switch (inputType)
             {
-                case GXCombineColorInput.ColorPrev: return "result.rgb";
-                case GXCombineColorInput.AlphaPrev: return "result.aaa";
-                case GXCombineColorInput.C0: return "color0.rgb";
-                case GXCombineColorInput.A0: return "color0.aaa";
-                case GXCombineColorInput.C1: return "color1.rgb";
-                case GXCombineColorInput.A1: return "color1.aaa";
-                case GXCombineColorInput.C2: return "color2.rgb";
-                case GXCombineColorInput.A2: return "color2.aaa";
+                case GXCombineColorInput.ColorPrev: return m_tevOutputRegs[0] + ".rgb";
+                case GXCombineColorInput.AlphaPrev: return m_tevOutputRegs[0] + ".aaa";
+                case GXCombineColorInput.C0: return m_tevOutputRegs[1] + ".rgb";
+                case GXCombineColorInput.A0: return m_tevOutputRegs[1] + ".aaa";
+                case GXCombineColorInput.C1: return m_tevOutputRegs[2] + ".rgb";
+                case GXCombineColorInput.A1: return m_tevOutputRegs[2] + ".aaa";
+                case GXCombineColorInput.C2: return m_tevOutputRegs[3] + ".rgb";
+                case GXCombineColorInput.A2: return m_tevOutputRegs[3] + ".aaa";
                 case GXCombineColorInput.TexColor: return GetTexTapString(texMapping) + ".rgb";
                 case GXCombineColorInput.TexAlpha: return GetTexTapString(texMapping) + ".aaa";
                 case GXCombineColorInput.RasColor: return GetVertColorString(texMapping) + ".rgb";
@@ -598,10 +606,10 @@ namespace WEditor.Rendering
         {
             switch (inputType)
             {
-                case GXCombineAlphaInput.AlphaPrev: return "result.a";
-                case GXCombineAlphaInput.A0: return "color0.a";
-                case GXCombineAlphaInput.A1: return "color1.a";
-                case GXCombineAlphaInput.A2: return "color2.a";
+                case GXCombineAlphaInput.AlphaPrev: return m_tevOutputRegs[0] + ".a";
+                case GXCombineAlphaInput.A0: return m_tevOutputRegs[1] + ".a";
+                case GXCombineAlphaInput.A1: return m_tevOutputRegs[2] + ".a";
+                case GXCombineAlphaInput.A2: return m_tevOutputRegs[3] + ".a";
                 case GXCombineAlphaInput.TexAlpha: return GetTexTapString(texMapping) + ".a";
                 case GXCombineAlphaInput.RasAlpha: return GetVertColorString(texMapping) + ".a";
                 case GXCombineAlphaInput.Konst: return GetKonstAlphaString(konst) + ".a";
@@ -682,6 +690,166 @@ namespace WEditor.Rendering
                     WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unsupported GXKonstColorSel: {0}, returning 1.0", konst);
                     return "1.0";
             }
+        }
+
+        private static string GetColorOpString(GXTevOp op, GXTevBias bias, GXTevScale scale, bool clamp, byte outputRegIndex, string[] colorInputs)
+        {
+            string channelSelect = ".rgb";
+            string dest = m_tevOutputRegs[outputRegIndex] + channelSelect;
+            StringBuilder sb = new StringBuilder();
+
+            switch (op)
+            {
+                case GXTevOp.Add:
+                case GXTevOp.Sub:
+                    {
+                        // out_color = (d + lerp(a, b, c)); - Add
+                        // out_color = (d - lerp(a, b, c)); - Sub
+                        string compareOp = (op == GXTevOp.Add) ? "+" : "-";
+                        sb.AppendLine(string.Format("{0} = ({1} {5} mix({2}, {3}, {4}));", dest, colorInputs[3], colorInputs[0], colorInputs[1], colorInputs[2], compareOp));
+                        sb.AppendLine(GetModString(outputRegIndex, bias, scale, clamp, false));
+                    }
+                    break;
+                case GXTevOp.Comp_R8_GT:
+                case GXTevOp.Comp_R8_EQ:
+                    {
+                        // out_color = (d + ((a.r > b.r) ? c : 0));
+                        string compareOp = (op == GXTevOp.Comp_R8_GT) ? ">" : "==";
+                        sb.AppendLine(string.Format("{0} = ({1} + (({2}.r {5} {3}.r) ? {4} : 0))", dest, colorInputs[3], colorInputs[0], colorInputs[1], colorInputs[2], compareOp));
+                    }
+                    break;
+                case GXTevOp.Comp_GR16_GT:
+                case GXTevOp.Comp_GR16_EQ:
+                    {
+                        // out_color = (d + (dot(a.gr, rgTo16Bit) > dot(b.gr, rgTo16Bit) ? c : 0));
+                        string compareOp = (op == GXTevOp.Comp_GR16_GT) ? ">" : "==";
+                        string rgTo16Bit = "vec2(255.0/65535.6, 255.0 * 256.0/65535.0)";
+                        sb.AppendLine(string.Format("{0} = ({1} + (dot({2}.gr, {3}) {4} dot({5}.gr, {3}) ? {6} : 0));",
+                            dest, colorInputs[3], colorInputs[0], rgTo16Bit, compareOp, colorInputs[1], colorInputs[2]));
+                    }
+                    break;
+                case GXTevOp.Comp_BGR24_GT:
+                case GXTevOp.Comp_BGR24_EQ:
+                    {
+                        // out_color = (d + (dot(a.bgr, bgrTo24Bit) > dot(b.bgr, bgrTo24Bit) ? c : 0));
+                        string compareOp = (op == GXTevOp.Comp_BGR24_GT) ? ">" : "==";
+                        string bgrTo24Bit = "vec3(255.0/16777215.0, 255.0 * 256.0/16777215.0, 255.0*65536.0/16777215.0)";
+                        sb.AppendLine(string.Format("{0} = ({1} + (dot({2}.bgr, {4}) {5} ({2}.bgr, {4}) ? {3} : 0));",
+                            dest, colorInputs[3], colorInputs[0], colorInputs[1], colorInputs[2], colorInputs[3], bgrTo24Bit, compareOp));
+                    }
+                    break;
+                case GXTevOp.Comp_RGB8_GT:
+                case GXTevOp.Comp_RGB8_EQ:
+                    {
+                        // out_color.r = d.r + ((a.r > b.r) ? c.r : 0);
+                        // out_color.g = d.g + ((a.g > b.g) ? c.g : 0);
+                        // out_color.b = d.b + ((a.b > b.b) ? c.b : 0);
+                        string compareOp = (op == GXTevOp.Comp_RGB8_GT) ? ">" : "==";
+                        string format = "{0}.{6} = {1}.{6} + (({2}.{6} {5} {3}.{6}) ? {4}.{6} : 0);";
+
+                        sb.AppendLine(string.Format(format, dest, colorInputs[3], colorInputs[0], colorInputs[1], colorInputs[2], compareOp, "r"));
+                        sb.AppendLine(string.Format(format, dest, colorInputs[3], colorInputs[0], colorInputs[1], colorInputs[2], compareOp, "g"));
+                        sb.AppendLine(string.Format(format, dest, colorInputs[3], colorInputs[0], colorInputs[1], colorInputs[2], compareOp, "b"));
+                    }
+                    break;
+                default:
+                    WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unsupported Color Op: {0}!", op);
+                    sb.AppendLine("// Invalid Color op for TEV broke here.");
+                    break;
+            }
+
+            if (op > GXTevOp.Sub)
+            {
+                //if(bias != 3 || scale != 0 || clamp != 1)
+                // warn(unexpected bias, scale, clamp)...?
+            }
+
+            return sb.ToString();
+        }
+
+        private static string GetAlphaOpString(GXTevOp op, GXTevBias bias, GXTevScale scale, bool clamp, byte outputRegIndex, string[] alphaInputs)
+        {
+            string channelSelect = ".a";
+            string dest = m_tevOutputRegs[outputRegIndex] + channelSelect;
+            StringBuilder sb = new StringBuilder();
+
+            switch (op)
+            {
+                case GXTevOp.Add:
+                case GXTevOp.Sub:
+                    {
+                        // out_color = (d + lerp(a, b, c)); - Add
+                        // out_color = (d - lerp(a, b, c)); - Sub
+                        string compareOp = (op == GXTevOp.Add) ? "+" : "-";
+                        sb.AppendLine(string.Format("{0} = ({1} {5} mix({2}, {3}, {4}));", dest, alphaInputs[3], alphaInputs[0], alphaInputs[1], alphaInputs[2], compareOp));
+                        sb.AppendLine(GetModString(outputRegIndex, bias, scale, clamp, true));
+                    }
+                    break;
+                case GXTevOp.Comp_A8_EQ:
+                case GXTevOp.Comp_A8_GT:
+                    {
+                        // out_color = (d + ((a.a > b.a) ? c : 0))
+                        string compareOp = (op == GXTevOp.Comp_R8_GT) ? ">" : "==";
+                        sb.AppendLine(string.Format("{0} = ({1} + (({2}.a {5} {3}.a) ? {4} : 0))", dest, alphaInputs[3], alphaInputs[0], alphaInputs[1], alphaInputs[2], compareOp));
+                    }
+                    break;
+
+                default:
+                    WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unsupported op in GetAlphaOpString: {0}", op);
+                    sb.AppendLine("// Invalid Alpha op for TEV broke here.");
+                    break;
+
+            }
+
+            if (op == GXTevOp.Comp_A8_GT || op == GXTevOp.Comp_A8_EQ)
+            {
+                // if(bias != 3 || scale != 1 || clamp != 1)
+                // warn unexpected bias/scale/etc
+            }
+
+            return sb.ToString();
+        }
+
+        private static string GetModString(byte outputRegIndex, GXTevBias bias, GXTevScale scale, bool clamp, bool isAlpha)
+        {
+            float biasVal = 0f;
+            float scaleVal = 1f;
+
+            switch (bias)
+            {
+                case GXTevBias.Zero: biasVal = 0f; break;
+                case GXTevBias.AddHalf: biasVal = 0.5f; break;
+                case GXTevBias.SubHalf: biasVal = -0.5f; break;
+            }
+
+            switch (scale)
+            {
+                case GXTevScale.Scale_1: scaleVal = 1f; break;
+                case GXTevScale.Scale_2: scaleVal = 2f; break;
+                case GXTevScale.Scale_4: scaleVal = 4f; break;
+                case GXTevScale.Divide_2: scaleVal = 0.5f; break;
+            }
+
+            // If we're not modifying it, early out.
+            if (scaleVal == 1f && biasVal == 0f && !clamp)
+                return "";
+
+            string channelSelect = isAlpha ? ".a" : ".rgb";
+            string dest = m_tevOutputRegs[outputRegIndex] + channelSelect;
+            StringBuilder sb = new StringBuilder();
+
+            if (scaleVal == 1f && biasVal == 0f)
+            {
+                // result = saturate(result)
+                sb.AppendLine(string.Format("{0} = clamp({0},0.0,1.0);", dest));
+            }
+            else
+            {
+                // result = saturate(result * scale + bias * scale)
+                sb.AppendLine(string.Format("{0} = clamp({0} * {1} + {2} * {1});", dest, scaleVal, biasVal));
+            }
+
+            return sb.ToString();
         }
     }
 }

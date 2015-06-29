@@ -65,7 +65,9 @@ namespace WEditor.Rendering
         Comp_BGR24_GT = 12,
         Comp_BGR24_EQ = 13,
         Comp_RGB8_GT = 14,
-        Comp_RGB8_EQ = 15
+        Comp_RGB8_EQ = 15,
+        Comp_A8_EQ = Comp_RGB8_EQ,
+        Comp_A8_GT = Comp_RGB8_GT
     }
 
     public enum GXTevBias
@@ -325,4 +327,12 @@ namespace WEditor.Rendering
         AlphaBumpN = 8,
         ColorNull = 0xFF,
     }
+
+    /*public enum GXTevClampMode
+    {
+        Clamp = 0,
+        ClampBottom = 2,
+        None = 0,
+        Top = 1
+    }*/
 }
