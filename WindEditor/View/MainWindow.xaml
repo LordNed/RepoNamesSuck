@@ -1,16 +1,19 @@
 ﻿<Window x:Class="WindEditor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:self="clr-namespace:WEditor.UI"
-        Title="Wind Editor" Height="720" Width="1280" ResizeMode="CanResizeWithGrip">
+        xmlns:self="clr-namespace:WindEditor.UI"
+        Title="Wind Editor" Height="720" Width="1280" ResizeMode="CanResizeWithGrip" Icon="/WindEditor;component/Resources/middlewindwakersymbol256.ico">
     <Window.CommandBindings>
-        <CommandBinding Command="ApplicationCommands.Open" CanExecute="OnOpenCommand_CanExecute" Executed="OnOpenCommand_Executed"/>
+        <CommandBinding Command="ApplicationCommands.Open" Executed="OnOpenCommand_Executed"/>
         <CommandBinding Command="ApplicationCommands.Save" CanExecute="OnSaveCommand_CanExecute" Executed="OnSaveCommand_Executed"/>
         <CommandBinding Command="ApplicationCommands.Close" CanExecute="OnCloseCommand_CanExecute" Executed="OnCloseCommand_Executed"/>
         <CommandBinding Command="ApplicationCommands.Undo" CanExecute="OnUndoCommand_CanExecute" Executed="OnUndoCommand_Executed"/>
         <CommandBinding Command="ApplicationCommands.Redo" CanExecute="OnRedoCommand_CanExecute" Executed="OnRedoCommand_Executed"/>
         <CommandBinding Command="self:Commands.Exit" Executed="OnExitCommand_Executed"/>
     </Window.CommandBindings>
+    <Window.DataContext>
+        <self:MainWindowViewModel/>
+    </Window.DataContext>
     <Grid>
         <DockPanel VerticalAlignment="Top" Height="20">
             <Menu DockPanel.Dock="Top">

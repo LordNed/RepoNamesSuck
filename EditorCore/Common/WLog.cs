@@ -25,7 +25,10 @@ namespace WEditor
         EditorCore,
         // Texture Decoding/Encoding
         Textures,
+        // Archive Loader
         ArchiveLoading,
+        // UI
+        UI
     }
 
     public enum LogSeverity

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using WEditor.Rendering;
+using WEditor.WindWaker;
 
 namespace WEditor
 {
@@ -19,6 +20,8 @@ namespace WEditor
         private StandardOutLogger m_stdOutLogger;
 
         public List<Component> HackyComponents;
+
+        public Map LoadedScene { get; private set; }
 
         public EditorCore()
         {
