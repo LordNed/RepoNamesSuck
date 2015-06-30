@@ -11,9 +11,6 @@
         <CommandBinding Command="ApplicationCommands.Redo" CanExecute="OnRedoCommand_CanExecute" Executed="OnRedoCommand_Executed"/>
         <CommandBinding Command="self:Commands.Exit" Executed="OnExitCommand_Executed"/>
     </Window.CommandBindings>
-    <Window.DataContext>
-        <self:MainWindowViewModel/>
-    </Window.DataContext>
     <Grid>
         <DockPanel VerticalAlignment="Top" Height="20">
             <Menu DockPanel.Dock="Top">
@@ -26,6 +23,7 @@
                 </MenuItem>
             </Menu>
         </DockPanel>
+        <WindowsFormsHost x:Name="winFormsHost" Margin="280,30,10,10" Initialized="winFormsHost_Initialized" KeyDown="winFormsHost_KeyDown" KeyUp="winFormsHost_KeyUp" LayoutUpdated="winFormsHost_LayoutUpdated"/>
 
     </Grid>
 </Window>

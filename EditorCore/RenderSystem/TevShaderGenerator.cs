@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using WEditor.Common.Nintendo.J3D;
@@ -200,6 +201,7 @@ namespace WEditor.Rendering
             stream.AppendLine();
 
             // Compile the Fragment Shader and return whether it compiled sucesfully or not.
+            Directory.CreateDirectory("ShaderDump");
             System.IO.File.WriteAllText("ShaderDump/" + mat.Name + "_frag_output", stream.ToString());
             return shader.CompileSource(stream.ToString(), OpenTK.Graphics.OpenGL.ShaderType.FragmentShader);
         }
@@ -447,6 +449,7 @@ namespace WEditor.Rendering
             stream.AppendLine();
 
             // Compile the Vertex Shader and return whether it compiled sucesfully or not.
+            Directory.CreateDirectory("ShaderDump");
             System.IO.File.WriteAllText("ShaderDump/" + mat.Name + "_vert_output", stream.ToString());
             return shader.CompileSource(stream.ToString(), OpenTK.Graphics.OpenGL.ShaderType.VertexShader);
         }

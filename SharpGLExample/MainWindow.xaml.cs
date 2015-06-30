@@ -35,6 +35,9 @@ namespace SharpGLExample
             DataContext = m_viewModel;
         }
 
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+        }
         private void winFormsHost_Initialized(object sender, EventArgs e)
         {
             m_glControl = new GLControl(new GraphicsMode(32, 24), 3, 0, GraphicsContextFlags.Default);
@@ -46,10 +49,6 @@ namespace SharpGLExample
             m_viewModel.OnGraphicsContextInitialized(m_glControl);
 
             winFormsHost.Child = m_glControl;
-        }
-
-        private void Window_MouseMove(object sender, MouseEventArgs e)
-        {
         }
 
         void m_glControl_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -102,15 +101,6 @@ namespace SharpGLExample
             m_viewModel.SetMouseState(btn, true);
         }
 
-        void m_glControl_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
-        {
-
-            /*GL.ClearColor(Color4.Red);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.Flush();
-            m_glControl.SwapBuffers();*/
-        }
 
         private void winFormsHost_LayoutUpdated(object sender, EventArgs e)
         {
@@ -130,6 +120,16 @@ namespace SharpGLExample
         private void winFormsHost_MouseMove(object sender, MouseEventArgs e)
         {
             m_viewModel.MousePosition = Mouse.GetPosition(null);
+        }
+
+        void m_glControl_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        {
+
+            /*GL.ClearColor(Color4.Red);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.Flush();
+            m_glControl.SwapBuffers();*/
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -178,6 +179,8 @@ namespace WEditor
                 Marshal.Copy(imageData, 0, ptr, imageData.Length);
                 bmp.UnlockBits(bmpData);
 
+                // Bitmaps will throw an exception if the output folder doesn't exist so...
+                Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
                 bmp.Save(outputFile);
             }
         }
