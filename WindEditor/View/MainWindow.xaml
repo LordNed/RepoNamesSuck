@@ -23,7 +23,64 @@
                 </MenuItem>
             </Menu>
         </DockPanel>
-        <WindowsFormsHost x:Name="winFormsHost" Margin="280,30,10,10" Initialized="winFormsHost_Initialized" KeyDown="winFormsHost_KeyDown" KeyUp="winFormsHost_KeyUp" LayoutUpdated="winFormsHost_LayoutUpdated"/>
+        <Grid HorizontalAlignment="Stretch" Margin="0,20" VerticalAlignment="Stretch" Width="Auto">
+            <Grid Margin="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="215"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="215"/>
+                </Grid.ColumnDefinitions>
+                <!-- Left Pane -->
+                <Grid Grid.Column="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="120"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Top Pane -->
+                        <GroupBox Header="Entity Outliner" Margin="2,0">
+                            <TreeView x:Name="m_projectTree"/>
+                        </GroupBox>
+                        
+                        <!-- First Splitter -->
+                        <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
+                        
+                        <!-- Middle Pane -->
+                        <GroupBox Grid.Row="2" Header="Scene View" Margin="2,0">
+                            <TreeView/>
+                        </GroupBox>
 
+                        <!-- Second Splitter -->
+                        <GridSplitter Grid.Row="3" Height="5" HorizontalAlignment="Stretch"/>
+                        
+                        <!-- Bottom Pane -->
+                        <GroupBox Grid.Row="4" Header="Layer Visibility" Margin="2,0,1.6,0">
+                            
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+                <!-- Left Side Splitter Handle -->
+                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                <!-- Middle Pane (Main View) -->
+                <Grid Grid.Column="2">
+                <WindowsFormsHost x:Name="winFormsHost" Margin="0" Initialized="winFormsHost_Initialized" KeyDown="winFormsHost_KeyDown" KeyUp="winFormsHost_KeyUp" LayoutUpdated="winFormsHost_LayoutUpdated"/>
+                </Grid>
+                <!-- Right Side Splitter Handle-->
+                <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
+                <!-- Right Pane-->
+                <Grid Grid.Column="4">
+                    
+                </Grid>
+
+            </Grid>
+        </Grid>
+        <DockPanel VerticalAlignment="Bottom" Height="20">
+        </DockPanel>
     </Grid>
 </Window>
