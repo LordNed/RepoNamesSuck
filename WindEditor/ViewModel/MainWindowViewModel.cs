@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using WEditor;
 
 namespace WindEditor.UI
@@ -43,7 +44,25 @@ namespace WindEditor.UI
 
         internal void Open()
         {
-            throw new NotImplementedException();
+            var ofd = new CommonOpenFileDialog();
+            ofd.Title = "Choose Directory";
+            ofd.IsFolderPicker = true;
+            ofd.AddToMostRecentlyUsedList = false;
+            ofd.AllowNonFileSystemItems = false;
+            ofd.EnsureFileExists = true;
+            ofd.EnsurePathExists = true;
+            ofd.EnsureReadOnly = false;
+            ofd.EnsureValidNames = true;
+            ofd.Multiselect = false;
+            ofd.ShowPlacesList = true;
+
+            if(ofd.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                // Just assume the folder paths are valid now.
+                var folderPath = ofd.FileName;
+
+                m_editorCore.LoadMapFromDirectory(folderPath);
+            }
         }
 
 

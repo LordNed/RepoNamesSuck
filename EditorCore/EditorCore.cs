@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using WEditor.Rendering;
 using WEditor.WindWaker;
+using WEditor.WindWaker.Loaders;
 
 namespace WEditor
 {
@@ -63,5 +64,14 @@ namespace WEditor
 
             m_renderSystem.SetOutputSize(width, height);
         }
+
+        public void LoadMapFromDirectory(string folderPath)
+        {
+            if (string.IsNullOrEmpty(folderPath))
+                throw new ArgumentException("You must specify a folder to load from directory!");
+
+            LoadedScene = MapLoader.Load(folderPath);
+        }
+
     }
 }
