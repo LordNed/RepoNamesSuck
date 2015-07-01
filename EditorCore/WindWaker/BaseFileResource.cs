@@ -37,32 +37,15 @@ namespace WEditor.WindWaker
         }
 
         /// <summary>
-        /// Name of the folder that this file came from. Used to put the file back into
-        /// the folder it came from, regardless of the FileResourceType. Used to preserve
-        /// loading / unloading archives.
-        /// </summary>
-        public string FolderName
-        {
-            get { return m_folderName; }
-            set
-            {
-                m_folderName = value;
-                OnPropertyChanged("FolderName");
-            }
-        }
-
-        /// <summary>
         /// Archive that this file belongs to.
         /// </summary>
         public ZArchive ParentArchive { get; private set; }
 
         private string m_fileName;
-        private string m_folderName;
 
-        public BaseFileResource(string fileName, string folderName, ZArchive parentArchive)
+        public BaseFileResource(string fileName, ZArchive parentArchive)
         {
             FileName = fileName;
-            FolderName = folderName;
             ParentArchive = parentArchive;
         }
 
@@ -82,7 +65,7 @@ namespace WEditor.WindWaker
     {
         public byte[] Data;
 
-        public UnsupportedFileResource(string fileName, string folderName, ZArchive parentArchive) : base(fileName, folderName, parentArchive)
+        public UnsupportedFileResource(string fileName, ZArchive parentArchive) : base(fileName, parentArchive)
         {
 
         }

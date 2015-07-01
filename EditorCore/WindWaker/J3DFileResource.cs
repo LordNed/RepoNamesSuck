@@ -126,7 +126,7 @@ namespace WEditor.WindWaker
 
         public Mesh Mesh;
 
-        public J3DFileResource(string fileName, string folderName, ZArchive parentArchive) : base (fileName, folderName, parentArchive)
+        public J3DFileResource(string fileName, ZArchive parentArchive) : base (fileName, parentArchive)
         {
             Mesh = new Mesh();
         }

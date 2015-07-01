@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using WEditor.FileSystem;
 namespace WEditor.WindWaker
 {
     public enum ArchiveType 
@@ -35,7 +36,7 @@ namespace WEditor.WindWaker
             }
         }
 
-        public BindingList<BaseFileResource> Files { get; private set; }
+        public VirtualFilesystemDirectory Files { get; private set; }
 
         private string m_name;
         private ArchiveType m_type;
@@ -44,13 +45,12 @@ namespace WEditor.WindWaker
         {
             Name = name;
             Type = type;
-            Files = new BindingList<BaseFileResource>();
+            Files = new VirtualFilesystemDirectory(Name);
         }
 
         public override string ToString()
         {
-            //return string.Format("{0} FileCount: {1}", Type, Files.Count);
-            return base.ToString();
+            return Name;
         }
 
         protected void OnPropertyChanged(string propertyName)

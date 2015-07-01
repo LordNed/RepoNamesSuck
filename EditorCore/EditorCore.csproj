@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Common\Colors.cs" />
     <Compile Include="Common\Component.cs" />
+    <Compile Include="Common\FileSystem\VirtualFilesystem.cs" />
     <Compile Include="Common\Input.cs" />
     <Compile Include="Common\MapEntityObject.cs" />
     <Compile Include="Common\Nintendo\BinaryTextureImage.cs" />

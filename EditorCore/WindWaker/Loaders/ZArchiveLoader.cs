@@ -1,6 +1,7 @@
 ﻿using WEditor.WindWaker.MapEntities;
 using System;
 using System.IO;
+using WEditor.FileSystem;
 namespace WEditor.WindWaker.Loaders
 {
     public static class ZArchiveLoader
@@ -21,6 +22,8 @@ namespace WEditor.WindWaker.Loaders
             foreach (DirectoryInfo folder in rootFolderInfo.GetDirectories())
             {
                 string folderName = folder.Name;
+                var virtualDirectory = new VirtualFilesystemDirectory(folderName);
+                archive.Files.Children.Add(virtualDirectory);
 
                 // Get all of the files within this folder.
                 foreach(FileInfo file in folder.GetFiles())
@@ -36,7 +39,7 @@ namespace WEditor.WindWaker.Loaders
                         /* Map Collision Format */
                         case ".dzb":
                             WLog.Info(LogCategory.ArchiveLoading, archive, "Loading DZB (Map Collision) {0}...", fileName);
-                            resource = new UnsupportedFileResource(fileName, folderName, archive);
+                            resource = new UnsupportedFileResource(fileName, archive);
                             WLog.Info(LogCategory.ArchiveLoading, archive, "Loaded {0}.", fileName);
                             break;
 
@@ -44,7 +47,7 @@ namespace WEditor.WindWaker.Loaders
                         case ".dzr":
                         case ".dzs":
                             WLog.Info(LogCategory.ArchiveLoading, archive, "Loading DZR/DZS (Map Entity Data) {0}...", fileName);
-                            resource = new MapEntityResource(fileName, folderName, archive);
+                            resource = new MapEntityResource(fileName, archive);
                             MapEntityLoader.Load((MapEntityResource) resource, map, file.FullName);
                             WLog.Info(LogCategory.ArchiveLoading, archive, "Loaded {0}.", fileName);
                             break;
@@ -53,7 +56,7 @@ namespace WEditor.WindWaker.Loaders
                         case ".bmd":
                         case ".bdl":
                             WLog.Info(LogCategory.ArchiveLoading, archive, "Loading J3D (3D Model) {0}...", fileName);
-                            resource = new J3DFileResource(fileName, folderName, archive);
+                            resource = new J3DFileResource(fileName, archive);
                             J3DLoader.Load((J3DFileResource)resource, file.FullName);
                             WLog.Info(LogCategory.ArchiveLoading, archive, "Loaded {0}.", fileName);
                             break;
@@ -70,17 +73,18 @@ namespace WEditor.WindWaker.Loaders
                         case ".btk":
                         /* Alternate Materials (MAT3 Chunk from BMD/BDL) */
                         case ".bmt":
-                            resource = new UnsupportedFileResource(fileName, folderName, archive);
+                            resource = new UnsupportedFileResource(fileName, archive);
                             break;
 
                         default:
                             WLog.Warning(LogCategory.ArchiveLoading, archive, "Unknown folder type \"{0}\" found ({1}).", folderName, fileName);
-                            resource = new UnsupportedFileResource(fileName, folderName, archive);
+                            resource = new UnsupportedFileResource(fileName, archive);
                             UnsupportedFileResourceLoader.Load((UnsupportedFileResource)resource, file.FullName);
                             break;
                     }
 
-                    archive.Files.Add(resource);
+                    var virtualFile = new VirtualFilesystemFile(fileName, fileExtension, resource);
+                    virtualDirectory.Children.Add(virtualFile);
                 }
             }
         }

@@ -5,20 +5,27 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:self="clr-namespace:WindEditor.UI"
              xmlns:windeditor="clr-namespace:WEditor.WindWaker;assembly=EditorCore"
+             xmlns:filesystem="clr-namespace:WEditor.FileSystem;assembly=EditorCore"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <HierarchicalDataTemplate x:Key="ChildTemplate">
-            <TextBlock Text="{Binding FileName}"/>
-        </HierarchicalDataTemplate>
-
-        <HierarchicalDataTemplate x:Key="ArchiveViewTemplate" ItemsSource="{Binding Files}" ItemTemplate="{StaticResource ChildTemplate}">
+        <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type filesystem:VirtualFilesystemDirectory}">
             <TextBlock Text="{Binding Name}"/>
         </HierarchicalDataTemplate>
+
+        <HierarchicalDataTemplate ItemsSource="{Binding Files.Children}" DataType="{x:Type windeditor:ZArchive}">
+            <TextBlock Text="{Binding Name}"/>
+        </HierarchicalDataTemplate>
+
+        <DataTemplate DataType="{x:Type filesystem:VirtualFilesystemFile}">
+            <TextBlock Text="{Binding Name}"/>
+        </DataTemplate>
+
+
     </UserControl.Resources>
     <Grid>
         <GroupBox Header="Scene View" Margin="2,0">
-            <TreeView ItemsSource="{Binding ArchiveList}" ItemTemplate="{StaticResource ArchiveViewTemplate}"/>
+            <TreeView ItemsSource="{Binding ArchiveList}"/>
         </GroupBox>
     </Grid>
 </UserControl>

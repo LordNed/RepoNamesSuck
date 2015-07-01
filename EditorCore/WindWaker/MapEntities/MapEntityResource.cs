@@ -9,7 +9,7 @@ namespace WEditor.WindWaker.MapEntities
     {
         public BindingList<MapEntityObject> Objects { get; private set; }
 
-        public MapEntityResource(string fileName, string folderName, ZArchive parentArchive) : base (fileName, folderName, parentArchive)
+        public MapEntityResource(string fileName, ZArchive parentArchive) : base (fileName, parentArchive)
         {
             Objects = new BindingList<MapEntityObject>();
         }
