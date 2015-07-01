@@ -50,9 +50,7 @@
                         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
                         
                         <!-- Middle Pane -->
-                        <GroupBox Grid.Row="2" Header="Scene View" Margin="2,0">
-                            <TreeView/>
-                        </GroupBox>
+                        <View:SceneView Grid.Row="2" DataContext="{Binding SceneView}"/>
 
                         <!-- Second Splitter -->
                         <GridSplitter Grid.Row="3" Height="5" HorizontalAlignment="Stretch"/>

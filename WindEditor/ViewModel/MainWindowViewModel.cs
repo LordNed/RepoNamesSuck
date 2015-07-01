@@ -21,6 +21,8 @@ namespace WindEditor.UI
         public bool CanUndo { get { return false; } }
         public bool CanRedo { get { return false; } }
 
+        public SceneViewViewModel SceneView { get; private set; }
+
         private EditorCore m_editorCore;
         private System.Windows.Forms.Timer m_intervalTimer;
         private GLControl m_control;
@@ -28,6 +30,9 @@ namespace WindEditor.UI
         public MainWindowViewModel()
         {
             m_editorCore = new EditorCore();
+            SceneView = new SceneViewViewModel();
+
+
             m_intervalTimer = new System.Windows.Forms.Timer();
             m_intervalTimer.Interval = 16; // 60 FPS roughly
             m_intervalTimer.Enabled = true;
