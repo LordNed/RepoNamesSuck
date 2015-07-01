@@ -8,14 +8,17 @@ using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using WEditor;
 using OpenTK;
+using System.ComponentModel;
 
 namespace WindEditor.UI
 {
     /// <summary>
     /// This is constructed automatically by the MainWindow view and is bound to the MainWindow's data context.
     /// </summary>
-    public class MainWindowViewModel
+    public class MainWindowViewModel : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public bool CanSave { get { return m_editorCore.LoadedScene != null; } }
         public bool CanClose { get { return m_editorCore.LoadedScene != null; } }
         public bool CanUndo { get { return false; } }
@@ -44,8 +47,15 @@ namespace WindEditor.UI
                 if (m_control != null)
                     m_control.SwapBuffers();
             };
+
+            m_editorCore.PropertyChanged += OnEditorPropertyChanged;
         }
 
+        void OnEditorPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == "LoadedScene")
+                SceneView.SetMap(m_editorCore.LoadedScene);
+        }
 
         internal void OnGraphicsContextInitialized(GLControl context)
         {
@@ -128,6 +138,12 @@ namespace WindEditor.UI
         internal void Redo()
         {
             WLog.Info(LogCategory.UI, null, "Redo (Not Implemented)");
+        }
+
+                protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

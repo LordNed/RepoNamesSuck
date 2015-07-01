@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using WEditor.Rendering;
 using WEditor.WindWaker;
@@ -7,8 +8,10 @@ using WEditor.WindWaker.Loaders;
 
 namespace WEditor
 {
-    public class EditorCore
+    public class EditorCore : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public static EditorCore HackyInstance;
 
         /// Sub-Systems that run various parts of the Editor 
@@ -22,14 +25,25 @@ namespace WEditor
 
         public List<Component> HackyComponents;
 
-        public Map LoadedScene { get; private set; }
+        public Map LoadedScene
+        {
+            get { return m_loadedScene; }
+            set
+            {
+                m_loadedScene = value;
+                OnPropertyChanged("LoadedScene");
+            }
+        }
+
+        private Map m_loadedScene;
 
         public EditorCore()
         {
+            m_stdOutLogger = new StandardOutLogger();
+
             HackyInstance = this;
             m_dtStopwatch = new Stopwatch();
             HackyComponents = new List<Component>();
-            m_stdOutLogger = new StandardOutLogger();
             WLog.Info(LogCategory.EditorCore, null, "Initialized.");
         }
 
@@ -73,5 +87,11 @@ namespace WEditor
             LoadedScene = MapLoader.Load(folderPath);
         }
 
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

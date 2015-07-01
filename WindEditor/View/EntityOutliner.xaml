@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <GroupBox Header="Entity Outliner" Margin="2,0">
-            <TreeView x:Name="m_projectTree"/>
+            <TextBlock Text="Hello World"/>
         </GroupBox>
     </Grid>
 </UserControl>

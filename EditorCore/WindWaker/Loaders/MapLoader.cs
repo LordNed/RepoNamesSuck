@@ -36,7 +36,7 @@ namespace WEditor.WindWaker.Loaders
                 string folderName = dirInfo.Name;
                 if(folderName.ToLower().StartsWith("stage"))
                 {
-                    archive = new ZArchive(ArchiveType.Stage);
+                    archive = new ZArchive(folderName, ArchiveType.Stage);
 
                     if (newMap.Stage != null)
                         throw new FileLoadException("folderDirectory contains more than one stage archive!");
@@ -45,7 +45,7 @@ namespace WEditor.WindWaker.Loaders
                 }
                 else if (folderName.ToLower().StartsWith("room"))
                 {
-                    archive = new ZArchive(ArchiveType.Room);
+                    archive = new ZArchive(folderName, ArchiveType.Room);
                     newMap.Rooms.Add(archive);
                 }
 

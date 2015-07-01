@@ -41,7 +41,15 @@ namespace WEditor.WindWaker
         /// the folder it came from, regardless of the FileResourceType. Used to preserve
         /// loading / unloading archives.
         /// </summary>
-        public string FolderName { get; private set; }
+        public string FolderName
+        {
+            get { return m_folderName; }
+            set
+            {
+                m_folderName = value;
+                OnPropertyChanged("FolderName");
+            }
+        }
 
         /// <summary>
         /// Archive that this file belongs to.
@@ -49,6 +57,7 @@ namespace WEditor.WindWaker
         public ZArchive ParentArchive { get; private set; }
 
         private string m_fileName;
+        private string m_folderName;
 
         public BaseFileResource(string fileName, string folderName, ZArchive parentArchive)
         {
