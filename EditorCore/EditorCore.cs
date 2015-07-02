@@ -93,5 +93,10 @@ namespace WEditor
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public void UnloadMap()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace WindEditor.UI
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public bool CanSave { get { return m_editorCore.LoadedScene != null; } }
+        public bool CanSave { get { return false; /* return m_editorCore.LoadedScene != null;*/ } }
         public bool CanClose { get { return m_editorCore.LoadedScene != null; } }
         public bool CanUndo { get { return false; } }
         public bool CanRedo { get { return false; } }
@@ -126,9 +126,8 @@ namespace WindEditor.UI
 
         internal void Close()
         {
-            throw new NotImplementedException();
+            m_editorCore.UnloadMap();
         }
-
 
         internal void Undo()
         {
