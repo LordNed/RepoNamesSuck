@@ -41,10 +41,6 @@ namespace WEditor
         Error
     }
 
-    // WLog.Info(...)
-    // WLog.Warning(...)
-    // WLog.Error(...)
-
     public static class WLog
     {
         public delegate void RecieveLogMessage(Entry message);
