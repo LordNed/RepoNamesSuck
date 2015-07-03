@@ -10,84 +10,18 @@ namespace WEditor.Rendering
         public static RenderSystem HackInstance;
 
         private List<Camera> m_cameraList;
-        private ShaderProgram m_shader;
-
         public List<Mesh> m_meshList;
 
         public RenderSystem()
         {
             m_cameraList = new List<Camera>();
             m_meshList = new List<Mesh>();
-            m_shader = new ShaderProgram("RenderSystem/Shaders/vert.glsl", "RenderSystem/Shaders/frag.glsl");
             HackInstance = this;
 
             // Create a Default camera
             Camera editorCamera = new Camera();
             editorCamera.ClearColor = new Color(0.8f, 0.2f, 1f, 1f);
             m_cameraList.Add(editorCamera);
-
-            Camera leftCamera = new Camera();
-            leftCamera.ClearColor = new Color(1f, 0.5f, 0, 1f);
-            leftCamera.ViewportRect = new Rect(0f, 0f, 0.5f, 1f);
-
-
-            Camera rightCamera = new Camera();
-            rightCamera.ViewportRect = new Rect(0.5f, 0f, 0.5f, 1f);
-            rightCamera.ClearColor = new Color(0.5f, 0, 1f, 1f);
-
-            //m_cameraList.Add(leftCamera);
-            //m_cameraList.Add(rightCamera);
-
-            /* Create a default cube */
-            var testMesh = new MeshBatch();
-            Vector3 size = new Vector3(2f, 2f, 2f);
-
-            Vector3[] meshVerts =
-            {
-                new Vector3(-size.X / 2f, -size.Y / 2f,  -size.Z / 2f),
-                new Vector3(size.X / 2f, -size.Y / 2f,  -size.Z / 2f),
-                new Vector3(size.X / 2f, size.Y / 2f,  -size.Z / 2f),
-                new Vector3(-size.X / 2f, size.Y / 2f,  -size.Z / 2f),
-                new Vector3(-size.X / 2f, -size.Y / 2f,  size.Z / 2f),
-                new Vector3(size.X / 2f, -size.Y / 2f,  size.Z / 2f),
-                new Vector3(size.X / 2f, size.Y / 2f,  size.Z / 2f),
-                new Vector3(-size.X / 2f, size.Y / 2f,  size.Z / 2f),
-            };
-
-            int[] meshIndexes =
-            {
-                //front
-                0, 7, 3,
-                0, 4, 7,
-                //back
-                1, 2, 6,
-                6, 5, 1,
-                //left
-                0, 2, 1,
-                0, 3, 2,
-                //right
-                4, 5, 6,
-                6, 7, 4,
-                //top
-                2, 3, 6,
-                6, 3, 7,
-                //bottom
-                0, 1, 5,
-                0, 5, 4
-            };
-
-            testMesh.Vertices = meshVerts;
-            testMesh.Indexes = meshIndexes;
-
-            Color[] colors = new Color[meshVerts.Length];
-            for (int i = 0; i < meshVerts.Length; i++)
-                colors[i] = new Color(1f, 1f, 0f, 0.5f);
-            testMesh.Color0 = colors;
-
-            Mesh mesh = new Mesh();
-            mesh.SubMeshes.Add(testMesh);
-
-            //m_meshList.Add(mesh);
         }
 
         internal void RenderFrame()
