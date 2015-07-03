@@ -81,7 +81,7 @@
                     
                     <!-- Bottom Footer (Message Log) -->
                     <Grid Grid.Row="2">
-                        <View:OutputLog Width="Auto" Height="Auto"/>
+                        <View:OutputLog Width="Auto" Height="Auto" DataContext="{Binding OutputLog}"/>
                     </Grid>
 
                 </Grid>

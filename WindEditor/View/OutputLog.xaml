@@ -11,7 +11,7 @@
         <RichTextBox>
             <FlowDocument>
                 <Paragraph>
-                    <Run Text="RichTextBox"/>
+                    <Run Text="{Binding Messages, Mode=OneWay}"/>
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>

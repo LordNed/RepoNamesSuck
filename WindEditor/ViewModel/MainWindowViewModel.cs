@@ -25,6 +25,7 @@ namespace WindEditor.UI
         public bool CanRedo { get { return false; } }
 
         public SceneViewViewModel SceneView { get; private set; }
+        public OutputLogViewModel OutputLog { get; private set; }
 
         private EditorCore m_editorCore;
         private System.Windows.Forms.Timer m_intervalTimer;
@@ -34,7 +35,7 @@ namespace WindEditor.UI
         {
             m_editorCore = new EditorCore();
             SceneView = new SceneViewViewModel();
-
+            OutputLog = new OutputLogViewModel(m_editorCore);
 
             m_intervalTimer = new System.Windows.Forms.Timer();
             m_intervalTimer.Interval = 16; // 60 FPS roughly

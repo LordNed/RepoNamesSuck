@@ -89,6 +89,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModel\OutputLogViewModel.cs" />
     <Compile Include="ViewModel\SceneViewViewModel.cs" />
     <Compile Include="View\OutputLog.xaml.cs">
       <DependentUpon>OutputLog.xaml</DependentUpon>
