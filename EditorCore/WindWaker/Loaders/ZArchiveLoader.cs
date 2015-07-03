@@ -22,7 +22,7 @@ namespace WEditor.WindWaker.Loaders
             foreach (DirectoryInfo folder in rootFolderInfo.GetDirectories())
             {
                 string folderName = folder.Name;
-                var virtualDirectory = new VirtualFilesystemDirectory(folderName);
+                var virtualDirectory = new VirtualFilesystemDirectory(folderName, archive);
                 archive.Files.Children.Add(virtualDirectory);
 
                 // Get all of the files within this folder.
@@ -83,7 +83,7 @@ namespace WEditor.WindWaker.Loaders
                             break;
                     }
 
-                    var virtualFile = new VirtualFilesystemFile(fileName, fileExtension, resource);
+                    var virtualFile = new VirtualFilesystemFile(fileName, fileExtension, resource, archive);
                     virtualDirectory.Children.Add(virtualFile);
                 }
             }

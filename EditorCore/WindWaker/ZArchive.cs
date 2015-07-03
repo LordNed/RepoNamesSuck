@@ -45,7 +45,7 @@ namespace WEditor.WindWaker
         {
             Name = name;
             Type = type;
-            Files = new VirtualFilesystemDirectory(Name);
+            Files = new VirtualFilesystemDirectory(Name, this);
         }
 
         public override string ToString()

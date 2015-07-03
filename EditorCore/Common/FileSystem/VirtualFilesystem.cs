@@ -20,6 +20,7 @@ namespace WEditor.FileSystem
             get { return m_type; }
             protected set { m_type = value; }
         }
+
         public string Name
         {
             get { return m_name; }
@@ -30,13 +31,20 @@ namespace WEditor.FileSystem
             }
         }
 
+        public ZArchive ParentArchive
+        {
+            get { return m_parentArchive; }
+        }
+
         private NodeType m_type;
         private string m_name;
+        private ZArchive m_parentArchive;
 
-        public VirtualFilesystemNode()
+        public VirtualFilesystemNode(ZArchive parentArc)
         {
             Type = NodeType.None;
             Name = "Unnamed";
+            m_parentArchive = parentArc;
         }
 
         protected void OnPropertyChanged(string propertyName)
@@ -48,13 +56,52 @@ namespace WEditor.FileSystem
 
     public class VirtualFilesystemDirectory : VirtualFilesystemNode
     {
-        public BindingList<VirtualFilesystemNode> Children { get; private set;}
+        public BindingList<VirtualFilesystemNode> Children { get; private set; }
 
-        public VirtualFilesystemDirectory(string name)
+        public VirtualFilesystemDirectory(string name, ZArchive parentArc)
+            : base(parentArc)
         {
             Children = new BindingList<VirtualFilesystemNode>();
             Name = name;
             Type = NodeType.Directory;
+        }
+
+        public List<VirtualFilesystemFile> FindByExtension(string extension)
+        {
+            return FindByExtension(new string[] { extension });
+        }
+
+        public List<VirtualFilesystemFile> FindByExtension(string[] extensions)
+        {
+            return FindByExtensionRecursive(extensions);
+        }
+
+        private List<VirtualFilesystemFile> FindByExtensionRecursive(string[] extensions)
+        {
+            List<VirtualFilesystemFile> validFiles = new List<VirtualFilesystemFile>();
+
+            foreach(var child in Children)
+            {
+                if(child.Type == NodeType.File)
+                {
+                    VirtualFilesystemFile file = (VirtualFilesystemFile)child;
+                    foreach(var extension in extensions)
+                    {
+                        if (string.Compare(file.Extension, extension, System.StringComparison.InvariantCultureIgnoreCase) == 0)
+                        {
+                            validFiles.Add(file);
+                            break;
+                        }
+                    }
+                }
+                else if(child.Type == NodeType.Directory)
+                {
+                    VirtualFilesystemDirectory dir = (VirtualFilesystemDirectory)child;
+                    validFiles.AddRange(dir.FindByExtensionRecursive(extensions));
+                }
+            }
+
+            return validFiles;
         }
     }
 
@@ -83,7 +130,8 @@ namespace WEditor.FileSystem
         private BaseFileResource m_file;
         private string m_extension;
 
-        public VirtualFilesystemFile(string name, string extension, BaseFileResource file)
+        public VirtualFilesystemFile(string name, string extension, BaseFileResource file, ZArchive parentArc)
+            : base(parentArc)
         {
             Name = name;
             Extension = extension;
