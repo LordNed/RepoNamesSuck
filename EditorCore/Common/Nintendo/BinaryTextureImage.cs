@@ -594,19 +594,19 @@ namespace WEditor
                                 continue;
 
                             byte data = stream.ReadByte();
-                            byte t = (byte)(data & 0xF0);
+                            byte t = (byte)((data & 0xF0) >> 4);
                             byte t2 = (byte)(data & 0x0F);
                             uint destIndex = (uint)(4 * (width * ((yBlock * 8) + pY) + (xBlock * 8) + pX));
 
-                            decodedData[destIndex + 3] = (byte)(t * 0x11);
                             decodedData[destIndex + 2] = (byte)(t * 0x11);
                             decodedData[destIndex + 1] = (byte)(t * 0x11);
-                            decodedData[destIndex + 0] = 0xFF;
+                            decodedData[destIndex + 0] = (byte)(t * 0x11);
+                            decodedData[destIndex + 3] = 0xFF;
 
-                            decodedData[destIndex + 7] = (byte)(t2 * 0x11);
                             decodedData[destIndex + 6] = (byte)(t2 * 0x11);
                             decodedData[destIndex + 5] = (byte)(t2 * 0x11);
-                            decodedData[destIndex + 4] = 0xFF;
+                            decodedData[destIndex + 4] = (byte)(t2 * 0x11);
+                            decodedData[destIndex + 7] = 0xFF;
                         }
                     }
                 }
