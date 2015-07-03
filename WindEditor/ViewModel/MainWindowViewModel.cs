@@ -9,6 +9,8 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using WEditor;
 using OpenTK;
 using System.ComponentModel;
+using WEditor.WindWaker;
+using WEditor.WindWaker.MapEntities;
 
 namespace WindEditor.UI
 {
@@ -25,6 +27,7 @@ namespace WindEditor.UI
         public bool CanRedo { get { return false; } }
 
         public SceneViewViewModel SceneView { get; private set; }
+        public EntityOutlinerViewModel EntityOutliner { get; private set; }
         public OutputLogViewModel OutputLog { get; private set; }
 
         private EditorCore m_editorCore;
@@ -34,8 +37,9 @@ namespace WindEditor.UI
         public MainWindowViewModel()
         {
             m_editorCore = new EditorCore();
-            SceneView = new SceneViewViewModel();
+            SceneView = new SceneViewViewModel(this);
             OutputLog = new OutputLogViewModel(m_editorCore);
+            EntityOutliner = new EntityOutlinerViewModel(this);
 
             m_intervalTimer = new System.Windows.Forms.Timer();
             m_intervalTimer.Interval = 16; // 60 FPS roughly
@@ -54,7 +58,7 @@ namespace WindEditor.UI
 
         void OnEditorPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "LoadedScene")
+            if (e.PropertyName == "LoadedScene")
                 SceneView.SetMap(m_editorCore.LoadedScene);
         }
 
@@ -84,7 +88,7 @@ namespace WindEditor.UI
 
         internal void Exit()
         {
-            if(m_editorCore.LoadedScene != null)
+            if (m_editorCore.LoadedScene != null)
             {
                 if (System.Windows.MessageBox.Show("Are you sure to exit?", "Exit", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
@@ -111,7 +115,7 @@ namespace WindEditor.UI
             ofd.Multiselect = false;
             ofd.ShowPlacesList = true;
 
-            if(ofd.ShowDialog() == CommonFileDialogResult.Ok)
+            if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 // Just assume the folder paths are valid now.
                 var folderPath = ofd.FileName;
@@ -140,10 +144,15 @@ namespace WindEditor.UI
             WLog.Info(LogCategory.UI, null, "Redo (Not Implemented)");
         }
 
-                protected void OnPropertyChanged(string propertyName)
+        protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        internal void SetSelectedEntityFile(MapEntityResource entityFile)
+        {
+            EntityOutliner.EntityList = entityFile.Objects;
         }
     }
 }

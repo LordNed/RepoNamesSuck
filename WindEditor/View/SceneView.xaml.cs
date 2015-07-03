@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WindEditor.UI;
 
 namespace WEditor.UI.View
 {
@@ -23,6 +24,11 @@ namespace WEditor.UI.View
         public SceneView()
         {
             InitializeComponent();
+        }
+
+        private void SceneView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            ((SceneViewViewModel)DataContext).OnSceneViewSelectObject(e.NewValue);
         }
     }
 }

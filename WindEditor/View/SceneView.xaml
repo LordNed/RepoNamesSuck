@@ -25,7 +25,7 @@
     </UserControl.Resources>
     <Grid>
         <GroupBox Header="Scene View" Margin="2,0">
-            <TreeView ItemsSource="{Binding ArchiveList}"/>
+            <TreeView ItemsSource="{Binding ArchiveList}" SelectedItemChanged="SceneView_SelectedItemChanged"/>
         </GroupBox>
     </Grid>
 </UserControl>
