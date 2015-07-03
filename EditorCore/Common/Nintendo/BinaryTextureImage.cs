@@ -168,7 +168,7 @@ namespace WEditor
 
         public void SaveImageToDisk(string outputFile)
         {
-            using(Bitmap bmp = new Bitmap(Width, Height))
+            using (Bitmap bmp = new Bitmap(Width, Height))
             {
                 Rectangle rect = new Rectangle(0, 0, Width, Height);
                 BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
@@ -349,7 +349,7 @@ namespace WEditor
                             if ((xBlock * 8 + pX >= width) || (yBlock * 4 + pY >= height))
                                 continue;
 
-        
+
                             byte data = stream.ReadByte();
                             decodedData[width * ((yBlock * 4) + pY) + (xBlock * 8) + pX] = data;
                         }
@@ -358,7 +358,7 @@ namespace WEditor
             }
 
             //Now look them up in the palette and turn them into actual colors.
-            byte[] finalDest = new byte[decodedData.Length/2];
+            byte[] finalDest = new byte[decodedData.Length / 2];
 
             int pixelSize = paletteFormat == PaletteFormats.IA8 ? 2 : 4;
             int destOffset = 0;
@@ -371,7 +371,7 @@ namespace WEditor
                 }
             }
 
-            return finalDest;            
+            return finalDest;
         }
 
         private static byte[] DecodeRgb565(EndianBinaryReader stream, uint width, uint height)
@@ -583,29 +583,31 @@ namespace WEditor
 
             byte[] decodedData = new byte[width * height * 4];
 
-            for (int y = 0; y < height; y += 4)
+            for (int yBlock = 0; yBlock < height; yBlock++)
             {
-                for (int x = 0; x < width; x += 8)
+                for (int xBlock = 0; xBlock < width; xBlock++)
                 {
-                    for (int dy = 0; dy < 4; ++dy)
+                    //For each block, we're going to examine block width / block height number of 'pixels'
+                    for (int pY = 0; pY < 4; pY++)
                     {
-                        for (int dx = 0; dx < 8; ++dx)
+                        for (int pX = 0; pX < 8; pX++)
                         {
-                            if (x + dx < width && y + dy < height)
-                            {
-                                byte value = stream.ReadByte();
+                            //Ensure the pixel we're checking is within bounds of the image.
+                            if ((xBlock * 8 + pX >= width) || (yBlock * 4 + pY >= height))
+                                continue;
 
-                                byte alpha = (byte)((value & 0xF0) >> 4);
-                                byte lum = (byte)(value & 0x0F);
 
-                                uint destIndex = (uint)(4 * (width * (y + dy) + x + dx));
+                            byte value = stream.ReadByte();
 
-                                // 2 * (width * (y + dy) + x + dx) + 0
-                                decodedData[destIndex + 0] = (byte)(lum * 0x11);
-                                decodedData[destIndex + 1] = (byte)(lum * 0x11);
-                                decodedData[destIndex + 2] = (byte)(lum * 0x11);
-                                decodedData[destIndex + 3] = (byte)(alpha * 0x11);
-                            }
+                            byte alpha = (byte)((value & 0xF0) >> 4);
+                            byte lum = (byte)(value & 0x0F);
+
+                            uint destIndex = (uint)(4 * (width * ((yBlock * 4) + pY) + (xBlock * 8) + pX));
+
+                            decodedData[destIndex + 0] = (byte)(lum * 0x11);
+                            decodedData[destIndex + 1] = (byte)(lum * 0x11);
+                            decodedData[destIndex + 2] = (byte)(lum * 0x11);
+                            decodedData[destIndex + 3] = (byte)(alpha * 0x11);
                         }
                     }
                 }
