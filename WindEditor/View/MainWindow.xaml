@@ -42,22 +42,22 @@
                             <RowDefinition Height="5"/>
                             <RowDefinition Height="120" MinHeight="120"/>
                         </Grid.RowDefinitions>
-                        
+
                         <!-- Top Pane -->
                         <View:EntityOutliner Grid.Row="0"/>
-           
+
                         <!-- First Splitter -->
                         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
-                        
+
                         <!-- Middle Pane -->
                         <View:SceneView Grid.Row="2" DataContext="{Binding SceneView}"/>
 
                         <!-- Second Splitter -->
                         <GridSplitter Grid.Row="3" Height="5" HorizontalAlignment="Stretch"/>
-                        
+
                         <!-- Bottom Pane -->
                         <GroupBox Grid.Row="4" Header="Layer Visibility" Margin="2,0,2,0">
-                            
+
                         </GroupBox>
                     </Grid>
                 </Grid>
@@ -65,13 +65,31 @@
                 <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
                 <!-- Middle Pane (Main View) -->
                 <Grid Grid.Column="2">
-                <WindowsFormsHost x:Name="winFormsHost" Margin="0" Initialized="winFormsHost_Initialized" KeyDown="winFormsHost_KeyDown" KeyUp="winFormsHost_KeyUp" LayoutUpdated="winFormsHost_LayoutUpdated"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="135"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Main Game Window -->
+                    <Grid Grid.Row="0">
+                        <WindowsFormsHost x:Name="winFormsHost" Initialized="winFormsHost_Initialized" KeyDown="winFormsHost_KeyDown" KeyUp="winFormsHost_KeyUp" LayoutUpdated="winFormsHost_LayoutUpdated"/>
+                    </Grid>
+                    
+                    <!-- Splitter Handle -->
+                    <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
+                    
+                    <!-- Bottom Footer (Message Log) -->
+                    <Grid Grid.Row="2">
+                        <View:OutputLog Width="Auto" Height="Auto"/>
+                    </Grid>
+
                 </Grid>
                 <!-- Right Side Splitter Handle-->
                 <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
                 <!-- Right Pane-->
                 <Grid Grid.Column="4">
-                    
+
                 </Grid>
 
             </Grid>
