@@ -314,7 +314,11 @@ namespace WEditor.WindWaker.Loaders
                         }
                     }
 
-                    return potentialRefs[index];
+                    // There's an edge-case here where some maps omit an entity (such as Fairy01 not having a Virt chunk) but use index 0 (Fairy01's Pale chunk)
+                    // and so it was finding no potentialRefs 
+                    if(index < potentialRefs.Count)
+                        return potentialRefs[index];
+                    break;
             }
 
             return null;
