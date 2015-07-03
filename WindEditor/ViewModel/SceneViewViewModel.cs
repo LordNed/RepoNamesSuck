@@ -75,6 +75,10 @@ namespace WindEditor.UI
                 {
                     m_mainView.SetSelectedEntityFile((MapEntityResource) vfFileList[0].File);
                 }
+                else
+                {
+                    m_mainView.SetSelectedEntityFile(null);
+                }
             }
         }
     }

@@ -152,7 +152,14 @@ namespace WindEditor.UI
 
         internal void SetSelectedEntityFile(MapEntityResource entityFile)
         {
-            EntityOutliner.EntityList = entityFile.Objects;
+            if (entityFile != null)
+            {
+                EntityOutliner.EntityList = entityFile.Objects;
+            }
+            else
+            {
+                EntityOutliner.EntityList = null;
+            }
         }
     }
 }
