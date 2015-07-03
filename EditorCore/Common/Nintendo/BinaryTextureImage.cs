@@ -213,6 +213,9 @@ namespace WEditor
                 case TextureFormats.IA8:
                     return DecodeIA8(stream, width, height);
 
+                case TextureFormats.IA4:
+                    return DecodeIA4(stream, width, height);
+
                 case TextureFormats.I4:
                     return DecodeI4(stream, width, height);
 
@@ -573,6 +576,44 @@ namespace WEditor
             return decodedData;
         }
 
+        private static byte[] DecodeIA4(EndianBinaryReader stream, uint width, uint height)
+        {
+            uint numBlocksW = width / 8;
+            uint numBlocksH = height / 4;
+
+            byte[] decodedData = new byte[width * height * 4];
+
+            for (int y = 0; y < height; y += 4)
+            {
+                for (int x = 0; x < width; x += 8)
+                {
+                    for (int dy = 0; dy < 4; ++dy)
+                    {
+                        for (int dx = 0; dx < 8; ++dx)
+                        {
+                            if (x + dx < width && y + dy < height)
+                            {
+                                byte value = stream.ReadByte();
+
+                                byte alpha = (byte)((value & 0xF0) >> 4);
+                                byte lum = (byte)(value & 0x0F);
+
+                                uint destIndex = (uint)(4 * (width * (y + dy) + x + dx));
+
+                                // 2 * (width * (y + dy) + x + dx) + 0
+                                decodedData[destIndex + 0] = (byte)(lum * 0x11);
+                                decodedData[destIndex + 1] = (byte)(lum * 0x11);
+                                decodedData[destIndex + 2] = (byte)(lum * 0x11);
+                                decodedData[destIndex + 3] = (byte)(alpha * 0x11);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return decodedData;
+        }
+
         private static byte[] DecodeI4(EndianBinaryReader stream, uint width, uint height)
         {
             uint numBlocksW = width / 8; //8 byte block width
@@ -598,14 +639,14 @@ namespace WEditor
                             byte t2 = (byte)(data & 0x0F);
                             uint destIndex = (uint)(4 * (width * ((yBlock * 8) + pY) + (xBlock * 8) + pX));
 
-                            decodedData[destIndex + 2] = (byte)(t * 0x11);
-                            decodedData[destIndex + 1] = (byte)(t * 0x11);
                             decodedData[destIndex + 0] = (byte)(t * 0x11);
+                            decodedData[destIndex + 1] = (byte)(t * 0x11);
+                            decodedData[destIndex + 2] = (byte)(t * 0x11);
                             decodedData[destIndex + 3] = 0xFF;
 
-                            decodedData[destIndex + 6] = (byte)(t2 * 0x11);
-                            decodedData[destIndex + 5] = (byte)(t2 * 0x11);
                             decodedData[destIndex + 4] = (byte)(t2 * 0x11);
+                            decodedData[destIndex + 5] = (byte)(t2 * 0x11);
+                            decodedData[destIndex + 6] = (byte)(t2 * 0x11);
                             decodedData[destIndex + 7] = 0xFF;
                         }
                     }
