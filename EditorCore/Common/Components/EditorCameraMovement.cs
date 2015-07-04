@@ -10,7 +10,7 @@ namespace WEditor
 {
     public class EditorCameraMovement : WComponent
     {
-        public float MoveSpeed = 350f;
+        public float MoveSpeed = 750f;
         public float MouseSensitivity = 20f;
         public Camera Camera;
 
