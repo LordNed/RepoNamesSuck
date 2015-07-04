@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Colors.cs" />
-    <Compile Include="Common\Component.cs" />
+    <Compile Include="Common\Components\EditorCameraMovement.cs" />
     <Compile Include="Common\FileSystem\VirtualFilesystem.cs" />
     <Compile Include="Common\Input.cs" />
     <Compile Include="Common\MapEntityObject.cs" />
@@ -64,9 +64,11 @@
     <Compile Include="Common\Rectangle.cs" />
     <Compile Include="Common\Rotations.cs" />
     <Compile Include="Common\StandardOutLogger.cs" />
-    <Compile Include="Common\Time.cs" />
     <Compile Include="Common\Transform.cs" />
+    <Compile Include="Common\WComponent.cs" />
     <Compile Include="Common\WLog.cs" />
+    <Compile Include="Common\WObject.cs" />
+    <Compile Include="Common\WWorld.cs" />
     <Compile Include="EditorCore.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -36,55 +36,56 @@ namespace WindEditor.UI
 
         public MainWindowViewModel()
         {
-            m_editorCore = new EditorCore();
             SceneView = new SceneViewViewModel(this);
-            OutputLog = new OutputLogViewModel(m_editorCore);
             EntityOutliner = new EntityOutlinerViewModel(this);
+            OutputLog = new OutputLogViewModel();
+        }
 
+        void OnEditorPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "LoadedScene")
+            {
+                WLog.Error(LogCategory.None, null, "Is this even called?");
+                SceneView.SetMap(m_editorCore.LoadedScene);
+            }
+        }
+
+        internal void OnGraphicsContextInitialized(GLControl context)
+        {
+            m_control = context;
+
+            m_editorCore = new EditorCore();
             m_intervalTimer = new System.Windows.Forms.Timer();
             m_intervalTimer.Interval = 16; // 60 FPS roughly
             m_intervalTimer.Enabled = true;
             m_intervalTimer.Tick += (args, o) =>
             {
                 var newMousePosition = System.Windows.Forms.Control.MousePosition;
-                Input.SetMousePosition(new OpenTK.Vector2((float)newMousePosition.X, (float)newMousePosition.Y));
+                m_editorCore.SetMousePosition("main", new OpenTK.Vector2((float)newMousePosition.X, (float)newMousePosition.Y));
                 m_editorCore.Tick();
                 if (m_control != null)
                     m_control.SwapBuffers();
             };
 
             m_editorCore.PropertyChanged += OnEditorPropertyChanged;
-        }
-
-        void OnEditorPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "LoadedScene")
-                SceneView.SetMap(m_editorCore.LoadedScene);
-        }
-
-        internal void OnGraphicsContextInitialized(GLControl context)
-        {
-            m_control = context;
-            m_editorCore.OnGraphicsContextInitialized();
 
             m_editorCore.LoadMapFromDirectory(@"C:\Users\Matt\Documents\Wind Editor\ma2room_slim");
         }
 
         internal void OnOutputResized(float width, float height)
         {
-            m_editorCore.OnOutputResized(width, height);
+            m_editorCore.OnOutputResized("main", width, height);
         }
 
         internal void SetMouseState(MouseButton mouseButton, bool down)
         {
-            Input.SetMouseState(mouseButton, down);
+            m_editorCore.SetMouseState("main", mouseButton, down);
         }
 
         internal void SetKeyboardState(Key key, bool down)
         {
-            Input.SetkeyboardState(key, down);
+            m_editorCore.SetKeyboardState("main", key, down);
         }
-
 
         internal void Exit()
         {

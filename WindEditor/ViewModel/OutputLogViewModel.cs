@@ -14,12 +14,10 @@ namespace WindEditor.UI
             get { return m_messageLog.ToString(); }
         }
 
-        private EditorCore m_editor;
         private StringBuilder m_messageLog;
 
-        public OutputLogViewModel(EditorCore editor)
+        public OutputLogViewModel()
         {
-            m_editor = editor;
             m_messageLog = new StringBuilder();
             WLog.Subscribe(LogCategory.None, OnRecieveMessage, null);
         }

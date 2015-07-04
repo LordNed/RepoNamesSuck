@@ -10,17 +10,24 @@ namespace WEditor.Rendering
         public static RenderSystem HackInstance;
 
         private List<Camera> m_cameraList;
+        private WWorld m_world;
         public List<Mesh> m_meshList;
 
-        public RenderSystem()
+        public RenderSystem(WWorld world)
         {
             m_cameraList = new List<Camera>();
             m_meshList = new List<Mesh>();
+            m_world = world;
             HackInstance = this;
 
             // Create a Default camera
             Camera editorCamera = new Camera();
             editorCamera.ClearColor = new Color(0.8f, 0.2f, 1f, 1f);
+
+            EditorCameraMovement camMovement = new EditorCameraMovement();
+            camMovement.Camera = editorCamera;
+            m_world.RegisterComponent(camMovement);
+
             m_cameraList.Add(editorCamera);
         }
 
