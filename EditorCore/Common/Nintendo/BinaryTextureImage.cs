@@ -195,33 +195,27 @@ namespace WEditor
         {
             switch (format)
             {
-                case TextureFormats.RGBA32:
-                    return DecodeRgba32(stream, width, height);
-
-                case TextureFormats.C4:
-                    return DecodeC4(stream, width, height, imagePalette, paletteFormat);
-
-                case TextureFormats.C8:
-                    return DecodeC8(stream, width, height, imagePalette, paletteFormat);
-
-                case TextureFormats.RGB565:
-                    return DecodeRgb565(stream, width, height);
-
-                case TextureFormats.CMPR:
-                    return DecodeCmpr(stream, width, height);
-
-                case TextureFormats.IA8:
-                    return DecodeIA8(stream, width, height);
-
-                case TextureFormats.IA4:
-                    return DecodeIA4(stream, width, height);
-
                 case TextureFormats.I4:
                     return DecodeI4(stream, width, height);
-
+                case TextureFormats.I8:
+                    return DecodeI8(stream, width, height);
+                case TextureFormats.IA4:
+                    return DecodeIA4(stream, width, height);
+                case TextureFormats.IA8:
+                    return DecodeIA8(stream, width, height);
+                case TextureFormats.RGB565:
+                    return DecodeRgb565(stream, width, height);
                 case TextureFormats.RGB5A3:
                     return DecodeRgb5A3(stream, width, height);
-
+                case TextureFormats.RGBA32:
+                    return DecodeRgba32(stream, width, height);
+                case TextureFormats.C4:
+                    return DecodeC4(stream, width, height, imagePalette, paletteFormat);
+                case TextureFormats.C8:
+                    return DecodeC8(stream, width, height, imagePalette, paletteFormat);
+                case TextureFormats.CMPR:
+                    return DecodeCmpr(stream, width, height);
+                case TextureFormats.C14X2:
                 default:
                     WLog.Warning(LogCategory.Textures, null, "Unsupported Binary Texture Image format {0}, unable to decode!", format);
                     return new byte[0];
@@ -650,6 +644,41 @@ namespace WEditor
                             decodedData[destIndex + 5] = (byte)(t2 * 0x11);
                             decodedData[destIndex + 6] = (byte)(t2 * 0x11);
                             decodedData[destIndex + 7] = 0xFF;
+                        }
+                    }
+                }
+            }
+
+            return decodedData;
+        }
+
+        private static byte[] DecodeI8(EndianBinaryReader stream, uint width, uint height)
+        {
+            uint numBlocksW = width / 8; //8 pixel block width
+            uint numBlocksH = height / 4; //4 pixel block height 
+
+            byte[] decodedData = new byte[width * height * 4];
+
+            for (int yBlock = 0; yBlock < numBlocksH; yBlock++)
+            {
+                for (int xBlock = 0; xBlock < numBlocksW; xBlock++)
+                {
+                    //For each block, we're going to examine block width / block height number of 'pixels'
+                    for (int pY = 0; pY < 4; pY++)
+                    {
+                        for (int pX = 0; pX < 8; pX++)
+                        {
+                            //Ensure the pixel we're checking is within bounds of the image.
+                            if ((xBlock * 8 + pX >= width) || (yBlock * 4 + pY >= height))
+                                continue;
+
+                            byte data = stream.ReadByte();
+                            uint destIndex = (uint)(4 * (width * ((yBlock * 4) + pY) + (xBlock * 8) + pX));
+
+                            decodedData[destIndex + 0] = data;
+                            decodedData[destIndex + 1] = data;
+                            decodedData[destIndex + 2] = data;
+                            decodedData[destIndex + 3] = 0xFF;
                         }
                     }
                 }
