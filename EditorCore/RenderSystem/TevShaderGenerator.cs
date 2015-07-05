@@ -97,7 +97,7 @@ namespace WEditor.Rendering
 
             // Texture Samples
             bool[] oldCombos = new bool[256];
-            for (int i = 0, j = 0; i < mat.NumTevStages; i++)
+            for (int i = 0; i < mat.NumTevStages; i++)
             {
                 TevOrder order = mat.TevOrderInfos[i];
                 int tex = order.TexMap;
@@ -329,7 +329,7 @@ namespace WEditor.Rendering
             for (int chanSel = 0; chanSel < mat.NumChannelControls; chanSel++)
             {
                 ChanCtrl chanInfo = mat.ChannelControls[chanSel];
-                string chanTarget, vtxColor, ambColor, matColor, ambLight, diffLight;
+                string chanTarget, ambColor, matColor, ambLight, diffLight;
                 string swizzle, chan;
                 bool alpha;
 
@@ -371,7 +371,7 @@ namespace WEditor.Rendering
                     continue;
 
                 TexCoordGen texGen = mat.TexGenInfos[i];
-                string texGenSrc, texGenFn, matrix;
+                string texGenSrc;
 
                 switch (texGen.Source)
                 {
