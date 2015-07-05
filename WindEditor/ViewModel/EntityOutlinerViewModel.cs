@@ -38,5 +38,10 @@ namespace WindEditor.UI
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        internal void OnSelectedEntityChanged(object newObject)
+        {
+            m_mainView.SetSelectedEntity((MapEntityObject)newObject);
+        }
     }
 }

@@ -13,7 +13,7 @@
     </UserControl.Resources>
     <Grid>
         <GroupBox Header="Entity Outliner" Margin="2,0">
-            <TreeView ItemsSource="{Binding EntityList}"/>
+            <TreeView ItemsSource="{Binding EntityList}" SelectedItemChanged="SelectedEntityChanged"/>
         </GroupBox>
     </Grid>
 </UserControl>

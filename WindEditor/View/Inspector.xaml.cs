@@ -12,23 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using WindEditor.UI;
 
 namespace WEditor.UI.View
 {
     /// <summary>
-    /// Interaction logic for EntityOutliner.xaml
+    /// Interaction logic for Inspector.xaml
     /// </summary>
-    public partial class EntityOutliner : UserControl
+    public partial class Inspector : UserControl
     {
-        public EntityOutliner()
+        public Inspector()
         {
             InitializeComponent();
-        }
-
-        private void SelectedEntityChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            ((EntityOutlinerViewModel)DataContext).OnSelectedEntityChanged(e.NewValue);
         }
     }
 }

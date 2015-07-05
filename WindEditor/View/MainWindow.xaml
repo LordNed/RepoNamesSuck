@@ -89,8 +89,7 @@
                 <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
                 <!-- Right Pane-->
                 <Grid Grid.Column="4">
-                    <TextBlock HorizontalAlignment="Left" Margin="10,578,0,0" TextWrapping="Wrap" Text="{Binding GCMemAmount}" VerticalAlignment="Top" Height="61" Width="195"/>
-
+                    <View:Inspector Width="Auto" Height="Auto" DataContext="{Binding InspectorView}"/>
                 </Grid>
 
             </Grid>

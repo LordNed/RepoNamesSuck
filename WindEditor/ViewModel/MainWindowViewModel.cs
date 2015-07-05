@@ -26,14 +26,10 @@ namespace WindEditor.UI
         public bool CanUndo { get { return false; } }
         public bool CanRedo { get { return false; } }
 
-        public string GCMemAmount
-        {
-            get { return string.Format("GC Heap Size: {0:N2}mb", (GC.GetTotalMemory(false)/1024/1024f)); }
-        }
-
         public SceneViewViewModel SceneView { get; private set; }
         public EntityOutlinerViewModel EntityOutliner { get; private set; }
         public OutputLogViewModel OutputLog { get; private set; }
+        public InspectorViewModel InspectorView { get; private set; }
 
         private EditorCore m_editorCore;
         private System.Windows.Forms.Timer m_intervalTimer;
@@ -44,6 +40,7 @@ namespace WindEditor.UI
             SceneView = new SceneViewViewModel(this);
             EntityOutliner = new EntityOutlinerViewModel(this);
             OutputLog = new OutputLogViewModel();
+            InspectorView = new InspectorViewModel();
         }
 
         void OnEditorPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -161,6 +158,11 @@ namespace WindEditor.UI
             {
                 EntityOutliner.EntityList = null;
             }
+        }
+
+        internal void SetSelectedEntity(MapEntityObject newEntity)
+        {
+            InspectorView.SelectedEntity = newEntity;
         }
 
         protected void OnPropertyChanged(string propertyName)
