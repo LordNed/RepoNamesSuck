@@ -110,94 +110,94 @@
     <None Include="RenderSystem\Shaders\vert.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Actor.json">
+    <None Include="WindWaker\Templates\EntityData\Actor.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Blank.json">
+    <None Include="WindWaker\Templates\EntityData\Blank.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Camera Type - Room.json">
+    <None Include="WindWaker\Templates\EntityData\Camera Type - Room.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Camera Point - Room.json">
+    <None Include="WindWaker\Templates\EntityData\Camera Point - Room.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Camera Point.json">
+    <None Include="WindWaker\Templates\EntityData\Camera Point.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Camera Type.json">
+    <None Include="WindWaker\Templates\EntityData\Camera Type.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Dungeon Map Floor.json">
+    <None Include="WindWaker\Templates\EntityData\Dungeon Map Floor.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Dungeon Map.json">
+    <None Include="WindWaker\Templates\EntityData\Dungeon Map.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Dynamic Light.json">
+    <None Include="WindWaker\Templates\EntityData\Dynamic Light.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Environment Light Palette.json">
+    <None Include="WindWaker\Templates\EntityData\Environment Light Palette.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Environment Lighting Preset.json">
+    <None Include="WindWaker\Templates\EntityData\Environment Lighting Preset.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Environment Skybox Colors.json">
+    <None Include="WindWaker\Templates\EntityData\Environment Skybox Colors.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Environment Time Light Preset.json">
+    <None Include="WindWaker\Templates\EntityData\Environment Time Light Preset.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Event.json">
+    <None Include="WindWaker\Templates\EntityData\Event.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\MECO.json">
+    <None Include="WindWaker\Templates\EntityData\MECO.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\MEMA.json">
+    <None Include="WindWaker\Templates\EntityData\MEMA.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\2D Minimap.json">
+    <None Include="WindWaker\Templates\EntityData\2D Minimap.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Player Spawn.json">
+    <None Include="WindWaker\Templates\EntityData\Player Spawn.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Room Exit.json">
+    <None Include="WindWaker\Templates\EntityData\Room Exit.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Room Transform.json">
+    <None Include="WindWaker\Templates\EntityData\Room Transform.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\RoomProperties.json">
+    <None Include="WindWaker\Templates\EntityData\RoomProperties.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Scaleable Object.json">
+    <None Include="WindWaker\Templates\EntityData\Scaleable Object.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Ship Spawn.json">
+    <None Include="WindWaker\Templates\EntityData\Ship Spawn.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Sound.json">
+    <None Include="WindWaker\Templates\EntityData\Sound.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Stage Properties.json">
+    <None Include="WindWaker\Templates\EntityData\Stage Properties.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\TemplateOrder.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Waypoint RPPN.json">
+    <None Include="WindWaker\Templates\EntityData\Waypoint RPPN.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Waypoint Path RPAT.json">
+    <None Include="WindWaker\Templates\EntityData\Waypoint Path RPAT.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Waypoint Path.json">
+    <None Include="WindWaker\Templates\EntityData\Waypoint Path.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\Waypoint.json">
+    <None Include="WindWaker\Templates\EntityData\Waypoint.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

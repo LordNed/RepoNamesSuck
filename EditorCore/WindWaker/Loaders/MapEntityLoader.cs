@@ -97,16 +97,13 @@ namespace WEditor.WindWaker.Loaders
         private static List<ItemJsonTemplate> LoadItemTemplates()
         {
             string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            executionPath += "/WindWaker/Templates/";
+            executionPath += "/WindWaker/Templates/EntityData/";
 
             DirectoryInfo dI = new DirectoryInfo(executionPath);
             List<ItemJsonTemplate> itemTemplates = new List<ItemJsonTemplate>();
 
             foreach(var file in dI.GetFiles())
             {
-                if (string.Compare(file.Name, "TemplateOrder.json", StringComparison.InvariantCultureIgnoreCase) == 0)
-                    continue;
-
                 var template = JsonConvert.DeserializeObject<ItemJsonTemplate>(File.ReadAllText(file.FullName));
                 itemTemplates.Add(template);
             }
