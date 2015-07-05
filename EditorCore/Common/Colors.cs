@@ -87,6 +87,51 @@ namespace WEditor
         {
             return string.Format("[Color32] (r: {0} g: {1} b: {2} a: {3})", R, G, B, A);
         }
+
+        public byte this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return R;
+                    case 1:
+                        return G;
+                    case 2:
+                        return B;
+                    case 3:
+                        return A;
+
+                    default:
+                        throw new ArgumentOutOfRangeException("index");
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        R = value;
+                        break;
+
+                    case 1:
+                        G = value;
+                        break;
+
+                    case 2:
+                        B = value;
+                        break;
+
+                    case 3:
+                        A = value;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException("index");
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -106,6 +151,45 @@ namespace WEditor
         public override string ToString()
         {
             return string.Format("[Color24] (r: {0} g: {1} b: {2})", R, G, B);            
+        }
+
+        public byte this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return R;
+                    case 1:
+                        return G;
+                    case 2:
+                        return B;
+
+                    default:
+                        throw new ArgumentOutOfRangeException("index");
+                }
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        R = value;
+                        break;
+
+                    case 1:
+                        G = value;
+                        break;
+
+                    case 2:
+                        B = value;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException("index");
+                }
+            }
         }
     }
 }
