@@ -107,6 +107,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\Color32Converter.cs" />
+    <Compile Include="Common\Color24Converter.cs" />
     <Compile Include="Common\InspectorTemplateSelector.cs" />
     <Compile Include="ViewModel\EntityOutlinerViewModel.cs" />
     <Compile Include="ViewModel\InspectorViewModel.cs" />

@@ -2,7 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
                     xmlns:local="clr-namespace:WindEditor.UI">
-
+    <!-- Convert WEditor Color24/Color32 to WPF Colors -->
+    <local:Color24Converter x:Key="ItemColor24Converter"/>
+    <local:Color32Converter x:Key="ItemColor32Converter"/>
+    
     <!-- BYTE TEMPLATE -->
     <DataTemplate x:Key="byteTemplate">
         <Grid>
@@ -51,7 +54,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
-            <wpfToolkit:DoubleUpDown Grid.Column="1" Value="{Binding Path=Value, Mode=TwoWay}"/>
+            <wpfToolkit:SingleUpDown Grid.Column="1" Value="{Binding Path=Value, Mode=TwoWay}"/>
         </Grid>
     </DataTemplate>
 
@@ -94,9 +97,9 @@
 
             <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
             <TextBlock Grid.Column="1" Text="X:"/>
-            <wpfToolkit:DoubleUpDown Grid.Column="2" Value="{Binding Path=Value[0], Mode=TwoWay}"/>
+            <wpfToolkit:SingleUpDown Grid.Column="2" Value="{Binding Path=Value[0], Mode=TwoWay}"/>
             <TextBlock Grid.Column="3" Text="Y:"/>
-            <wpfToolkit:DoubleUpDown Grid.Column="4" Value="{Binding Path=Value[1], Mode=TwoWay}"/>
+            <wpfToolkit:SingleUpDown Grid.Column="4" Value="{Binding Path=Value[1], Mode=TwoWay}"/>
         </Grid>
     </DataTemplate>
 
@@ -115,11 +118,11 @@
 
             <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
             <TextBlock Grid.Column="1" Text="X:"/>
-            <wpfToolkit:DoubleUpDown Grid.Column="2" Value="{Binding Path=Value[0], Mode=TwoWay}"/>
+            <wpfToolkit:SingleUpDown Grid.Column="2" Value="{Binding Path=Value[0], Mode=TwoWay}"/>
             <TextBlock Grid.Column="3" Text="Y:"/>
-            <wpfToolkit:DoubleUpDown Grid.Column="4" Value="{Binding Path=Value[1], Mode=TwoWay}"/>
+            <wpfToolkit:SingleUpDown Grid.Column="4" Value="{Binding Path=Value[1], Mode=TwoWay}"/>
             <TextBlock Grid.Column="4" Text="Z:"/>
-            <wpfToolkit:DoubleUpDown Grid.Column="5" Value="{Binding Path=Value[2], Mode=TwoWay}"/>
+            <wpfToolkit:SingleUpDown Grid.Column="5" Value="{Binding Path=Value[2], Mode=TwoWay}"/>
         </Grid>
     </DataTemplate>
 
@@ -164,7 +167,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
-            <wpfToolkit:ColorPicker Grid.Column="1" SelectedColor="{Binding Path=Value, Mode=TwoWay}"/>
+            <wpfToolkit:ColorPicker Grid.Column="1" SelectedColor="{Binding Path=Value, Mode=TwoWay, Converter={StaticResource ItemColor24Converter}}" ColorMode="ColorCanvas"/>
         </Grid>
     </DataTemplate>
 
@@ -177,7 +180,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
-            <wpfToolkit:ColorPicker Grid.Column="1" SelectedColor="{Binding Path=Value, Mode=TwoWay}"/>
+            <wpfToolkit:ColorPicker Grid.Column="1" SelectedColor="{Binding Path=Value, Mode=TwoWay, Converter={StaticResource ItemColor32Converter}}" ColorMode="ColorCanvas"/>
         </Grid>
     </DataTemplate>
 

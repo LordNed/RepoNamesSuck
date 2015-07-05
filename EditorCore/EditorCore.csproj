@@ -137,7 +137,7 @@
     <None Include="WindWaker\Templates\EntityData\Dynamic Light.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Environment Light Palette.json">
+    <None Include="WindWaker\Templates\EntityData\Environment Palette.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\EntityData\Environment Lighting Preset.json">
