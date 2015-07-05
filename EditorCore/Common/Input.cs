@@ -62,7 +62,7 @@ namespace WEditor
             _prevMousePos = MousePosition;
         }
 
-        public void SetkeyboardState(Key keyCode, bool bPressed)
+        public void SetKeyboardState(Key keyCode, bool bPressed)
         {
             m_keysDown[(int)keyCode] = bPressed;
         }

@@ -45,20 +45,21 @@ namespace WEditor
             }
         }
 
-        public void OnOutputResized(string worldName, float width, float height)
+        public WWorld GetWorldByName(string worldName)
         {
             // Find the right world for this output
-            foreach(WWorld world in m_editorWorlds)
+            foreach (WWorld world in m_editorWorlds)
             {
-                if(string.Compare(world.Name, worldName, StringComparison.InvariantCultureIgnoreCase) == 0)
+                if (string.Compare(world.Name, worldName, StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
-                    world.RenderSystem.SetOutputSize(width, height);
-                    return;
+                    return world;
                 }
             }
 
-            WLog.Warning(LogCategory.Rendering, null, "Recieved Display Resize event for world {0}, but no world of that name exists. Ignoring.", worldName);
+            WLog.Warning(LogCategory.Rendering, null, "Recieved GetWorldByName for world {0}, but no world of that name exists. Ignoring.", worldName);
+            return null;
         }
+
 
         public void LoadMapFromDirectory(string folderPath)
         {
@@ -81,51 +82,6 @@ namespace WEditor
 
             // Force a GC collect so we're sure everything got disposed and can actually test against it.
             GC.Collect();
-        }
-
-        public void SetMouseState(string worldName, System.Windows.Input.MouseButton mouseButton, bool down)
-        {
-            // Find the right world for this output
-            foreach (WWorld world in m_editorWorlds)
-            {
-                if (string.Compare(world.Name, worldName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    world.Input.SetMouseState(mouseButton, down);
-                    return;
-                }
-            }
-
-            WLog.Warning(LogCategory.Rendering, null, "Recieved SetMouseState event for world {0}, but no world of that name exists. Ignoring.", worldName);
-        }
-
-        public void SetKeyboardState(string worldName, System.Windows.Input.Key key, bool down)
-        {
-            // Find the right world for this output
-            foreach (WWorld world in m_editorWorlds)
-            {
-                if (string.Compare(world.Name, worldName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    world.Input.SetkeyboardState(key, down);
-                    return;
-                }
-            }
-
-            WLog.Warning(LogCategory.Rendering, null, "Recieved SetKeyboardState event for world {0}, but no world of that name exists. Ignoring.", worldName);
-        }
-
-        public void SetMousePosition(string worldName, OpenTK.Vector2 position)
-        {
-            // Find the right world for this output
-            foreach (WWorld world in m_editorWorlds)
-            {
-                if (string.Compare(world.Name, worldName, StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    world.Input.SetMousePosition(position);
-                    return;
-                }
-            }
-
-            WLog.Warning(LogCategory.Rendering, null, "Recieved SetMousePosition event for world {0}, but no world of that name exists. Ignoring.", worldName);
         }
 
         protected void OnPropertyChanged(string propertyName)

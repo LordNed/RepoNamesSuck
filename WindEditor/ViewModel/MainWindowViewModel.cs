@@ -62,32 +62,32 @@ namespace WindEditor.UI
             m_intervalTimer.Tick += (args, o) =>
             {
                 var newMousePosition = System.Windows.Forms.Control.MousePosition;
-                m_editorCore.SetMousePosition("main", new OpenTK.Vector2((float)newMousePosition.X, (float)newMousePosition.Y));
+                m_editorCore.GetWorldByName("main").Input.SetMousePosition(new OpenTK.Vector2((float)newMousePosition.X, (float)newMousePosition.Y));
                 m_editorCore.Tick();
+
                 if (m_control != null)
                     m_control.SwapBuffers();
-
-                OnPropertyChanged("GCMemAmount");
             };
 
             m_editorCore.PropertyChanged += OnEditorPropertyChanged;
 
+            // Debug for fast-loading.
             m_editorCore.LoadMapFromDirectory(@"C:\Users\Matt\Documents\Wind Editor\ma2room_slim");
         }
 
         internal void OnOutputResized(float width, float height)
         {
-            m_editorCore.OnOutputResized("main", width, height);
+            m_editorCore.GetWorldByName("main").RenderSystem.SetOutputSize(width, height);
         }
 
         internal void SetMouseState(MouseButton mouseButton, bool down)
         {
-            m_editorCore.SetMouseState("main", mouseButton, down);
+            m_editorCore.GetWorldByName("main").Input.SetMouseState(mouseButton, down);
         }
 
         internal void SetKeyboardState(Key key, bool down)
         {
-            m_editorCore.SetKeyboardState("main", key, down);
+            m_editorCore.GetWorldByName("main").Input.SetKeyboardState(key, down);
         }
 
         internal void Exit()

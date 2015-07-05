@@ -164,7 +164,7 @@ namespace WEditor.Rendering
 
         
 
-        internal void SetOutputSize(float width, float height)
+        public void SetOutputSize(float width, float height)
         {
             // Re-Calculate perspective camera ratios here.
             for (int i = 0; i < m_cameraList.Count; i++)
