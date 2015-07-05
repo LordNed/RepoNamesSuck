@@ -76,5 +76,12 @@ namespace WEditor
             m_componentList.Remove(component);
         }
 
+
+        public void UnloadAll()
+        {
+            m_componentList.Clear();
+
+            RenderSystem.UnloadAll();
+        }
     }
 }

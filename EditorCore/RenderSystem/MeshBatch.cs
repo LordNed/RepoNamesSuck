@@ -18,7 +18,7 @@ namespace WEditor.Rendering
         }
     }
 
-    public class MeshBatch
+    public class MeshBatch : IDisposable
     {
         #region Properties
         public Vector3[] Vertices
@@ -303,6 +303,18 @@ namespace WEditor.Rendering
             // Finally, update the data.
             int stride = m_vertexDescription.GetStride(attribute);
             GL.BufferData<T>(BufferTarget.ArrayBuffer, (IntPtr)(data.Length * stride), data, BufferUsageHint.StaticDraw);
+        }
+
+        public void Dispose()
+        {
+            // Free the OpenGL Resources when this object gets destroyed.
+            for(int i = 0; i < m_maxBufferCount; i++)
+            {
+                if(m_vertexDescription.AttributeIsEnabled((ShaderAttributeIds)i))
+                {
+                    GL.DeleteBuffers(1, ref m_attributeBuffers[i]);
+                }
+            }
         }
     }
 }

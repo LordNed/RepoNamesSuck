@@ -4,21 +4,6 @@ using System.ComponentModel;
 using System.IO;
 namespace WEditor.WindWaker
 {
-    //public enum FileResourceType
-    //{
-    //    Collision,
-    //    RoomEntityData,
-    //    StageEntityData,
-    //    BMD,
-    //    BDL,
-    //    ExternalTexture,
-    //    BoneAnimation,
-    //    TevRegisterAnimation,
-    //    TextureAnimation,
-    //    AlternateMaterial,
-    //    Unknown
-    //}
-
     public abstract class BaseFileResource : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

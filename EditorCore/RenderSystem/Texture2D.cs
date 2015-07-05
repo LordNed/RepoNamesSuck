@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WEditor.Rendering
 {
-    public class Texture2D
+    public class Texture2D : IDisposable
     {
         public TextureWrapMode WrapS
         {
@@ -146,6 +146,11 @@ namespace WEditor.Rendering
                                                 255, 255, 255, 255, 255, 255, 255, 255 };
 
             return texture;
+        }
+
+        public void Dispose()
+        {
+            GL.DeleteTextures(1, ref m_textureBuffer);
         }
     }
 }

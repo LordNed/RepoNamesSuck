@@ -26,6 +26,11 @@ namespace WindEditor.UI
         public bool CanUndo { get { return false; } }
         public bool CanRedo { get { return false; } }
 
+        public string GCMemAmount
+        {
+            get { return string.Format("GC Heap Size: {0:N2}mb", (GC.GetTotalMemory(false)/1024/1024f)); }
+        }
+
         public SceneViewViewModel SceneView { get; private set; }
         public EntityOutlinerViewModel EntityOutliner { get; private set; }
         public OutputLogViewModel OutputLog { get; private set; }
@@ -45,7 +50,6 @@ namespace WindEditor.UI
         {
             if (e.PropertyName == "LoadedScene")
             {
-                WLog.Error(LogCategory.None, null, "Is this even called?");
                 SceneView.SetMap(m_editorCore.LoadedScene);
             }
         }
@@ -65,6 +69,8 @@ namespace WindEditor.UI
                 m_editorCore.Tick();
                 if (m_control != null)
                     m_control.SwapBuffers();
+
+                OnPropertyChanged("GCMemAmount");
             };
 
             m_editorCore.PropertyChanged += OnEditorPropertyChanged;
@@ -145,12 +151,6 @@ namespace WindEditor.UI
             WLog.Info(LogCategory.UI, null, "Redo (Not Implemented)");
         }
 
-        protected void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         internal void SetSelectedEntityFile(MapEntityResource entityFile)
         {
             if (entityFile != null)
@@ -161,6 +161,12 @@ namespace WindEditor.UI
             {
                 EntityOutliner.EntityList = null;
             }
+        }
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

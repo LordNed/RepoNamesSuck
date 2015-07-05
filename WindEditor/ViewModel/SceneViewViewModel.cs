@@ -36,6 +36,9 @@ namespace WindEditor.UI
         public void SetMap(Map map)
         {
             ArchiveList = new BindingList<ZArchive>();
+            if (map == null)
+                return;
+
             for (int i = 0; i < map.Rooms.Count; i++)
                 ArchiveList.Add(map.Rooms[i]);
             ArchiveList.Add(map.Stage);

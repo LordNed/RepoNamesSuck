@@ -68,15 +68,19 @@ namespace WEditor
             LoadedScene = MapLoader.Load(folderPath);
         }
 
-        protected void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         public void UnloadMap()
         {
-            throw new NotImplementedException();
+            // We're going to clear the contents of each currently loaded world. This means freeing GPU resources,
+            // unloading archives, etc, etc. 
+            foreach(WWorld world in m_editorWorlds)
+            {
+                world.UnloadAll();
+            }
+
+            LoadedScene = null;
+
+            // Force a GC collect so we're sure everything got disposed and can actually test against it.
+            GC.Collect();
         }
 
         public void SetMouseState(string worldName, System.Windows.Input.MouseButton mouseButton, bool down)
@@ -122,6 +126,12 @@ namespace WEditor
             }
 
             WLog.Warning(LogCategory.Rendering, null, "Recieved SetMousePosition event for world {0}, but no world of that name exists. Ignoring.", worldName);
+        }
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
