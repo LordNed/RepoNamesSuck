@@ -149,11 +149,11 @@ namespace WindEditor.UI
             WLog.Info(LogCategory.UI, null, "Redo (Not Implemented)");
         }
 
-        internal void SetSelectedEntityFile(MapEntityResource entityFile)
+        internal void SetSelectedSceneFile(Scene sceneFile)
         {
-            if (entityFile != null)
+            if (sceneFile != null)
             {
-                EntityOutliner.EntityList = entityFile.Objects;
+                EntityOutliner.EntityList = sceneFile.Entities;
             }
             else
             {

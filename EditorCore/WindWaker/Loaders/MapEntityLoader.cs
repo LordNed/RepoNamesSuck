@@ -37,9 +37,9 @@ namespace WEditor.WindWaker.Loaders
             m_templateOrder = LoadTemplateOrder();
         }
 
-        public List<MapEntityData> LoadFromStream(EndianBinaryReader reader)
+        public BindingList<MapEntityData> LoadFromStream(EndianBinaryReader reader)
         {
-            List<MapEntityData> entities = new List<MapEntityData>();
+            BindingList<MapEntityData> entities = new BindingList<MapEntityData>();
 
             long fileOffsetStart = reader.BaseStream.Position;
 
@@ -154,7 +154,7 @@ namespace WEditor.WindWaker.Loaders
             return sortedChunks;
         }
 
-        private MapEntityData LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, List<MapEntityData> loadedEntities)
+        private MapEntityData LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, BindingList<MapEntityData> loadedEntities)
         {
             MapEntityData obj = new MapEntityData(chunkFourCC);
 
@@ -327,7 +327,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, List<MapEntityData> loadedEntities, Map map)
+        private object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, BindingList<MapEntityData> loadedEntities, Map map)
         {
             switch (templateProperty.ReferenceType)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,6 @@ namespace WEditor.WindWaker
 {
     public abstract class Scene
     {
-        public List<MapEntityData> Entities { get; set; }
+        public BindingList<MapEntityData> Entities { get; set; }
     }
 }
