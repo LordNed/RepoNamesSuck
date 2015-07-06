@@ -1,6 +1,9 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using WEditor.Common.Maps;
 
 namespace WEditor.WindWaker.Loaders
 {
@@ -22,7 +25,6 @@ namespace WEditor.WindWaker.Loaders
             string mapName = rootFolderInfo.Name;
 
             ZArchiveLoader archiveLoader = new ZArchiveLoader();
-
 
             // Maps are stored in two distinct parts. A Stage which encompasses global data for all rooms, and then
             // one or more rooms. We're going to load both the room and stage into ZArchives and then load the data
@@ -79,9 +81,90 @@ namespace WEditor.WindWaker.Loaders
             // Fix up object-references on map entity data.
             sceneLoader.PostProcessEntityData(newMap);
 
+            if(newMap.NewStage != null)
+            {
+                PostProcessStage(newMap.NewStage);
+            }
+
             // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
 
             return newMap;
+        }
+
+        private void PostProcessStage(Stage stage)
+        {
+            PostProcessPointLights(stage);
+            PostProcessArrows(stage);
+        }
+
+        private void PostProcessArrows(Scene scene)
+        {
+            var arobList = FindAllByType("AROB", scene.Entities);
+            for(int i = 0; i < arobList.Count; i++)
+            {
+                Arrow arrow = new Arrow
+                {
+                    Position = (Vector3)arobList[i]["Position"].Value,
+                    Rotation = (XYZRotation)arobList[i]["Rotation"].Value,
+                    Padding = (short)arobList[i]["Padding"].Value,
+                };
+
+                scene.AROB.Add(arrow);
+            }
+
+            var raroList = FindAllByType("RARO", scene.Entities);
+            for (int i = 0; i < arobList.Count; i++)
+            {
+                Arrow arrow = new Arrow
+                {
+                    Position = (Vector3)arobList[i]["Position"].Value,
+                    Rotation = (XYZRotation)arobList[i]["Rotation"].Value,
+                    Padding = (short)arobList[i]["Padding"].Value,
+                };
+
+                scene.RARO.Add(arrow);
+            }
+        }
+
+        private void PostProcessPointLights(Scene scene)
+        {
+            var lghtList = FindAllByType("LGHT", scene.Entities);
+            for(int i = 0; i < lghtList.Count; i++)
+            {
+                PointLight pointLight = new PointLight
+                {
+                    Position = (Vector3)lghtList[i]["Position"].Value,
+                    Radius = (Vector3)lghtList[i]["Radius"].Value,
+                    Color = (Color32)lghtList[i]["Color"].Value
+                };
+
+                scene.LGHT.Add(pointLight);
+            }
+
+            var lgtvList = FindAllByType("LGTV", scene.Entities);
+            for(int i = 0; i < lgtvList.Count; i++)
+            {
+                PointLight pointLight = new PointLight
+                {
+                    Position = (Vector3)lghtList[i]["Position"].Value,
+                    Radius = (Vector3)lghtList[i]["Radius"].Value,
+                    Color = (Color32)lghtList[i]["Color"].Value
+                };
+
+                scene.LGTV.Add(pointLight);
+            }
+        }
+        
+        private List<MapEntityData> FindAllByType(string fourCC, BindingList<MapEntityData> fromList)
+        {
+            List<MapEntityData> results = new List<MapEntityData>();
+            foreach (var item in fromList)
+            {
+                if (string.Compare(item.FourCC, fourCC, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    results.Add(item);
+            }
+
+            return results;
         }
     }
 }

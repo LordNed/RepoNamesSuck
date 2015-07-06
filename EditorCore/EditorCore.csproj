@@ -58,6 +58,7 @@
     <Compile Include="Common\Input.cs" />
     <Compile Include="Common\MapEntityObject.cs" />
     <Compile Include="Common\Maps\MapEntityData.cs" />
+    <Compile Include="Common\Maps\PointLight.cs" />
     <Compile Include="Common\Nintendo\BinaryTextureImage.cs" />
     <Compile Include="Common\Nintendo\J3D\Common.cs" />
     <Compile Include="Common\Nintendo\J3D\Materials.cs" />
