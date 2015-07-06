@@ -248,12 +248,24 @@ namespace WEditor.WindWaker.Loaders
 
                     case "xyRotation":
                         type = PropertyType.XYRotation;
-                        value = new XYRotation(reader.ReadUInt16(), reader.ReadUInt16());
+                        var xyRot = new XYRotation(reader.ReadUInt16(), reader.ReadUInt16());
+
+                        // Convert from -32768,32768 to -180,180
+                        xyRot.X = xyRot.X / 32768f * 180;
+                        xyRot.Y = xyRot.Y / 32768f * 180;
+                        value = xyRot;
+                        
                         break;
 
                     case "xyzRotation":
                         type = PropertyType.XYZRotation;
-                        value = new XYZRotation(reader.ReadUInt16(), reader.ReadUInt16(), reader.ReadUInt16());
+                        var xyzRot = new XYZRotation(reader.ReadUInt16(), reader.ReadUInt16(), reader.ReadUInt16());
+
+                        // Convert from -32768,32768 to -180,180
+                        xyzRot.X = xyzRot.X / 32768f * 180;
+                        xyzRot.Y = xyzRot.Y / 32768f * 180;
+                        xyzRot.Z = xyzRot.Z / 32768f * 180;
+                        value = xyzRot;
                         break;
 
                     case "color32":

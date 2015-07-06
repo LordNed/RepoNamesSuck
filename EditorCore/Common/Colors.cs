@@ -22,6 +22,21 @@ namespace WEditor
             return string.Format("[Color] (r: {0} g: {1} b: {2} a: {3})", R, G, B, A);
         }
 
+        public static implicit operator Color(Color32 color32)
+        {
+            return new Color(color32.R / 255f, color32.G / 255f, color32.B / 255f, color32.A / 255f);
+        }
+
+        public static implicit operator Color(Color24 color24)
+        {
+            return new Color(color24.R / 255f, color24.G / 255f, color24.B / 255f, 1f);
+        }
+
+        public static implicit operator Color32(Color color)
+        {
+            return new Color32((byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255), (byte)(color.A * 255));
+        }
+
         public float this[int index]
         {
             get

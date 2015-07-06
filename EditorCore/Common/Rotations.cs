@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -67,6 +68,11 @@ namespace WEditor
             X = x;
             Y = y;
             Z = z;
+        }
+
+        static public implicit operator Quaternion(XYZRotation rotation)
+        {
+            return new Quaternion(rotation.X * (float)MathE.Deg2Rad, rotation.Y * (float)MathE.Deg2Rad, rotation.Z * (float)MathE.Deg2Rad, 0f);
         }
 
         public override string ToString()
