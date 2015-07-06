@@ -16,6 +16,9 @@ namespace WEditor.WindWaker
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Name of this archive, generally the folder name on disk it was when archived.
+        /// </summary>
         public string Name
         {
             get { return m_name; }
@@ -26,6 +29,9 @@ namespace WEditor.WindWaker
             }
         }
 
+        /// <summary>
+        /// Is this a Room or a Stage
+        /// </summary>
         public ArchiveType Type
         {
             get { return m_type; }
@@ -36,16 +42,28 @@ namespace WEditor.WindWaker
             }
         }
 
-        public VirtualFilesystemDirectory Files { get; private set; }
+        /// <summary>
+        /// A virtual filesystem which can contain multiple subfolders/files (recursive).
+        /// </summary>
+        public VirtualFilesystemDirectory Contents
+        {
+            get { return m_contents; }
+            set
+            {
+                m_contents = value;
+                OnPropertyChanged("Contents");
+            }
+        }
 
         private string m_name;
         private ArchiveType m_type;
+        private VirtualFilesystemDirectory m_contents;
 
         public ZArchive(string name, ArchiveType type)
         {
             Name = name;
             Type = type;
-            Files = new VirtualFilesystemDirectory(Name, this);
+            Contents = new VirtualFilesystemDirectory("root", this);
         }
 
         public override string ToString()

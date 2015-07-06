@@ -124,6 +124,7 @@ namespace WindEditor.UI
                 // Just assume the folder paths are valid now.
                 var folderPath = ofd.FileName;
 
+                m_editorCore.UnloadMap();
                 m_editorCore.LoadMapFromDirectory(folderPath);
             }
         }

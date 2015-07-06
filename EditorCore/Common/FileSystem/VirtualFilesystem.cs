@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using GameFormatReader.Common;
+using System.Collections.Generic;
 using System.ComponentModel;
 using WEditor.WindWaker;
 
@@ -117,6 +118,8 @@ namespace WEditor.FileSystem
             }
         }
 
+        public VirtualFileContents Data;
+
         public string Extension
         {
             get { return m_extension; }
@@ -137,6 +140,29 @@ namespace WEditor.FileSystem
             Extension = extension;
             File = file;
             Type = NodeType.File;
+        }
+
+        public VirtualFilesystemFile(string name, string extension, VirtualFileContents file, ZArchive parentArc) : base(parentArc)
+        {
+            Type = NodeType.File;
+            Name = name;
+            Extension = extension;
+            Data = file;
+        }
+    }
+
+    public class VirtualFileContents
+    {
+        private byte[] m_data;
+
+        public VirtualFileContents(byte[] data)
+        {
+            m_data = data;    
+        }
+
+        public byte[] GetData()
+        {
+            return m_data;
         }
     }
 }

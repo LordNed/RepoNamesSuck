@@ -73,7 +73,7 @@ namespace WindEditor.UI
 
             if(rootArchive != null)
             {
-                var vfFileList = rootArchive.Files.FindByExtension(new[] { ".dzs", ".dzr" });
+                var vfFileList = rootArchive.Contents.FindByExtension(new[] { ".dzs", ".dzr" });
                 if (vfFileList.Count > 0)
                 {
                     m_mainView.SetSelectedEntityFile((MapEntityResource) vfFileList[0].File);

@@ -2,15 +2,17 @@
 using System;
 using System.IO;
 using WEditor.FileSystem;
+
 namespace WEditor.WindWaker.Loaders
 {
-    public static class ZArchiveLoader
+    public class ZArchiveLoader
     {
         /// <summary>
         /// This looks for appropriate sub-folders (bdl, btk, dzb, dzr, dzs, dat, tex, etc.) and loads each file within it as appropriate.
         /// </summary>
         /// <param name="archive">ZArchive to put the loaded files in.</param>
         /// <param name="folderDirectory">Absolute path to folder on disk which contains sub-folders of the names above.</param>
+        [Obsolete]
         public static void Load(Map map, ZArchive archive, string folderDirectory)
         {
             if (string.IsNullOrEmpty(folderDirectory))
@@ -23,7 +25,7 @@ namespace WEditor.WindWaker.Loaders
             {
                 string folderName = folder.Name;
                 var virtualDirectory = new VirtualFilesystemDirectory(folderName, archive);
-                archive.Files.Children.Add(virtualDirectory);
+                archive.Contents.Children.Add(virtualDirectory);
 
                 // Get all of the files within this folder.
                 foreach(FileInfo file in folder.GetFiles())
@@ -88,5 +90,39 @@ namespace WEditor.WindWaker.Loaders
                 }
             }
         }
+
+        public void LoadFromDirectory(ZArchive intoArchive, string folderPath)
+        {
+            if (string.IsNullOrEmpty(folderPath))
+                throw new ArgumentException("folderPath is null or empty!");
+
+            if (!Directory.Exists(folderPath))
+                throw new DirectoryNotFoundException("folderPath not found, ensure the directory exists first!");
+
+            FillArchiveRecursively(intoArchive.Contents, folderPath);
+        }
+
+        private void FillArchiveRecursively(VirtualFilesystemDirectory virDirectory, string folderPath)
+        {
+            DirectoryInfo folderInfo = new DirectoryInfo(folderPath);
+            foreach(DirectoryInfo folder in folderInfo.GetDirectories())
+            {
+                var virtualDirectory = new VirtualFilesystemDirectory(folder.Name, virDirectory.ParentArchive);
+                virDirectory.Children.Add(virtualDirectory);
+
+                foreach(FileInfo file in folder.GetFiles())
+                {
+                    VirtualFileContents fileContents = new VirtualFileContents(File.ReadAllBytes(file.FullName));
+                    var virtualFile = new VirtualFilesystemFile(file.Name, file.Extension, fileContents, virDirectory.ParentArchive);
+                    virtualDirectory.Children.Add(virtualFile);
+                }
+
+                foreach(DirectoryInfo dir in folder.GetDirectories())
+                {
+                    FillArchiveRecursively(virtualDirectory, dir.FullName);
+                }
+            }
+        }
+
     }
 }

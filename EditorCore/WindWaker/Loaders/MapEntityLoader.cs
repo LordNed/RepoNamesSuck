@@ -7,10 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using WEditor.Common.Maps;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static class MapEntityLoader
+    public class MapEntityLoader
     {
         private class ChunkHeader
         {
@@ -290,7 +291,9 @@ namespace WEditor.WindWaker.Loaders
                     if (index == 0xFF)
                         return null;
 
-                    return map.Rooms[index];
+                    if(index < map.Rooms.Count-1)
+                        return map.Rooms[index];
+                    return null;
 
                 case "FourCC":
                     // We can (hopefully) know that the array it's about to index is already loaded
@@ -318,6 +321,11 @@ namespace WEditor.WindWaker.Loaders
                     break;
             }
 
+            return null;
+        }
+
+        public List<MapEntityData> LoadFromStream(EndianBinaryReader reader)
+        {
             return null;
         }
     }
