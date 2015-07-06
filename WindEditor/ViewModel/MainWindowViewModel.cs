@@ -94,7 +94,7 @@ namespace WindEditor.UI
         {
             if (m_editorCore.LoadedScene != null)
             {
-                if (System.Windows.MessageBox.Show("Are you sure to exit?", "Exit", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                if (System.Windows.MessageBox.Show("Are you sure you want to exit?", "Exit", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     Application.Current.Shutdown();
                 }
