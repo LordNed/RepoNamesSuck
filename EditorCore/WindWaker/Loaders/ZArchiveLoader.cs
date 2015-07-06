@@ -112,9 +112,20 @@ namespace WEditor.WindWaker.Loaders
 
                 foreach(FileInfo file in folder.GetFiles())
                 {
-                    VirtualFileContents fileContents = new VirtualFileContents(File.ReadAllBytes(file.FullName));
-                    var virtualFile = new VirtualFilesystemFile(file.Name, file.Extension, fileContents, virDirectory.ParentArchive);
-                    virtualDirectory.Children.Add(virtualFile);
+                    // This tries to non-agressively read the file contents (ie: not requiring a lock on it) so hopefully it'll play nicer with having a HexEditor
+                    // with the file already open inside of it.
+                    using(FileStream fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        using (BinaryReader streamReader = new BinaryReader(fileStream))
+                        {
+                            byte[] fileContents = streamReader.ReadBytes((int)streamReader.BaseStream.Length);
+                           
+
+                            VirtualFileContents vFileContents = new VirtualFileContents(fileContents);
+                            var virtualFile = new VirtualFilesystemFile(file.Name, file.Extension, vFileContents, virDirectory.ParentArchive);
+                            virtualDirectory.Children.Add(virtualFile);
+                        }
+                    }
                 }
 
                 foreach(DirectoryInfo dir in folder.GetDirectories())
