@@ -76,8 +76,10 @@ namespace WEditor.WindWaker.Loaders
                 }
             }
 
-            // Fix up object-references
+            // Fix up object-references on map entity data.
             sceneLoader.PostProcessEntityData(newMap);
+
+            // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
 
             return newMap;
         }

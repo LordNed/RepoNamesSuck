@@ -307,7 +307,7 @@ namespace WEditor.WindWaker.Loaders
                         case "objectReferenceShort":
                             {
                                 int objIndex = (int)property.Value;
-                                property.Value = ResolveEntityReferenceNew(entity.FourCC, origTemplateProperty, objIndex, scene.Entities, map);
+                                property.Value = ResolveEntityReference(entity.FourCC, origTemplateProperty, objIndex, scene.Entities, map);
                             }
                             break;
                         case "objectReferenceArray":
@@ -316,7 +316,7 @@ namespace WEditor.WindWaker.Loaders
                                 BindingList<object> resolvedRefs = new BindingList<object>();
                                 for(int i = 0; i < indexes.Count; i++)
                                 {
-                                    var obj = ResolveEntityReferenceNew(entity.FourCC, origTemplateProperty, (int)indexes[i], scene.Entities, map);
+                                    var obj = ResolveEntityReference(entity.FourCC, origTemplateProperty, (int)indexes[i], scene.Entities, map);
                                     resolvedRefs.Add(obj);
                                 }
                                 property.Value = resolvedRefs;
@@ -327,7 +327,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private object ResolveEntityReferenceNew(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, List<MapEntityData> loadedEntities, Map map)
+        private object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, List<MapEntityData> loadedEntities, Map map)
         {
             switch (templateProperty.ReferenceType)
             {
