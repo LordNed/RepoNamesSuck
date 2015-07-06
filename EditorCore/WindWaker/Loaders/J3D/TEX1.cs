@@ -6,9 +6,9 @@ using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static partial class J3DLoader
+    public partial class J3DLoader
     {
-        private static List<Texture2D> LoadTEX1FromFile(EndianBinaryReader reader, long chunkStart)
+        private List<Texture2D> LoadTEX1FromFile(EndianBinaryReader reader, long chunkStart)
         {
             ushort textureCount = reader.ReadUInt16();
             ushort padding = reader.ReadUInt16(); // Usually 0xFFFF?

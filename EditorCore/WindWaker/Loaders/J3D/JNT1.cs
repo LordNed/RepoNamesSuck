@@ -8,9 +8,9 @@ using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static partial class J3DLoader
+    public partial class J3DLoader
     {
-        private static List<SkeletonBone> LoadJNT1SectionFromStream(EndianBinaryReader reader, long chunkStart)
+        private List<SkeletonBone> LoadJNT1SectionFromStream(EndianBinaryReader reader, long chunkStart)
         {
             List<SkeletonBone> skeletonBones;
             skeletonBones = new List<SkeletonBone>();

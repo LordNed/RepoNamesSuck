@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static partial class J3DLoader
+    public partial class J3DLoader
     {
         private class Envelopes
         {
@@ -22,7 +22,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private static Envelopes LoadEVP1FromStream(EndianBinaryReader reader, long chunkStart)
+        private Envelopes LoadEVP1FromStream(EndianBinaryReader reader, long chunkStart)
         {
             Envelopes envelopes = new Envelopes();
             ushort numEnvelopes = reader.ReadUInt16();

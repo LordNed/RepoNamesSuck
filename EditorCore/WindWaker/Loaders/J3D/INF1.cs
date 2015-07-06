@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static partial class J3DLoader
+    public partial class J3DLoader
     {
-        private static SceneNode LoadINF1FromFile(SceneNode rootNode, EndianBinaryReader reader, long chunkStart)
+        private SceneNode LoadINF1FromFile(SceneNode rootNode, EndianBinaryReader reader, long chunkStart)
         {
             ushort unknown1 = reader.ReadUInt16(); // A lot of Link's models have it but no idea what it means. Alt. doc says: "0 for BDL, 01 for BMD"
             ushort padding = reader.ReadUInt16();
@@ -42,7 +42,7 @@ namespace WEditor.WindWaker.Loaders
         /// <param name="allNodes"></param>
         /// <param name="currentListIndex"></param>
         /// <returns></returns>
-        private static int ConvertInfoHiearchyToSceneGraph(ref SceneNode parent, List<J3DFileResource.InfoNode> allNodes, int currentListIndex)
+        private int ConvertInfoHiearchyToSceneGraph(ref SceneNode parent, List<J3DFileResource.InfoNode> allNodes, int currentListIndex)
         {
             for (int i = currentListIndex; i < allNodes.Count; i++)
             {

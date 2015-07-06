@@ -7,9 +7,9 @@ using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static partial class J3DLoader
+    public partial class J3DLoader
     {
-        private static DrawInfo LoadDRW1FromStream(EndianBinaryReader reader, long chunkStart)
+        private DrawInfo LoadDRW1FromStream(EndianBinaryReader reader, long chunkStart)
         {
             DrawInfo drawInfo = new DrawInfo();
 

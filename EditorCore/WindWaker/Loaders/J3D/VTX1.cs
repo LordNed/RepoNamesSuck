@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static partial class J3DLoader
+    public partial class J3DLoader
     {
-        private static MeshVertexAttributeHolder LoadVTX1FromFile(J3DFileResource resource, EndianBinaryReader reader, long chunkStart, int chunkSize)
+        private MeshVertexAttributeHolder LoadVTX1FromFile(EndianBinaryReader reader, long chunkStart, int chunkSize)
         {
             MeshVertexAttributeHolder dataHolder = new MeshVertexAttributeHolder();
 
@@ -129,7 +129,7 @@ namespace WEditor.WindWaker.Loaders
             return dataHolder;
         }
 
-        private static List<T> LoadVertexAttribute<T>(EndianBinaryReader reader, int totalAttributeDataLength, byte decimalPoint, J3DFileResource.VertexArrayType arrayType, J3DFileResource.VertexDataType dataType, J3DFileResource.VertexColorType colorType) where T : new()
+        private List<T> LoadVertexAttribute<T>(EndianBinaryReader reader, int totalAttributeDataLength, byte decimalPoint, J3DFileResource.VertexArrayType arrayType, J3DFileResource.VertexDataType dataType, J3DFileResource.VertexColorType colorType) where T : new()
         {
             int componentCount = 0;
             switch (arrayType)
@@ -275,7 +275,7 @@ namespace WEditor.WindWaker.Loaders
         }
 
 
-        private static int GetVertexDataLength(int[] dataOffsets, int currentIndex, int endChunkOffset)
+        private int GetVertexDataLength(int[] dataOffsets, int currentIndex, int endChunkOffset)
         {
             int currentOffset = dataOffsets[currentIndex];
 

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WEditor.Common.Maps;
 using WEditor.FileSystem;
+using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
 {
@@ -47,7 +48,7 @@ namespace WEditor.WindWaker.Loaders
                         /* 3D Model Formats */
                         case "bmd":
                         case "bdl":
-                            //LoadStageModelData(file, stage, world);
+                            LoadModelData(file, scene, world);
                             break;
                         /* Map Collision Format */
                         case "dzb":
@@ -75,21 +76,20 @@ namespace WEditor.WindWaker.Loaders
             return scene;
         }
 
-
         private void LoadEntityData(VirtualFilesystemFile file, Scene scene, WWorld world)
         {
-            WLog.Info(LogCategory.ArchiveLoading, null, "Loading DZR/DZS (Room/Stage Entity Data) {0}{1}...", file.Name, file.Extension);
+            WLog.Info(LogCategory.ArchiveLoading, scene, "Loading DZR/DZS (Room/Stage Entity Data) {0}{1}...", file.Name, file.Extension);
 
             // We're going to load this DZS file into a generic list of all things contained by the DZS/DZR file, and then we'll manually pick through
             // chunks who's info we care about. Some objects will get stored on the Stage and discarded, while others will get converted into intermediate
             // formats.
-            MapEntityLoader entityLoader = new MapEntityLoader();
             using(EndianBinaryReader reader = new EndianBinaryReader(file.Data.GetData(), Endian.Big))
             {
+                MapEntityLoader entityLoader = new MapEntityLoader();
                 scene.Entities = entityLoader.LoadFromStream(reader);
             }
-        
-            WLog.Info(LogCategory.ArchiveLoading, null, "Loaded {0}{1}.", file.Name, file.Extension);
+
+            WLog.Info(LogCategory.ArchiveLoading, scene, "Loaded {0}{1}.", file.Name, file.Extension);
         }
 
         public void PostProcessEntityData(Map map)
@@ -101,5 +101,23 @@ namespace WEditor.WindWaker.Loaders
             foreach (var room in map.NewRooms)
                 entityLoader.PostProcess(room, map);
         }
+
+        private void LoadModelData(VirtualFilesystemFile file, Scene scene, WWorld world)
+        {
+            WLog.Info(LogCategory.ArchiveLoading, scene, "Loading BMD/BDL (3D Model) {0}{1}...", file.Name, file.Extension);
+            
+            using(EndianBinaryReader reader = new EndianBinaryReader(file.Data.GetData(), Endian.Big))
+            {
+                J3DLoader modelLoader = new J3DLoader();
+                Mesh model = modelLoader.LoadFromStream(reader);
+                world.RenderSystem.RegisterMesh(model);
+
+                scene.Meshes.Add(model);
+            }
+
+
+            WLog.Info(LogCategory.ArchiveLoading, scene, "Loaded {0}{1}.", file.Name, file.Extension);
+        }
+
     }
 }
