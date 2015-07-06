@@ -95,6 +95,12 @@ namespace WEditor.WindWaker.Loaders
 
             // Read the Header
             int magic = reader.ReadInt32(); // J3D1, J3D2, etc
+            if(magic != 1244873778)
+            {
+                WLog.Warning(LogCategory.ModelLoading, null, "Attempted to load model with invalid magic, ignoring!");
+                return null;
+            }
+
             int j3dType = reader.ReadInt32(); // BMD3 (models) BDL4 (models), jpa1 (particles), bck1 (animations), etc.
             int totalFileSize = reader.ReadInt32();
             int chunkCount = reader.ReadInt32();

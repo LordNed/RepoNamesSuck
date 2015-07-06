@@ -43,11 +43,19 @@ namespace WEditor.WindWaker.Loaders
                         /* Room and Stage Entity Data */
                         case "dzr":
                         case "dzs":
+                            // Skip any non .dzs and non .dzr files
+                            if (!(file.Extension == ".dzs" || file.Extension == ".dzr"))
+                                continue;
+
                             LoadEntityData(file, scene, world);
                             break;
                         /* 3D Model Formats */
                         case "bmd":
                         case "bdl":
+                            // Skip any non .bmd and non .bdl files
+                            if (!(file.Extension == ".bmd" || file.Extension == ".bdl"))
+                                continue;
+
                             LoadModelData(file, scene, world);
                             break;
                         /* Map Collision Format */
