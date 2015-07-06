@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WEditor;
+using WEditor.Common.Maps;
 
 namespace WindEditor.UI
 {
@@ -13,7 +14,7 @@ namespace WindEditor.UI
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ObservableCollection<MapEntityObject> EntityList
+        public BindingList<MapEntityData> EntityList
         {
             get { return m_entityList; }
             set
@@ -24,12 +25,12 @@ namespace WindEditor.UI
         }
 
         private MainWindowViewModel m_mainView;
-        private ObservableCollection<MapEntityObject> m_entityList;
+        private BindingList<MapEntityData> m_entityList;
 
         public EntityOutlinerViewModel(MainWindowViewModel mainView)
         {
             m_mainView = mainView;
-            m_entityList = new ObservableCollection<MapEntityObject>();
+            m_entityList = new BindingList<MapEntityData>();
         }
 
 

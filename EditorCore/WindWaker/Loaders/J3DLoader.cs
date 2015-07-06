@@ -9,7 +9,7 @@ using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static partial class J3DLoader
+    public partial class J3DLoader
     {
         private class MeshVertexAttributeHolder
         {
@@ -80,13 +80,8 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        public static void Load(J3DFileResource resource, string filePath)
-        {
-            if (string.IsNullOrEmpty(filePath))
-                throw new ArgumentException("filePath null or empty");
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException("filePath not found");
-
+        public Mesh LoadFromStream(EndianBinaryReader reader)
+        { 
             MeshVertexAttributeHolder vertexData = null;
             SceneNode rootNode = new SceneNode();
             List<Texture2D> textureList = new List<Texture2D>();
@@ -96,68 +91,71 @@ namespace WEditor.WindWaker.Loaders
             DrawInfo drawInfo = null;
             Envelopes envelopes = null;
 
-            Mesh j3dMesh = resource.Mesh;
+            Mesh j3dMesh = new Mesh();
 
             // Read the Header
-            using (EndianBinaryReader reader = new EndianBinaryReader(File.Open(filePath, FileMode.Open), Endian.Big))
+            int magic = reader.ReadInt32(); // J3D1, J3D2, etc
+            if(magic != 1244873778)
             {
-                int magic = reader.ReadInt32(); // J3D1, J3D2, etc
-                int j3dType = reader.ReadInt32(); // BMD3 (models) BDL4 (models), jpa1 (particles), bck1 (animations), etc.
-                int totalFileSize = reader.ReadInt32();
-                int chunkCount = reader.ReadInt32();
+                WLog.Warning(LogCategory.ModelLoading, null, "Attempted to load model with invalid magic, ignoring!");
+                return null;
+            }
 
-                // Skip over an unused tag (consistent in all files) and some padding.
-                reader.ReadBytes(16);
+            int j3dType = reader.ReadInt32(); // BMD3 (models) BDL4 (models), jpa1 (particles), bck1 (animations), etc.
+            int totalFileSize = reader.ReadInt32();
+            int chunkCount = reader.ReadInt32();
 
-                for (int i = 0; i < chunkCount; i++)
+            // Skip over an unused tag (consistent in all files) and some padding.
+            reader.ReadBytes(16);
+
+            for (int i = 0; i < chunkCount; i++)
+            {
+                long chunkStart = reader.BaseStream.Position;
+
+                string tagName = reader.ReadString(4);
+                int chunkSize = reader.ReadInt32();
+
+                switch (tagName)
                 {
-                    long chunkStart = reader.BaseStream.Position;
-
-                    string tagName = reader.ReadString(4);
-                    int chunkSize = reader.ReadInt32();
-
-                    switch (tagName)
-                    {
-                        // INFO - Vertex Count, Scene Hierarchy
-                        case "INF1":
-                            rootNode = LoadINF1FromFile(rootNode, reader, chunkStart);
-                            break;
-                        // VERTEX - Stores vertex arrays for pos/normal/color0/tex0 etc. Contains VertexAttributes which describe
-                        // how this data is stored/laid out.
-                        case "VTX1":
-                            vertexData = LoadVTX1FromFile(resource, reader, chunkStart, chunkSize);
-                            break;
-                        // ENVELOPES - Defines vertex weights for skinning.
-                        case "EVP1":
-                            envelopes = LoadEVP1FromStream(reader, chunkStart);
-                            break;
-                        // DRAW (Skeletal Animation Data) - Stores which matrices are weighted, and which are used directly.
-                        case "DRW1":
-                            drawInfo = LoadDRW1FromStream(reader, chunkStart);
-                            break;
-                        // JOINTS - Stores the skeletal joints (position, rotation, scale, etc.)
-                        case "JNT1":
-                            joints = LoadJNT1SectionFromStream(reader, chunkStart);
-                            break;
-                        // SHAPE - Face/Triangle information for model.
-                        case "SHP1":
-                            LoadSHP1SectionFromFile(vertexData, j3dMesh, reader, chunkStart);
-                            break;
-                        // MATERIAL - Stores materials (which describes how textures, etc. are drawn)
-                        case "MAT3":
-                            materialList = LoadMAT3SectionFromStream(reader, chunkStart, chunkSize, materialRemapIndexs);
-                            break;
-                        // TEXTURES - Stores binary texture images.
-                        case "TEX1":
-                            textureList = LoadTEX1FromFile(reader, chunkStart);
-                            break;
-                        // MODEL - Seems to be bypass commands for Materials and invokes GX registers directly.
-                        case "MDL3":
-                            break;
-                    }
-
-                    reader.BaseStream.Position = chunkStart + chunkSize;
+                    // INFO - Vertex Count, Scene Hierarchy
+                    case "INF1":
+                        rootNode = LoadINF1FromFile(rootNode, reader, chunkStart);
+                        break;
+                    // VERTEX - Stores vertex arrays for pos/normal/color0/tex0 etc. Contains VertexAttributes which describe
+                    // how this data is stored/laid out.
+                    case "VTX1":
+                        vertexData = LoadVTX1FromFile(reader, chunkStart, chunkSize);
+                        break;
+                    // ENVELOPES - Defines vertex weights for skinning.
+                    case "EVP1":
+                        envelopes = LoadEVP1FromStream(reader, chunkStart);
+                        break;
+                    // DRAW (Skeletal Animation Data) - Stores which matrices are weighted, and which are used directly.
+                    case "DRW1":
+                        drawInfo = LoadDRW1FromStream(reader, chunkStart);
+                        break;
+                    // JOINTS - Stores the skeletal joints (position, rotation, scale, etc.)
+                    case "JNT1":
+                        joints = LoadJNT1SectionFromStream(reader, chunkStart);
+                        break;
+                    // SHAPE - Face/Triangle information for model.
+                    case "SHP1":
+                        LoadSHP1SectionFromFile(vertexData, j3dMesh, reader, chunkStart);
+                        break;
+                    // MATERIAL - Stores materials (which describes how textures, etc. are drawn)
+                    case "MAT3":
+                        materialList = LoadMAT3SectionFromStream(reader, chunkStart, chunkSize, materialRemapIndexs);
+                        break;
+                    // TEXTURES - Stores binary texture images.
+                    case "TEX1":
+                        textureList = LoadTEX1FromFile(reader, chunkStart);
+                        break;
+                    // MODEL - Seems to be bypass commands for Materials and invokes GX registers directly.
+                    case "MDL3":
+                        break;
                 }
+
+                reader.BaseStream.Position = chunkStart + chunkSize;
             }
 
             // Resolve the texture indexes into actual textures now that we've loaded the TEX1 section.
@@ -270,7 +268,7 @@ namespace WEditor.WindWaker.Loaders
                 }
             }
 
-            RenderSystem.HackInstance.m_meshList.Add(resource.Mesh);
+            return j3dMesh;
         }
 
         private class ShapeAttribute

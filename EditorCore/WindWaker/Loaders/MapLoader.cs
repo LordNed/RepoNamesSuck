@@ -4,64 +4,82 @@ using System.IO;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static class MapLoader
+    public class MapLoader
     {
-        /// <summary>
-        /// This will create a new Map from an existing directory of rooms and stages on disk.
-        /// </summary>
-        /// <param name="folderDirectory">Absolute path to folder on disk including the Map name (ie: contents should be Stage.arc and Room*.arc)</param>
-        /// <returns></returns>
-        public static Map Load(string folderDirectory)
+        public Map CreateFromDirectory(WWorld world, string folderPath)
         {
-            if (string.IsNullOrEmpty(folderDirectory))
-                throw new ArgumentException("folderDirectory null or empty");
-            if(!Directory.Exists(folderDirectory))
-                throw new DirectoryNotFoundException("folderDirectory not found ensure you create the directory on disk first!");
+            if (world == null)
+                throw new ArgumentNullException("No world to load map into specified.");
 
-            // Calculate the Map Name
-            DirectoryInfo rootFolderInfo = new DirectoryInfo(folderDirectory);
+            if (string.IsNullOrEmpty(folderPath))
+                throw new ArgumentException("folderPath is null or empty!");
+
+            if (!Directory.Exists(folderPath))
+                throw new DirectoryNotFoundException("folderPath not found, ensure the directory exists first!");
+
+            // Calculate the Map Name from the folderPath - it should be the last segment of the folder path.s
+            DirectoryInfo rootFolderInfo = new DirectoryInfo(folderPath);
             string mapName = rootFolderInfo.Name;
 
-            Map newMap = new Map();
-            newMap.Name = mapName;
-            newMap.ProjectFilePath = Path.GetDirectoryName(folderDirectory);
+            ZArchiveLoader archiveLoader = new ZArchiveLoader();
 
-            var archiveFolderMap = new Dictionary<ZArchive,string>();
 
-            // Scan the folders in this directory and construct ZArchives out of each one. Determine the ZArchive type based on the folder name.
+            // Maps are stored in two distinct parts. A Stage which encompasses global data for all rooms, and then
+            // one or more rooms. We're going to load both the room and stage into ZArchives and then load the data
+            // stored in them into different data.
+            var archiveFolderMap = new Dictionary<string, ZArchive>();
             foreach (var dirInfo in rootFolderInfo.GetDirectories())
             {
                 ZArchive archive = null;
 
                 string folderName = dirInfo.Name;
-                if(folderName.ToLower().StartsWith("stage"))
+                if (folderName.ToLower().StartsWith("stage"))
                 {
                     archive = new ZArchive(folderName, ArchiveType.Stage);
 
-                    if (newMap.Stage != null)
-                        throw new FileLoadException("folderDirectory contains more than one stage archive!");
-
-                    newMap.Stage = archive;
+                    if(archiveFolderMap.ContainsKey("stage"))
+                    {
+                        WLog.Warning(LogCategory.EditorCore, null, "{0} contains more than one stage archive, ignoring second...", folderPath);
+                        continue;
+                    }
                 }
                 else if (folderName.ToLower().StartsWith("room"))
                 {
                     archive = new ZArchive(folderName, ArchiveType.Room);
-                    newMap.Rooms.Add(archive);
                 }
 
-                archiveFolderMap[archive] = dirInfo.FullName;
+                // Fill the archives with their contents.
+                archiveLoader.LoadFromDirectory(archive, dirInfo.FullName);
+                archiveFolderMap[folderName.ToLower()] = archive;
             }
 
-            // Now that we've loaded and created ZArchives for all stage/rooms, we can load the Stage entities, then Room entities.
-            if(newMap.Stage != null)
+            Map newMap = new Map();
+            newMap.Name = mapName;
+            newMap.ProjectFilePath = Path.GetDirectoryName(folderPath);
+
+            SceneLoader sceneLoader = new SceneLoader();
+
+            // Oof. So Stages can have references to rooms (via MULT chunk) and rooms can have references to other rooms (via PLYR)
+            // and it wouldn't surprise me if somewhere, a room references something in a stage. Because of this, we're going to load
+            // maps in two passes. The first pass does not resolve the reference (and instead leaves them as their indexes) and then
+            // once the stage and all rooms have been loaded, we can then do a second pass and turn the indexes into object references.
+            foreach(var kvp in archiveFolderMap)
             {
-                ZArchiveLoader.Load(newMap, newMap.Stage, archiveFolderMap[newMap.Stage]);
+                if(kvp.Key.StartsWith("room"))
+                {
+                    Room room = sceneLoader.LoadFromArchive<Room>(world, kvp.Value);
+                    newMap.NewRooms.Add(room);
+                }
+                else if (kvp.Key.StartsWith("stage"))
+                {
+                    newMap.NewStage = sceneLoader.LoadFromArchive<Stage>(world, kvp.Value);
+                }
             }
 
-            foreach(var room in newMap.Rooms)
-            {
-                ZArchiveLoader.Load(newMap, room, archiveFolderMap[room]);
-            }
+            // Fix up object-references on map entity data.
+            sceneLoader.PostProcessEntityData(newMap);
+
+            // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
 
             return newMap;
         }

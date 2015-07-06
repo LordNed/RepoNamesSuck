@@ -5,20 +5,18 @@ using System.Collections.Generic;
 
 namespace WEditor.Rendering
 {
-    public class RenderSystem
+    public class RenderSystem : IDisposable
     {
-        public static RenderSystem HackInstance;
-
         private List<Camera> m_cameraList;
         private WWorld m_world;
         public List<Mesh> m_meshList;
+        private bool m_disposed;
 
         public RenderSystem(WWorld world)
         {
             m_cameraList = new List<Camera>();
             m_meshList = new List<Mesh>();
             m_world = world;
-            HackInstance = this;
 
             // Create a Default camera
             Camera editorCamera = new Camera();
@@ -29,6 +27,16 @@ namespace WEditor.Rendering
             m_world.RegisterComponent(camMovement);
 
             m_cameraList.Add(editorCamera);
+        }
+
+        ~RenderSystem()
+        {
+            // Finalize can be called from any thread (ie: it's undefined) so we can't rely on finalize to dispose
+            // of OpenGL resources - they're created from the main ui thread, and trying to dispose of them from
+            // the finalize thread often results in a crash.
+            //if (!m_disposed)
+                //throw new Exception("This asset failed to manually be disposed!");
+            //Dispose(false);
         }
 
         internal void RenderFrame()
@@ -189,8 +197,43 @@ namespace WEditor.Rendering
                 m_world.RegisterComponent(camMovement);
             }
 
+            for (int i = 0; i < m_meshList.Count; i++)
+                m_meshList[i].Dispose();
+
             // Free all of our meshes
             m_meshList.Clear();
+        }
+
+        public void RegisterMesh(Mesh model)
+        {
+            m_meshList.Add(model);
+        }
+
+        public void UnregisterMesh(Mesh model)
+        {
+            model.Dispose();
+            m_meshList.Remove(model);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (m_disposed)
+                return;
+
+            if (disposing)
+            {
+                // Free any *managed* objects here.
+                UnloadAll();
+            }
+
+            // Free any *unmanaged* objects here.
+            m_disposed = true;
         }
     }
 }

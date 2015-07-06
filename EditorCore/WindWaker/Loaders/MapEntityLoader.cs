@@ -7,10 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using WEditor.Common.Maps;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public static class MapEntityLoader
+    public class MapEntityLoader
     {
         private class ChunkHeader
         {
@@ -27,74 +28,67 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        public static void Load(MapEntities.MapEntityResource resource, Map map, string filePath)
+        private List<ItemJsonTemplate> m_templates;
+        private List<string> m_templateOrder;
+
+        public MapEntityLoader()
         {
-            if (string.IsNullOrEmpty(filePath))
-                throw new ArgumentException("filePath null or empty");
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException("filePath not found");
-
-            var templates = LoadItemTemplates();
-            var templateOrder = LoadTemplateOrder();
-
-            // Simply load the contents of the data into the Data array and preserve it for now.
-            using (EndianBinaryReader reader = new EndianBinaryReader(File.Open(filePath, FileMode.Open), Endian.Big))
-            {
-                long fileOffsetStart = reader.BaseStream.Position;
-
-                // Read the File Header
-                int chunkCount = reader.ReadInt32();
-
-                // Read the chunk headers
-                List<ChunkHeader> chunks = new List<ChunkHeader>();
-                for(int i = 0; i < chunkCount; i++)
-                {
-                    ChunkHeader chunk = new ChunkHeader();
-                    chunk.FourCC = reader.ReadString(4);
-                    chunk.ElementCount = reader.ReadInt32();
-                    chunk.ChunkOffset = reader.ReadInt32();
-
-                    chunks.Add(chunk);
-                }
-
-                // Now sort the chunk headers to match the JSON defined Template Order, so that when we load a particular chunk,
-                // we can ensure its dependency chunks have been loaded in advanced.
-                chunks = SortChunksByTemplateOrder(chunks, templateOrder);
-
-                // For each chunk, read all elements of that type of chunk.
-                for(int i = 0; i < chunks.Count; i++)
-                {
-                    ChunkHeader chunk = chunks[i];
-
-                    // Find the appropriate JSON template that describes this chunk.
-                    ItemJsonTemplate template = templates.Find(x => string.Compare(x.FourCC, chunk.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
-
-                    if(template == null)
-                    {
-                        WLog.Warning(LogCategory.EntityLoading, resource, "Unsupported entity format: " + chunk.FourCC);
-                        continue;
-                    }
-
-                    reader.BaseStream.Position = chunk.ChunkOffset;
-
-                    for(int k = 0; k < chunk.ElementCount; k++)
-                    {
-                        MapEntityObject entity = LoadFromStreamIntoObjectUsingTemplate(chunk.FourCC, reader, template, map, resource);
-                        resource.Objects.Add(entity);
-
-                        /*Console.WriteLine("===== {0} =====", entity.FourCC);
-                        for(int l = 0; l < entity.Properties.Count; l++)
-                        {
-                            Console.WriteLine("[{0}] ({1}): {2}", entity.Properties[l].Name, entity.Properties[l].Type,  entity.Properties[l].Value.ToString());
-                        }
-
-                        Console.WriteLine("====");*/
-                    }
-                }
-            }
+            m_templates = LoadItemTemplates();
+            m_templateOrder = LoadTemplateOrder();
         }
 
-        private static List<ItemJsonTemplate> LoadItemTemplates()
+        public BindingList<MapEntityData> LoadFromStream(EndianBinaryReader reader)
+        {
+            BindingList<MapEntityData> entities = new BindingList<MapEntityData>();
+
+            long fileOffsetStart = reader.BaseStream.Position;
+
+            // File Header
+            int chunkCount = reader.ReadInt32();
+
+            // Read the chunk headers
+            List<ChunkHeader> chunks = new List<ChunkHeader>();
+            for (int i = 0; i < chunkCount; i++)
+            {
+                ChunkHeader chunk = new ChunkHeader();
+                chunk.FourCC = reader.ReadString(4);
+                chunk.ElementCount = reader.ReadInt32();
+                chunk.ChunkOffset = reader.ReadInt32();
+
+                chunks.Add(chunk);
+            }
+
+            // Now sort the chunk headers to match the JSON defined Template Order, so that when we load a particular chunk,
+            // we can ensure its dependency chunks have been loaded in advanced.
+            chunks = SortChunksByTemplateOrder(chunks, m_templateOrder);
+
+            // For each chunk, read all elements of that type of chunk.
+            for (int i = 0; i < chunks.Count; i++)
+            {
+                ChunkHeader chunk = chunks[i];
+
+                // Find the appropriate JSON template that describes this chunk.
+                ItemJsonTemplate template = m_templates.Find(x => string.Compare(x.FourCC, chunk.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
+
+                if (template == null)
+                {
+                    WLog.Error(LogCategory.EntityLoading, null, "Unsupported entity FourCC: {0}. Map will save without this data!", chunk.FourCC);
+                    continue;
+                }
+
+                reader.BaseStream.Position = chunk.ChunkOffset;
+
+                for (int k = 0; k < chunk.ElementCount; k++)
+                {
+                    MapEntityData entityInstance = LoadMapEntityFromStream(chunk.FourCC, reader, template, entities);
+                    entities.Add(entityInstance);
+                }
+            }
+
+            return entities;
+        }
+
+        private List<ItemJsonTemplate> LoadItemTemplates()
         {
             string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             executionPath += "/WindWaker/Templates/EntityData/";
@@ -123,7 +117,7 @@ namespace WEditor.WindWaker.Loaders
             return itemTemplates;
         }
 
-        private static List<string> LoadTemplateOrder()
+        private List<string> LoadTemplateOrder()
         {
             string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             executionPath += "/WindWaker/Templates/TemplateOrder.json";
@@ -131,7 +125,7 @@ namespace WEditor.WindWaker.Loaders
             return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(executionPath));
         }
 
-        private static List<ChunkHeader> SortChunksByTemplateOrder(List<ChunkHeader> unsortedChunks, List<string> templateOrder)
+        private List<ChunkHeader> SortChunksByTemplateOrder(List<ChunkHeader> unsortedChunks, List<string> templateOrder)
         {
             var sortedChunks = new List<ChunkHeader>();
 
@@ -160,20 +154,19 @@ namespace WEditor.WindWaker.Loaders
             return sortedChunks;
         }
 
-
-        private static MapEntityObject LoadFromStreamIntoObjectUsingTemplate(string FourCC, EndianBinaryReader reader, ItemJsonTemplate template, Map map, MapEntityResource resource)
+        private MapEntityData LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, BindingList<MapEntityData> loadedEntities)
         {
-            MapEntityObject obj = new MapEntityObject(FourCC);
+            MapEntityData obj = new MapEntityData(chunkFourCC);
 
             // We're going to examine the Template's properties and load based on the current template type.
-            for(int i = 0; i < template.Properties.Count; i++)
+            for (int i = 0; i < template.Properties.Count; i++)
             {
                 ItemJsonTemplate.Property templateProperty = template.Properties[i];
                 string propertyName = templateProperty.Name;
                 PropertyType type = PropertyType.None;
                 object value = null;
 
-                switch(templateProperty.Type)
+                switch (templateProperty.Type)
                 {
                     case "fixedLengthString":
                         type = PropertyType.String;
@@ -217,34 +210,39 @@ namespace WEditor.WindWaker.Loaders
 
                     case "enum":
                         type = PropertyType.Enum;
-                        
-                        // ToDo: Resolve to actual Enum later.
-                        byte enumIndexBytes = reader.ReadByte();
-
+                        byte enumIndexBytes = reader.ReadByte(); // ToDo: Resolve to actual Enum later.
                         value = enumIndexBytes;
                         break;
 
                     case "objectReference":
+                        // When we first resolve them, we're going to keep the value as the reference byte, 
+                        // and then when they are post-processed they'll be turned into a proper type.
                         type = PropertyType.ObjectReference;
-                        byte refByte = reader.ReadByte();
-                        value = ResolveObjectReference(templateProperty, refByte, map, resource);
+                        value = (int)reader.ReadByte();
+                        //byte refByte = reader.ReadByte();
+                        //value = ResolveEntityReferenceNew(chunkFourCC, templateProperty, refByte, loadedEntities);
                         break;
 
                     case "objectReferenceShort":
+                        // When we first resolve them, we're going to keep the value as the reference byte, 
+                        // and then when they are post-processed they'll be turned into a proper type.
                         type = PropertyType.ObjectReference;
-                        ushort refShort = reader.ReadUInt16();
-                        value = ResolveObjectReference(templateProperty, refShort, map, resource);
+                        value = (int)reader.ReadUInt16();
+                        //ushort refShort = reader.ReadUInt16();
+                        //value = ResolveEntityReferenceNew(chunkFourCC, templateProperty, refShort, loadedEntities);
                         break;
 
                     case "objectReferenceArray":
+                        // When we first resolve them, we're going to keep the value as the reference byte, 
+                        // and then when they are post-processed they'll be turned into a proper type.
                         type = PropertyType.ObjectReference;
                         var refList = new BindingList<object>();
-                        for(int refArray = 0; refArray < templateProperty.Length; refArray++)
+                        for (int refArray = 0; refArray < templateProperty.Length; refArray++)
                         {
-                            byte refByteArray = reader.ReadByte();
-                            refList.Add(ResolveObjectReference(templateProperty, refByteArray, map, resource));
+                            refList.Add((int)reader.ReadByte());
+                            //byte refByteArray = reader.ReadByte();
+                            //refList.Add(ResolveEntityReferenceNew(chunkFourCC, templateProperty, refByteArray, loadedEntities));
                         }
-
                         value = refList;
                         break;
 
@@ -281,16 +279,72 @@ namespace WEditor.WindWaker.Loaders
             return obj;
         }
 
-        private static object ResolveObjectReference(ItemJsonTemplate.Property templateProperty, int index, Map map, MapEntityResource resource)
+        public void PostProcess(Scene scene, Map map)
         {
-            switch(templateProperty.ReferenceType)
+            foreach(MapEntityObject entity in scene.Entities)
+            {
+                ItemJsonTemplate origTemplate = m_templates.Find(x => string.Compare(x.FourCC, entity.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
+                if (origTemplate == null)
+                {
+                    WLog.Warning(LogCategory.EntityLoading, map, "Failed to find template for entity {0}, not attempting to post-process.", entity);
+                    continue;
+                }
+
+                foreach(MapEntityObject.Property property in entity.Properties)
+                {
+                    ItemJsonTemplate.Property origTemplateProperty = origTemplate.Properties.Find(x => string.Compare(x.Name, property.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    if(origTemplateProperty == null)
+                    {
+                        WLog.Warning(LogCategory.EntityLoading, map, "Failed to find property {0} on template {1} for entity {2}, not attempting to post-process.", property.Name, origTemplate.FourCC, entity);
+                        continue;
+                    }
+
+                    // We cheated earlier and stored the various reference-type ones as their index values. That means the type of the object doesn't actually
+                    // reflect the Type field. Thus, we now need to go back, patch up the references, and set them to be their proper type. Yeah!
+                    switch(origTemplateProperty.Type)
+                    {
+                        case "objectReference":
+                        case "objectReferenceShort":
+                            {
+                                int objIndex = (int)property.Value;
+                                property.Value = ResolveEntityReference(entity.FourCC, origTemplateProperty, objIndex, scene.Entities, map);
+                            }
+                            break;
+                        case "objectReferenceArray":
+                            {
+                                BindingList<object> indexes = (BindingList<object>)property.Value;
+                                BindingList<object> resolvedRefs = new BindingList<object>();
+                                for(int i = 0; i < indexes.Count; i++)
+                                {
+                                    var obj = ResolveEntityReference(entity.FourCC, origTemplateProperty, (int)indexes[i], scene.Entities, map);
+                                    resolvedRefs.Add(obj);
+                                }
+                                property.Value = resolvedRefs;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        private object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, BindingList<MapEntityData> loadedEntities, Map map)
+        {
+            switch (templateProperty.ReferenceType)
             {
                 case "Room":
                     // Some things will specify a Room index of 255 for "This isn't Used", so we're going to special-case handle that.
                     if (index == 0xFF)
                         return null;
 
-                    return map.Rooms[index];
+                    if (index < map.NewRooms.Count)
+                    {
+                        return map.NewRooms[index];
+                    }
+                    else
+                    {
+                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for room {1} but index is out of range.", askingChunkFourCC, templateProperty.Name);
+                    }
+                    return null;
 
                 case "FourCC":
                     // We can (hopefully) know that the array it's about to index is already loaded
@@ -299,23 +353,29 @@ namespace WEditor.WindWaker.Loaders
 
                     // Get an (ordered) list of all chunks of that type.
                     List<MapEntityObject> potentialRefs = new List<MapEntityObject>();
-                    for(int i = 0; i < resource.Objects.Count; i++)
+                    for (int i = 0; i < loadedEntities.Count; i++)
                     {
                         // Check against all potential reference types. This resolves the issue where things like  RCAM/CAMR point to AROB/RARO and they're sharing
                         // a template (maybe a bad idea...) but need to object-reference against a different type. I don't think you'll have AROB/RARO in the same file
                         // so this should work...
-                        for(int k = 0; k < templateProperty.ReferenceFourCCType.Length; k++)
+                        for (int k = 0; k < templateProperty.ReferenceFourCCType.Length; k++)
                         {
-                            if (string.Compare(resource.Objects[i].FourCC, templateProperty.ReferenceFourCCType[k]) == 0)
-                                potentialRefs.Add(resource.Objects[i]);
+                            if (string.Compare(loadedEntities[i].FourCC, templateProperty.ReferenceFourCCType[k]) == 0)
+                                potentialRefs.Add(loadedEntities[i]);
                         }
                     }
 
                     // There's an edge-case here where some maps omit an entity (such as Fairy01 not having a Virt chunk) but use index 0 (Fairy01's Pale chunk)
                     // and so it was finding no potentialRefs 
-                    if(index < potentialRefs.Count)
+                    if (index < potentialRefs.Count)
+                    {
                         return potentialRefs[index];
-                    break;
+                    }
+                    else
+                    {
+                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for property {1} but index is out of range.", askingChunkFourCC, templateProperty.Name);
+                    }
+                    return null;
             }
 
             return null;

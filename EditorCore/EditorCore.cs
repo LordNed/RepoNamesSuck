@@ -16,6 +16,7 @@ namespace WEditor
         private StandardOutLogger m_stdOutLogger;
 
         private List<WWorld> m_editorWorlds;
+        private WWorld m_mainWorld;
 
         public Map LoadedScene
         {
@@ -33,7 +34,9 @@ namespace WEditor
         {
             m_stdOutLogger = new StandardOutLogger();
             m_editorWorlds = new List<WWorld>();
-            m_editorWorlds.Add(new WWorld("main"));
+            m_mainWorld = new WWorld("main");
+            m_editorWorlds.Add(m_mainWorld);
+
             WLog.Info(LogCategory.EditorCore, null, "Initialized.");
         }
 
@@ -66,7 +69,21 @@ namespace WEditor
             if (string.IsNullOrEmpty(folderPath))
                 throw new ArgumentException("You must specify a folder to load from directory!");
 
-            LoadedScene = MapLoader.Load(folderPath);
+            if (LoadedScene != null)
+                throw new InvalidOperationException("There is already a map loaded, call UnloadMap() first!");
+
+            MapLoader mapLoader = new MapLoader();
+            Map newMap = null;
+            try
+            {
+                newMap = mapLoader.CreateFromDirectory(m_mainWorld, folderPath);
+            }
+            catch(Exception ex)
+            {
+                WLog.Error(LogCategory.EditorCore, null, "Exception while loading map: " + ex.ToString());
+            }
+
+            LoadedScene = newMap;
         }
 
         public void UnloadMap()
