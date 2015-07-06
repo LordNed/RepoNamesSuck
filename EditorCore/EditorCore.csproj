@@ -97,12 +97,13 @@
     <Compile Include="WindWaker\Loaders\J3D\VTX1.cs" />
     <Compile Include="WindWaker\Loaders\MapEntityLoader.cs" />
     <Compile Include="WindWaker\Loaders\MapLoader.cs" />
-    <Compile Include="WindWaker\Loaders\RoomLoader.cs" />
-    <Compile Include="WindWaker\Loaders\StageLoader.cs" />
+    <Compile Include="WindWaker\Loaders\SceneLoader.cs" />
     <Compile Include="WindWaker\Loaders\ZArchiveLoader.cs" />
     <Compile Include="WindWaker\Map.cs" />
     <Compile Include="WindWaker\MapEntities\MapEntityResource.cs" />
     <Compile Include="WindWaker\ItemTemplate.cs" />
+    <Compile Include="WindWaker\Room.cs" />
+    <Compile Include="WindWaker\Scene.cs" />
     <Compile Include="WindWaker\Stage.cs" />
     <Compile Include="WindWaker\ZArchive.cs" />
   </ItemGroup>

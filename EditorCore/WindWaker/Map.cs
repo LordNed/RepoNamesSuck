@@ -57,6 +57,9 @@ namespace WEditor.WindWaker
             }
         }
 
+        public Stage NewStage;
+        public BindingList<Room> NewRooms;
+
         private string m_name;
         private string m_projectFilePath;
         private ZArchive m_stage;
@@ -66,6 +69,9 @@ namespace WEditor.WindWaker
             Stage = null;
             Rooms = new BindingList<ZArchive>();
             Name = "Unnamed";
+
+            NewStage = null;
+            NewRooms = new BindingList<Room>();
         }
 
         protected void OnPropertyChanged(string propertyName)

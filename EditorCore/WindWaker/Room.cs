@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WEditor.WindWaker.Loaders
+namespace WEditor.WindWaker
 {
-    public class RoomLoader
+    public class Room : Scene
     {
     }
 }

@@ -83,8 +83,7 @@ namespace WEditor
                 WLog.Error(LogCategory.EditorCore, null, "Exception while loading map: " + ex.ToString());
             }
 
-            //LoadedScene = newMap;*/
-            LoadedScene = MapLoader.Load(folderPath);
+            LoadedScene = newMap;
         }
 
         public void UnloadMap()

@@ -9,20 +9,20 @@ using WEditor.FileSystem;
 
 namespace WEditor.WindWaker.Loaders
 {
-    public class StageLoader
+    public class SceneLoader
     {
-        public Stage LoadFromArchive(WWorld world, ZArchive stageArchive)
+        public T LoadFromArchive<T>(WWorld world, ZArchive archive) where T : Scene, new()
         {
             if (world == null)
                 throw new ArgumentNullException("world must not be null!");
-            if (stageArchive == null)
-                throw new ArgumentNullException("stageArchive must not be null!");
+            if (archive == null)
+                throw new ArgumentNullException("archive must not be null!");
 
-            Stage stage = new Stage();
+            T scene = new T();
 
             // Wind Waker only supports one-level deep of folders (ie: root/<folders>/<files>) so
             // we don't load this recursively.
-            foreach (var vFolder in stageArchive.Contents.Children)
+            foreach (var vFolder in archive.Contents.Children)
             {
                 // Skip loose files alongside the top level folders inside the root.
                 if (vFolder.Type != NodeType.Directory)
@@ -40,44 +40,45 @@ namespace WEditor.WindWaker.Loaders
                     switch (folder.Name.ToLower())
                     {
                         /* Room and Stage Entity Data */
-                        case ".dzr":
-                        case ".dzs":
-                            LoadStageEntityData(file, stage, world);
+                        case "dzr":
+                        case "dzs":
+                            LoadEntityData(file, scene, world);
                             break;
                         /* 3D Model Formats */
-                        case ".bmd":
-                        case ".bdl":
+                        case "bmd":
+                        case "bdl":
                             //LoadStageModelData(file, stage, world);
                             break;
                         /* Map Collision Format */
-                        case ".dzb":
+                        case "dzb":
                         /* Event List */
-                        case ".dat":
+                        case "dat":
                         /* External Textures (skybox?) */
-                        case ".bti":
+                        case "bti":
                         /* Bone Animation */
-                        case ".bck":
+                        case "bck":
                         /* TEV Register Animation */
-                        case ".brk":
+                        case "brk":
                         /* Texture Animation */
-                        case ".btk":
+                        case "btk":
                         /* Alternate Materials (MAT3 Chunk from BMD/BDL) */
-                        case ".bmt":
+                        case "bmt":
                             break;
                         default:
-                            WLog.Warning(LogCategory.ArchiveLoading, stageArchive, "Unknown folder type \"{0}\" found in Archive \"{1}\"", folder.Name, stageArchive.Name);
+                            WLog.Warning(LogCategory.ArchiveLoading, archive, "Unknown folder type \"{0}\" found in Archive \"{1}\"", folder.Name, archive.Name);
                             break;
                     }
                 }
 
             }
 
-            return stage;
+            return scene;
         }
 
-        private void LoadStageEntityData(VirtualFilesystemFile file, Stage stage, WWorld world)
+
+        private void LoadEntityData(VirtualFilesystemFile file, Scene scene, WWorld world)
         {
-            WLog.Info(LogCategory.ArchiveLoading, null, "Loading DZS (Stage Entity Data) {0}.{1}...", file.Name, file.Extension);
+            WLog.Info(LogCategory.ArchiveLoading, null, "Loading DZR/DZS (Room/Stage Entity Data) {0}{1}...", file.Name, file.Extension);
 
             // We're going to load this DZS file into a generic list of all things contained by the DZS/DZR file, and then we'll manually pick through
             // chunks who's info we care about. Some objects will get stored on the Stage and discarded, while others will get converted into intermediate
@@ -85,11 +86,20 @@ namespace WEditor.WindWaker.Loaders
             MapEntityLoader entityLoader = new MapEntityLoader();
             using(EndianBinaryReader reader = new EndianBinaryReader(file.Data.GetData(), Endian.Big))
             {
-                List<MapEntityData> stageEntityData = entityLoader.LoadFromStream(reader);
+                scene.Entities = entityLoader.LoadFromStream(reader);
             }
-
         
-            WLog.Info(LogCategory.ArchiveLoading, null, "Loaded {0}.{1}.", file.Name, file.Extension);
+            WLog.Info(LogCategory.ArchiveLoading, null, "Loaded {0}{1}.", file.Name, file.Extension);
+        }
+
+        public void PostProcessEntityData(Map map)
+        {
+            MapEntityLoader entityLoader = new MapEntityLoader();
+            if(map.NewStage != null)
+                entityLoader.PostProcess(map.NewStage, map);
+
+            foreach (var room in map.NewRooms)
+                entityLoader.PostProcess(room, map);
         }
     }
 }
