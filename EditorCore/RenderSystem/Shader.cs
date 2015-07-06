@@ -26,9 +26,16 @@ namespace WEditor.Rendering
         private int m_fragmentAddress = -1;
         private int m_programAddress = -1;
 
+        private bool m_disposed;
+
         public Shader(string name)
         {
             Name = name;
+        }
+
+        ~Shader()
+        {
+            //Dispose(false);
         }
 
         public void Bind()
@@ -145,13 +152,30 @@ namespace WEditor.Rendering
 
         public void Dispose()
         {
-            if(m_vertexAddress >= 0)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (m_disposed)
+                return;
+
+            if (disposing)
+            {
+                // Free any *managed* objects here.
+            }
+
+            // Free any *unmanaged* objects here.
+            if (m_vertexAddress >= 0)
                 GL.DeleteShader(m_vertexAddress);
             if (m_fragmentAddress >= 0)
                 GL.DeleteShader(m_fragmentAddress);
 
             if (m_programAddress >= -1)
                 GL.DeleteProgram(m_programAddress);
+
+            m_disposed = true;
         }
     }
 }

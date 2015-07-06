@@ -254,7 +254,7 @@ namespace WEditor.Common.Nintendo.J3D
         public ushort[] Table; // 10 of these.
     }
 
-    public class Material
+    public class Material : IDisposable
     {
         /// <summary> Human readable name of the material, no file references point to this name. </summary>
         public string Name;
@@ -318,6 +318,7 @@ namespace WEditor.Common.Nintendo.J3D
         public AlphaCompare AlphaCompare;
         public BlendMode BlendMode;
         public short UnknownIndex2;
+        private bool m_disposed;
 
         public Material()
         {
@@ -325,9 +326,47 @@ namespace WEditor.Common.Nintendo.J3D
             Textures = new Texture2D[8];
         }
 
+        ~Material()
+        {
+            //Dispose(false);
+        }
+
+
         public override string ToString()
         {
             return Name;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (m_disposed)
+                return;
+
+            if(disposing)
+            {
+                // Free any *managed* objects here.
+                for (int i = 0; i < Textures.Length; i++)
+                {
+                    if (Textures[i] == null)
+                        continue;
+
+                    Textures[i].Dispose();
+                }
+
+                Textures = null;
+
+                if (Shader != null)
+                    Shader.Dispose();
+            }
+
+            // Free any *unmanaged* objects here.
+            m_disposed = true;
         }
     }
 }

@@ -1,9 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WEditor.Rendering
 {
@@ -109,10 +105,12 @@ namespace WEditor.Rendering
         private int m_textureBuffer;
         private byte[] m_pixelData;
 
+        private bool m_disposed;
+
         public Texture2D(ushort width, ushort height)
         {
             // Generate a buffer on the GPU to store our texture data.
-            GL.GenTextures(1, out m_textureBuffer);
+            m_textureBuffer = GL.GenTexture();
 
             m_width = width;
             m_height = height;
@@ -123,6 +121,11 @@ namespace WEditor.Rendering
             MagFilter = TextureMagFilter.Nearest;
             BorderColor = new Color(1f, 0f, 1f, 1f);
             MipMapBias = 0f;
+        }
+
+        ~Texture2D()
+        {
+            //Dispose(false);
         }
 
         public void Bind()
@@ -150,7 +153,25 @@ namespace WEditor.Rendering
 
         public void Dispose()
         {
-            GL.DeleteTextures(1, ref m_textureBuffer);
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (m_disposed)
+                return;
+
+            if (disposing)
+            {
+                // Free any *managed* objects here.
+            }
+
+            // Free any *unmanaged* objects here.
+            GL.DeleteTexture(m_textureBuffer);
+            m_textureBuffer = -1;
+
+            m_disposed = true;
         }
     }
 }

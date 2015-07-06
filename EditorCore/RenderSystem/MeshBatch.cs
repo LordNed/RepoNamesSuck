@@ -229,7 +229,7 @@ namespace WEditor.Rendering
         private int[] m_indexes;
 
         private int m_maxBufferCount;
-
+        private bool m_disposed;
 
 
         public MeshBatch()
@@ -253,9 +253,13 @@ namespace WEditor.Rendering
             m_texCoord7 = new Vector2[0];
 
             // Generate our element array buffer
-            GL.GenBuffers(1, out m_elementArrayBuffer);
+            m_elementArrayBuffer = GL.GenBuffer();
         }
 
+        ~MeshBatch()
+        {
+            //Dispose(false);
+        }
 
         public void Bind()
         {
@@ -293,7 +297,7 @@ namespace WEditor.Rendering
             // See if this attribute is already enabled. If it's not already enabled, we need to generate a buffer for it.
             if (!m_vertexDescription.AttributeIsEnabled(attribute))
             {
-                GL.GenBuffers(1, out m_attributeBuffers[(int)attribute]);
+                m_attributeBuffers[(int)attribute] = GL.GenBuffer();
                 m_vertexDescription.EnableAttribute(attribute);
             }
 
@@ -307,14 +311,36 @@ namespace WEditor.Rendering
 
         public void Dispose()
         {
-            // Free the OpenGL Resources when this object gets destroyed.
-            for(int i = 0; i < m_maxBufferCount; i++)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (m_disposed)
+                return;
+
+            if(disposing)
             {
-                if(m_vertexDescription.AttributeIsEnabled((ShaderAttributeIds)i))
+                // Free any *managed* objects here.    
+                if (Material != null)
                 {
-                    GL.DeleteBuffers(1, ref m_attributeBuffers[i]);
+                    Material.Dispose();
+                    Material = null;
                 }
             }
+
+            // Free any *unmanaged* objects here.
+            for (int i = 0; i < m_maxBufferCount; i++)
+            {
+                if (m_vertexDescription.AttributeIsEnabled((ShaderAttributeIds)i))
+                {
+                    GL.DeleteBuffer(m_attributeBuffers[i]);
+                }
+            }
+
+            GL.DeleteBuffer(m_elementArrayBuffer);
+            m_disposed = true;
         }
     }
 }

@@ -155,5 +155,10 @@ namespace WindEditor
         {
             m_viewModel.SetKeyboardState(e.Key, false);
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            m_viewModel.OnWindowClosing(sender, e);
+        }
     }
 }
