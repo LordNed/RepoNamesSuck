@@ -81,12 +81,12 @@ namespace WEditor.WindWaker.Loaders
             // Fix up object-references on map entity data.
             sceneLoader.PostProcessEntityData(newMap);
 
+            // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
             if(newMap.NewStage != null)
             {
                 PostProcessStage(newMap.NewStage);
             }
 
-            // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
 
             return newMap;
         }
@@ -95,6 +95,47 @@ namespace WEditor.WindWaker.Loaders
         {
             PostProcessPointLights(stage);
             PostProcessArrows(stage);
+            PostProcessSoundSources(stage);
+            PostProcessShipSpawns(stage);
+        }
+
+        private void PostProcessShipSpawns(Scene scene)
+        {
+            var spawnList = FindAllByType("SHIP", scene.Entities);
+            for(int i = 0; i < spawnList.Count; i++)
+            {
+                ShipSpawn shipSpawn = new ShipSpawn
+                {
+                    Position = (Vector3)spawnList[i]["Position"].Value,
+                    YRotation = (short)spawnList[i]["Rotation"].Value,
+                    Unknown1 = (short)spawnList[i]["Unknown 1"].Value
+                };
+
+                scene.ShipSpawns.Add(shipSpawn);
+            }
+        }
+
+        private void PostProcessSoundSources(Scene scene)
+        {
+            var sondList = FindAllByType("SOND", scene.Entities);
+            for(int i = 0; i < sondList.Count; i++)
+            {
+                SoundSource sndSrc = new SoundSource
+                {
+                    Name = (string)sondList[i]["Name"].Value,
+                    Position = (Vector3)sondList[i]["Position"].Value,
+                    Unknown1 = (byte)sondList[i]["Unknown 1"].Value,
+                    Unknown2 = (byte)sondList[i]["Unknown 2"].Value,
+                    Unknown3 = (byte)sondList[i]["Unknown 3"].Value,
+                    SoundId = (byte)sondList[i]["Sound ID"].Value,
+                    SoundRadius = (byte)sondList[i]["Sound Radius"].Value,
+                    Padding1 = (byte)sondList[i]["Padding 1"].Value,
+                    Padding2 = (byte)sondList[i]["Padding 2"].Value,
+                    Padding3 = (byte)sondList[i]["Padding 3"].Value
+                };
+
+                scene.Sounds.Add(sndSrc);
+            }
         }
 
         private void PostProcessArrows(Scene scene)

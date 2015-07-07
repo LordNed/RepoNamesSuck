@@ -23,6 +23,11 @@ namespace WEditor.WindWaker
         /// <summary> I'm pretty sure these are Room Arrows - only used in Rooms. </summary>
         public BindingList<Arrow> RARO { get; set; }
         
+        /// <summary> Sources of ambient sound in the map. </summary>
+        public BindingList<SoundSource> Sounds { get; set; }
+
+        /// <summary> Ship Spawns  </summary>
+        public BindingList<ShipSpawn> ShipSpawns { get; set; }
 
 
         public BindingList<MapEntityData> Entities { get; set; }
@@ -30,6 +35,13 @@ namespace WEditor.WindWaker
 
         public Scene()
         {
+            LGHT = new BindingList<PointLight>();
+            LGTV = new BindingList<PointLight>();
+            AROB = new BindingList<Arrow>();
+            RARO = new BindingList<Arrow>();
+            Sounds = new BindingList<SoundSource>();
+            ShipSpawns = new BindingList<ShipSpawn>();
+
             Entities = new BindingList<MapEntityData>();
             Meshes = new BindingList<Mesh>();
         }

@@ -2,10 +2,10 @@
 
 namespace WEditor.Common.Maps
 {
-    public class PointLight
+    public class ShipSpawn
     {
         public Vector3 Position;
-        public Vector3 Radius;
-        public Color Color;
+        public short YRotation;
+        public short Unknown1;
     }
 }
