@@ -11,7 +11,7 @@ namespace WEditor
 {
     public class DebugDrawing
     {
-        private class DrawInstance
+        public class DrawInstance
         {
             public Mesh Mesh;
             public Vector3 Position;
@@ -35,6 +35,9 @@ namespace WEditor
         {
             m_cubeMesh.Dispose();
             m_cubeMesh = null;
+
+            m_instanceList.Clear();
+            m_instanceList = null;
         }
 
         public void DrawWireCube(Vector3 position, Vector3 scale)
@@ -45,6 +48,11 @@ namespace WEditor
         public void ResetList()
         {
             m_instanceList.Clear();
+        }
+
+        public List<DrawInstance> GetInstanceList()
+        {
+            return m_instanceList;
         }
     }
 }

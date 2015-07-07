@@ -1,11 +1,11 @@
 ﻿#version 130
-in vec4 outColor;
-in vec2 outTexCoord0;
+in vec4 Color0;
+in vec3 Tex0;
 
-uniform sampler2D tex;
-out vec4 outputColor;
+// Final Output
+out vec4 PixelColor;
 
 void main()
 {
-	outputColor = texture(tex, outTexCoord0) * outColor;
+	PixelColor = Color0;
 }

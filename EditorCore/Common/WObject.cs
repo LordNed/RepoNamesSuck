@@ -9,5 +9,8 @@
         }
 
         private WWorld m_world;
+
+
+        public virtual void OnDrawGizmos() { }
     }
 }

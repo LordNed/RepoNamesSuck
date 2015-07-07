@@ -84,22 +84,27 @@ namespace WEditor.WindWaker.Loaders
             // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
             if(newMap.NewStage != null)
             {
-                PostProcessStage(newMap.NewStage);
+                PostProcessScene(newMap.NewStage, world);
+            }
+
+            foreach(var room in newMap.NewRooms)
+            {
+                PostProcessScene(room, world);
             }
 
 
             return newMap;
         }
 
-        private void PostProcessStage(Stage stage)
+        private void PostProcessScene(Scene scene, WWorld world)
         {
-            PostProcessPointLights(stage);
-            PostProcessArrows(stage);
-            PostProcessSoundSources(stage);
-            PostProcessShipSpawns(stage);
+            PostProcessPointLights(scene, world);
+            PostProcessArrows(scene, world);
+            PostProcessSoundSources(scene, world);
+            PostProcessShipSpawns(scene, world);
         }
 
-        private void PostProcessShipSpawns(Scene scene)
+        private void PostProcessShipSpawns(Scene scene, WWorld world)
         {
             var spawnList = FindAllByType("SHIP", scene.Entities);
             for(int i = 0; i < spawnList.Count; i++)
@@ -112,10 +117,11 @@ namespace WEditor.WindWaker.Loaders
                 };
 
                 scene.ShipSpawns.Add(shipSpawn);
+                world.RegisterObject(shipSpawn);
             }
         }
 
-        private void PostProcessSoundSources(Scene scene)
+        private void PostProcessSoundSources(Scene scene, WWorld world)
         {
             var sondList = FindAllByType("SOND", scene.Entities);
             for(int i = 0; i < sondList.Count; i++)
@@ -135,10 +141,11 @@ namespace WEditor.WindWaker.Loaders
                 };
 
                 scene.Sounds.Add(sndSrc);
+                world.RegisterObject(sndSrc);
             }
         }
 
-        private void PostProcessArrows(Scene scene)
+        private void PostProcessArrows(Scene scene, WWorld world)
         {
             var arobList = FindAllByType("AROB", scene.Entities);
             for(int i = 0; i < arobList.Count; i++)
@@ -151,23 +158,25 @@ namespace WEditor.WindWaker.Loaders
                 };
 
                 scene.AROB.Add(arrow);
+                world.RegisterObject(arrow);
             }
 
             var raroList = FindAllByType("RARO", scene.Entities);
-            for (int i = 0; i < arobList.Count; i++)
+            for (int i = 0; i < raroList.Count; i++)
             {
                 Arrow arrow = new Arrow
                 {
-                    Position = (Vector3)arobList[i]["Position"].Value,
-                    Rotation = (XYZRotation)arobList[i]["Rotation"].Value,
-                    Padding = (short)arobList[i]["Padding"].Value,
+                    Position = (Vector3)raroList[i]["Position"].Value,
+                    Rotation = (XYZRotation)raroList[i]["Rotation"].Value,
+                    Padding = (short)raroList[i]["Padding"].Value,
                 };
 
                 scene.RARO.Add(arrow);
+                world.RegisterObject(arrow);
             }
         }
 
-        private void PostProcessPointLights(Scene scene)
+        private void PostProcessPointLights(Scene scene, WWorld world)
         {
             var lghtList = FindAllByType("LGHT", scene.Entities);
             for(int i = 0; i < lghtList.Count; i++)
@@ -180,19 +189,21 @@ namespace WEditor.WindWaker.Loaders
                 };
 
                 scene.LGHT.Add(pointLight);
+                world.RegisterObject(pointLight);
             }
 
             var lgtvList = FindAllByType("LGTV", scene.Entities);
-            for(int i = 0; i < lgtvList.Count; i++)
+            for (int i = 0; i < lgtvList.Count; i++)
             {
                 PointLight pointLight = new PointLight
                 {
-                    Position = (Vector3)lghtList[i]["Position"].Value,
-                    Radius = (Vector3)lghtList[i]["Radius"].Value,
-                    Color = (Color32)lghtList[i]["Color"].Value
+                    Position = (Vector3)lgtvList[i]["Position"].Value,
+                    Radius = (Vector3)lgtvList[i]["Radius"].Value,
+                    Color = (Color32)lgtvList[i]["Color"].Value
                 };
 
                 scene.LGTV.Add(pointLight);
+                world.RegisterObject(pointLight);
             }
         }
         

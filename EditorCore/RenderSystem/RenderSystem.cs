@@ -80,6 +80,29 @@ namespace WEditor.Rendering
                 Matrix4 viewMatrix = camera.ViewMatrix;
                 Matrix4 projMatrix = camera.ProjectionMatrix;
 
+                // Draw Debug Shapes
+                foreach(var instance in m_world.Gizmos.GetInstanceList())
+                {
+                    Matrix4 modelMatrix = Matrix4.CreateScale(instance.Scale) * Matrix4.CreateTranslation(instance.Position);
+
+                    // Bind the Debug Shader
+                    m_debugShader.Bind();
+
+                    // Upload uniforms to GPU
+                    GL.UniformMatrix4(m_debugShader.UniformModelMtx, false, ref modelMatrix);
+                    GL.UniformMatrix4(m_debugShader.UniformViewMtx, false, ref viewMatrix);
+                    GL.UniformMatrix4(m_debugShader.UniformProjMtx, false, ref projMatrix);
+
+                    // Bind our Mesh
+                    instance.Mesh.SubMeshes[0].Bind();
+
+                    // Draw our Mesh.
+                    GL.DrawElements(instance.Mesh.SubMeshes[0].PrimitveType, instance.Mesh.SubMeshes[0].Indexes.Length, DrawElementsType.UnsignedInt, 0);
+
+                    // Unbind the VAOs so that our VAO doesn't leak into the next drawcall.
+                    instance.Mesh.SubMeshes[0].Unbind();
+                }
+
                 for (int m = 0; m < m_meshList.Count; m++)
                 {
                     Mesh mesh = m_meshList[m];

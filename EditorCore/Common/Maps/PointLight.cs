@@ -2,7 +2,7 @@
 
 namespace WEditor.Common.Maps
 {
-    public class PointLight
+    public class PointLight : WObject
     {
         public Vector3 Position;
         public Vector3 Radius;

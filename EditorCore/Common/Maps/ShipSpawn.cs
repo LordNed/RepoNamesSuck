@@ -2,7 +2,7 @@
 
 namespace WEditor.Common.Maps
 {
-    public class ShipSpawn
+    public class ShipSpawn : WObject
     {
         public Vector3 Position;
         public short YRotation;

@@ -12,6 +12,11 @@ namespace WEditor
             get { return m_renderSystem; }
         }
 
+        public DebugDrawing Gizmos
+        {
+            get { return m_gizmos; }
+        }
+
         public Input Input
         {
             get { return m_input; }
@@ -27,8 +32,10 @@ namespace WEditor
 
         /// <summary> List of components in the WWorld which need to recieve update ticks. </summary>
         private List<WComponent> m_componentList;
+        private List<WObject> m_objectList;
 
         private RenderSystem m_renderSystem;
+        private DebugDrawing m_gizmos;
 
         private Input m_input;
         private string m_worldName;
@@ -37,31 +44,42 @@ namespace WEditor
         {
             m_worldName = worldName;
             m_componentList = new List<WComponent>();
+            m_objectList = new List<WObject>();
             m_dtStopwatch = new Stopwatch();
             m_input = new Input();
 
+            m_gizmos = new DebugDrawing();
             m_renderSystem = new RenderSystem(this);
         }
 
         public void InitializeSystem()
         {
             m_renderSystem.InitializeSystem();
+            m_gizmos.InitializeSystem();
         }
 
         public void ShutdownSystem()
         {
             m_renderSystem.ShutdownSystem();
+            m_gizmos.ShutdownSystem();
         }
 
         public void Tick()
         {
             float deltaTime = m_dtStopwatch.ElapsedMilliseconds / 1000f;
             m_dtStopwatch.Restart();
+            m_gizmos.ResetList();
 
             // Update all of the entities in this world so they can move around, etc.
             foreach(WComponent component in m_componentList)
             {
                 component.Tick(deltaTime);
+            }
+
+            // Gizmo Drawing
+            foreach(WObject obj in m_objectList)
+            {
+                obj.OnDrawGizmos();
             }
 
             // Update the render system this frame and draw everything.
@@ -83,11 +101,22 @@ namespace WEditor
             m_componentList.Remove(component);
         }
 
+        public void RegisterObject(WObject obj)
+        {
+            obj.World = this;
+            m_objectList.Add(obj);
+        }
 
-        public void UnloadAll()
+        public void UnregisterObject(WObject obj)
+        {
+            m_objectList.Remove(obj);
+        }
+
+        public void UnloadWorld()
         {
             m_componentList.Clear();
-
+            m_objectList.Clear();
+            m_gizmos.ResetList();
             RenderSystem.UnloadAll();
         }
     }

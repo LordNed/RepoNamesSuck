@@ -102,7 +102,7 @@ namespace WEditor
             // unloading archives, etc, etc. 
             foreach(WWorld world in m_editorWorlds)
             {
-                world.UnloadAll();
+                world.UnloadWorld();
             }
 
             LoadedScene = null;
