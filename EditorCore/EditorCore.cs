@@ -37,7 +37,17 @@ namespace WEditor
             m_mainWorld = new WWorld("main");
             m_editorWorlds.Add(m_mainWorld);
 
+            m_mainWorld.InitializeSystem();
+
             WLog.Info(LogCategory.EditorCore, null, "Initialized.");
+        }
+
+        public void Shutdown()
+        {
+            UnloadMap();
+
+            for (int i = 0; i < m_editorWorlds.Count; i++)
+                m_editorWorlds[i].ShutdownSystem();
         }
 
         public void Tick()

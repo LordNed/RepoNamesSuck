@@ -6,12 +6,11 @@ using System.IO;
 
 namespace WEditor.Rendering
 {
-    public class RenderSystem : IDisposable
+    public class RenderSystem
     {
         private List<Camera> m_cameraList;
         private WWorld m_world;
         public List<Mesh> m_meshList;
-        private bool m_disposed;
 
         private Shader m_debugShader;
 
@@ -20,7 +19,10 @@ namespace WEditor.Rendering
             m_cameraList = new List<Camera>();
             m_meshList = new List<Mesh>();
             m_world = world;
+        }
 
+        public void InitializeSystem()
+        {
             // Create a Default camera
             Camera editorCamera = new Camera();
             editorCamera.ClearColor = new Color(0.8f, 0.2f, 1f, 1f);
@@ -39,14 +41,11 @@ namespace WEditor.Rendering
             m_debugShader.LinkShader();
         }
 
-        ~RenderSystem()
+        public void ShutdownSystem()
         {
-            // Finalize can be called from any thread (ie: it's undefined) so we can't rely on finalize to dispose
-            // of OpenGL resources - they're created from the main ui thread, and trying to dispose of them from
-            // the finalize thread often results in a crash.
-            //if (!m_disposed)
-                //throw new Exception("This asset failed to manually be disposed!");
-            //Dispose(false);
+            UnloadAll();
+            m_debugShader.Dispose();
+            m_debugShader = null;
         }
 
         internal void RenderFrame()
@@ -223,27 +222,6 @@ namespace WEditor.Rendering
         {
             model.Dispose();
             m_meshList.Remove(model);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (m_disposed)
-                return;
-
-            if (disposing)
-            {
-                // Free any *managed* objects here.
-                UnloadAll();
-            }
-
-            // Free any *unmanaged* objects here.
-            m_disposed = true;
         }
     }
 }

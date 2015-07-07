@@ -177,19 +177,14 @@ namespace WindEditor.UI
             // Confirm exit.
             if (m_editorCore.LoadedScene != null)
             {
-                if (System.Windows.MessageBox.Show("Are you sure you want to exit?", "Exit", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    m_editorCore.UnloadMap();
-                    return;
-                }
-                else
+                if (System.Windows.MessageBox.Show("Are you sure you want to exit?", "Exit", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
                 {
                     e.Cancel = true;
                     return;
                 }
             }
 
-            m_editorCore.UnloadMap();
+            m_editorCore.Shutdown();
         }
     }
 }

@@ -39,7 +39,18 @@ namespace WEditor
             m_componentList = new List<WComponent>();
             m_dtStopwatch = new Stopwatch();
             m_input = new Input();
+
             m_renderSystem = new RenderSystem(this);
+        }
+
+        public void InitializeSystem()
+        {
+            m_renderSystem.InitializeSystem();
+        }
+
+        public void ShutdownSystem()
+        {
+            m_renderSystem.ShutdownSystem();
         }
 
         public void Tick()
