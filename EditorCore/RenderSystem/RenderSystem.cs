@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace WEditor.Rendering
 {
@@ -11,6 +12,8 @@ namespace WEditor.Rendering
         private WWorld m_world;
         public List<Mesh> m_meshList;
         private bool m_disposed;
+
+        private Shader m_debugShader;
 
         public RenderSystem(WWorld world)
         {
@@ -27,6 +30,13 @@ namespace WEditor.Rendering
             m_world.RegisterComponent(camMovement);
 
             m_cameraList.Add(editorCamera);
+
+
+            // Create a shader for drawing debug primitives/instances.
+            m_debugShader = new Shader("DebugPrimitives");
+            m_debugShader.CompileSource(File.ReadAllText("RenderSystem/Shaders/frag.glsl"), ShaderType.FragmentShader);
+            m_debugShader.CompileSource(File.ReadAllText("RenderSystem/Shaders/vert.glsl"), ShaderType.VertexShader);
+            m_debugShader.LinkShader();
         }
 
         ~RenderSystem()

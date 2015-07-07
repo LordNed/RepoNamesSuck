@@ -1,4 +1,4 @@
-﻿#version 330
+﻿#version 130
 
 // Vertex Data Input
 in vec3 vertexPos;
