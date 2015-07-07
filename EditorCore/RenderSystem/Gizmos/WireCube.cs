@@ -10,7 +10,7 @@ namespace WEditor.Rendering.Gizmos
 {
     public static class WireCube
     {
-        public static Mesh GetMesh(WWorld world)
+        public static Mesh GetMesh()
         {
             Vector3[] meshVerts = 
             { 

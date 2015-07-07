@@ -78,6 +78,7 @@
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderSystem\Camera.cs" />
+    <Compile Include="Common\DebugDrawing.cs" />
     <Compile Include="RenderSystem\Gizmos\WireCube.cs" />
     <Compile Include="RenderSystem\GX2OpenGL.cs" />
     <Compile Include="RenderSystem\GXEnums.cs" />
