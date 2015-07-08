@@ -305,9 +305,9 @@ namespace WEditor.WindWaker.Loaders
                     if (index == 0xFF)
                         return null;
 
-                    if (index < map.NewRooms.Count)
+                    if (index < map.Rooms.Count)
                     {
-                        return map.NewRooms[index];
+                        return map.Rooms[index];
                     }
                     else
                     {

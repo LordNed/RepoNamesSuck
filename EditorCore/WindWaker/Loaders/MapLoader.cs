@@ -70,11 +70,11 @@ namespace WEditor.WindWaker.Loaders
                 if(kvp.Key.StartsWith("room"))
                 {
                     Room room = sceneLoader.LoadFromArchive<Room>(world, kvp.Value);
-                    newMap.NewRooms.Add(room);
+                    newMap.Rooms.Add(room);
                 }
                 else if (kvp.Key.StartsWith("stage"))
                 {
-                    newMap.NewStage = sceneLoader.LoadFromArchive<Stage>(world, kvp.Value);
+                    newMap.Stage = sceneLoader.LoadFromArchive<Stage>(world, kvp.Value);
                 }
             }
 
@@ -82,12 +82,12 @@ namespace WEditor.WindWaker.Loaders
             sceneLoader.PostProcessEntityData(newMap);
 
             // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
-            if(newMap.NewStage != null)
+            if(newMap.Stage != null)
             {
-                PostProcessScene(newMap.NewStage, world);
+                PostProcessScene(newMap.Stage, world);
             }
 
-            foreach(var room in newMap.NewRooms)
+            foreach(var room in newMap.Rooms)
             {
                 PostProcessScene(room, world);
             }

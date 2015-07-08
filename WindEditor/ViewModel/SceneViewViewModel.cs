@@ -40,9 +40,9 @@ namespace WindEditor.UI
             if (map == null)
                 return;
 
-            for (int i = 0; i < map.NewRooms.Count; i++)
-                ArchiveList.Add(map.NewRooms[i]);
-            ArchiveList.Add(map.NewStage);
+            for (int i = 0; i < map.Rooms.Count; i++)
+                ArchiveList.Add(map.Rooms[i]);
+            ArchiveList.Add(map.Stage);
         }
 
         internal void OnSceneViewSelectObject(object newObject)

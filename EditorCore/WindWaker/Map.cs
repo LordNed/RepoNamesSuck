@@ -42,12 +42,20 @@ namespace WEditor.WindWaker
         /// <summary>
         /// A list of currently loaded rooms in this map. Does not include the stage archive.
         /// </summary>
-        public BindingList<ZArchive> Rooms { get; private set; }
+        public BindingList<Room> Rooms
+        {
+            get { return m_rooms; }
+            set
+            {
+                m_rooms = value;
+                OnPropertyChanged("Rooms");
+            }
+        }
 
         /// <summary>
         /// The stage associated with these rooms.
         /// </summary>
-        public ZArchive Stage
+        public Stage Stage
         {
             get { return m_stage; }
             set
@@ -57,21 +65,18 @@ namespace WEditor.WindWaker
             }
         }
 
-        public Stage NewStage;
-        public BindingList<Room> NewRooms;
-
         private string m_name;
         private string m_projectFilePath;
-        private ZArchive m_stage;
+        private Stage m_stage;
+        private BindingList<Room> m_rooms;
 
         public Map()
         {
             Stage = null;
-            Rooms = new BindingList<ZArchive>();
             Name = "Unnamed";
 
-            NewStage = null;
-            NewRooms = new BindingList<Room>();
+            Stage = null;
+            Rooms = new BindingList<Room>();
         }
 
         protected void OnPropertyChanged(string propertyName)

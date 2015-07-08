@@ -104,10 +104,10 @@ namespace WEditor.WindWaker.Loaders
         public void PostProcessEntityData(Map map)
         {
             MapEntityLoader entityLoader = new MapEntityLoader();
-            if(map.NewStage != null)
-                entityLoader.PostProcess(map.NewStage, map);
+            if(map.Stage != null)
+                entityLoader.PostProcess(map.Stage, map);
 
-            foreach (var room in map.NewRooms)
+            foreach (var room in map.Rooms)
                 entityLoader.PostProcess(room, map);
         }
 
