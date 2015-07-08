@@ -52,7 +52,7 @@ namespace WEditor
 
         public void Tick()
         {
-            foreach(WWorld world in m_editorWorlds)
+            foreach (WWorld world in m_editorWorlds)
             {
                 world.Tick();
             }
@@ -84,6 +84,9 @@ namespace WEditor
 
             MapLoader mapLoader = new MapLoader();
             Map newMap = null;
+#if DEBUG
+            newMap = mapLoader.CreateFromDirectory(m_mainWorld, folderPath);
+#else
             try
             {
                 newMap = mapLoader.CreateFromDirectory(m_mainWorld, folderPath);
@@ -92,6 +95,7 @@ namespace WEditor
             {
                 WLog.Error(LogCategory.EditorCore, null, "Exception while loading map: " + ex.ToString());
             }
+#endif
 
             LoadedScene = newMap;
         }
@@ -100,7 +104,7 @@ namespace WEditor
         {
             // We're going to clear the contents of each currently loaded world. This means freeing GPU resources,
             // unloading archives, etc, etc. 
-            foreach(WWorld world in m_editorWorlds)
+            foreach (WWorld world in m_editorWorlds)
             {
                 world.UnloadWorld();
             }
