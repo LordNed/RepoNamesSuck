@@ -29,12 +29,10 @@ namespace WEditor.WindWaker.Loaders
         }
 
         private List<ItemJsonTemplate> m_templates;
-        private List<string> m_templateOrder;
 
         public MapEntityLoader()
         {
             m_templates = LoadItemTemplates();
-            m_templateOrder = LoadTemplateOrder();
         }
 
         public BindingList<MapEntityData> LoadFromStream(EndianBinaryReader reader)
@@ -57,10 +55,6 @@ namespace WEditor.WindWaker.Loaders
 
                 chunks.Add(chunk);
             }
-
-            // Now sort the chunk headers to match the JSON defined Template Order, so that when we load a particular chunk,
-            // we can ensure its dependency chunks have been loaded in advanced.
-            chunks = SortChunksByTemplateOrder(chunks, m_templateOrder);
 
             // For each chunk, read all elements of that type of chunk.
             for (int i = 0; i < chunks.Count; i++)
@@ -115,43 +109,6 @@ namespace WEditor.WindWaker.Loaders
             }
 
             return itemTemplates;
-        }
-
-        private List<string> LoadTemplateOrder()
-        {
-            string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            executionPath += "/WindWaker/Templates/TemplateOrder.json";
-
-            return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(executionPath));
-        }
-
-        private List<ChunkHeader> SortChunksByTemplateOrder(List<ChunkHeader> unsortedChunks, List<string> templateOrder)
-        {
-            var sortedChunks = new List<ChunkHeader>();
-
-            for(int i = 0; i < templateOrder.Count; i++)
-            {
-                var chunk = unsortedChunks.Find(x => string.Compare(x.FourCC, templateOrder[i]) == 0);
-                if (chunk != null)
-                {
-                    sortedChunks.Add(chunk);
-                }
-            }
-
-            if(sortedChunks.Count != unsortedChunks.Count)
-            {
-                // Find the missing one that was not in our templateOrder list.
-                foreach(var unsortedChunk in unsortedChunks)
-                {
-                    if (!templateOrder.Contains(unsortedChunk.FourCC))
-                    {
-                        WLog.Warning(LogCategory.EntityLoading, null, "TemplateOrder is missing type {0}, adding to end of list.", unsortedChunk.FourCC);
-                        sortedChunks.Add(unsortedChunk);
-                    }
-                }
-            }
-
-            return sortedChunks;
         }
 
         private MapEntityData LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, BindingList<MapEntityData> loadedEntities)

@@ -196,9 +196,6 @@
     <None Include="WindWaker\Templates\EntityData\Stage Properties.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\TemplateOrder.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="WindWaker\Templates\EntityData\Waypoint RPPN.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
