@@ -148,7 +148,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
-            <TextBlock Grid.Column="1" Text="{Binding Path=Value, Mode=TwoWay}" HorizontalAlignment="Right">
+            <TextBlock Grid.Column="1" Text="{Binding Path=Value, Mode=TwoWay}" HorizontalAlignment="Right" Margin="0,0,5,0">
                 <!-- <Popup x:Name="objRefSelector" IsOpen="True" PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom">
                     <controls:ObjectReferenceSelector/>
                 </Popup> -->
