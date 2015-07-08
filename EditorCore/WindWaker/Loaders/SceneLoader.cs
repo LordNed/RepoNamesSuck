@@ -50,7 +50,8 @@ namespace WEditor.WindWaker.Loaders
                             LoadEntityData(file, scene, world);
                             break;
                         /* 3D Model Formats */
-                        case "bmd":
+                        case "bmdc": // Used on some very-old test maps for extra objects
+                        case "bmd": // Older model format for early maps.
                         case "bdl":
                             // Skip any non .bmd and non .bdl files
                             if (!(file.Extension == ".bmd" || file.Extension == ".bdl"))
