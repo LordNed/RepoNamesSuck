@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using WEditor.Common.Maps;
+using WEditor.Maps;
 
 namespace WEditor.WindWaker.Loaders
 {
@@ -207,9 +208,9 @@ namespace WEditor.WindWaker.Loaders
             }
         }
         
-        private List<MapEntityData> FindAllByType(string fourCC, BindingList<MapEntityData> fromList)
+        private List<MapEntity> FindAllByType(string fourCC, BindingList<MapEntity> fromList)
         {
-            List<MapEntityData> results = new List<MapEntityData>();
+            List<MapEntity> results = new List<MapEntity>();
             foreach (var item in fromList)
             {
                 if (string.Compare(item.FourCC, fourCC, StringComparison.InvariantCultureIgnoreCase) == 0)

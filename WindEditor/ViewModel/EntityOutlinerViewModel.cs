@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WEditor;
-using WEditor.Common.Maps;
+﻿using System.ComponentModel;
+using WEditor.Maps;
 
 namespace WindEditor.UI
 {
@@ -14,7 +7,7 @@ namespace WindEditor.UI
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public BindingList<MapEntityData> EntityList
+        public BindingList<MapEntity> EntityList
         {
             get { return m_entityList; }
             set
@@ -25,12 +18,12 @@ namespace WindEditor.UI
         }
 
         private MainWindowViewModel m_mainView;
-        private BindingList<MapEntityData> m_entityList;
+        private BindingList<MapEntity> m_entityList;
 
         public EntityOutlinerViewModel(MainWindowViewModel mainView)
         {
             m_mainView = mainView;
-            m_entityList = new BindingList<MapEntityData>();
+            m_entityList = new BindingList<MapEntity>();
         }
 
 
@@ -42,7 +35,7 @@ namespace WindEditor.UI
 
         internal void OnSelectedEntityChanged(object newObject)
         {
-            m_mainView.SetSelectedEntity((MapEntityObject)newObject);
+            m_mainView.SetSelectedEntity((MapEntity)newObject);
         }
     }
 }

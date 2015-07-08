@@ -10,7 +10,7 @@ using WEditor;
 using OpenTK;
 using System.ComponentModel;
 using WEditor.WindWaker;
-using WEditor.WindWaker.MapEntities;
+using WEditor.Maps;
 
 namespace WindEditor.UI
 {
@@ -161,7 +161,7 @@ namespace WindEditor.UI
             }
         }
 
-        internal void SetSelectedEntity(MapEntityObject newEntity)
+        internal void SetSelectedEntity(MapEntity newEntity)
         {
             InspectorView.SelectedEntity = newEntity;
         }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using WEditor.Common.Maps;
+using WEditor.Maps;
 using WEditor.Rendering;
 
 namespace WEditor.WindWaker
@@ -30,7 +26,7 @@ namespace WEditor.WindWaker
         public BindingList<ShipSpawn> ShipSpawns { get; set; }
 
 
-        public BindingList<MapEntityData> Entities { get; set; }
+        public BindingList<MapEntity> Entities { get; set; }
         public BindingList<Mesh> Meshes { get; set; }
 
         public Scene()
@@ -42,7 +38,7 @@ namespace WEditor.WindWaker
             Sounds = new BindingList<SoundSource>();
             ShipSpawns = new BindingList<ShipSpawn>();
 
-            Entities = new BindingList<MapEntityData>();
+            Entities = new BindingList<MapEntity>();
             Meshes = new BindingList<Mesh>();
         }
     }

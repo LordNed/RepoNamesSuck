@@ -56,9 +56,8 @@
     <Compile Include="Common\Components\EditorCameraMovement.cs" />
     <Compile Include="Common\FileSystem\VirtualFilesystem.cs" />
     <Compile Include="Common\Input.cs" />
-    <Compile Include="Common\MapEntityObject.cs" />
     <Compile Include="Common\Maps\Arrow.cs" />
-    <Compile Include="Common\Maps\MapEntityData.cs" />
+    <Compile Include="Common\Maps\MapEntity.cs" />
     <Compile Include="Common\Maps\PointLight.cs" />
     <Compile Include="Common\Maps\ShipSpawn.cs" />
     <Compile Include="Common\Maps\SoundSource.cs" />
@@ -106,7 +105,6 @@
     <Compile Include="WindWaker\Loaders\SceneLoader.cs" />
     <Compile Include="WindWaker\Loaders\ZArchiveLoader.cs" />
     <Compile Include="WindWaker\Map.cs" />
-    <Compile Include="WindWaker\MapEntities\MapEntityResource.cs" />
     <Compile Include="WindWaker\ItemJsonTemplate.cs" />
     <Compile Include="WindWaker\Room.cs" />
     <Compile Include="WindWaker\Scene.cs" />
@@ -208,6 +206,9 @@
     <None Include="WindWaker\Templates\EntityData\Waypoint.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="WindWaker\MapEntities\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

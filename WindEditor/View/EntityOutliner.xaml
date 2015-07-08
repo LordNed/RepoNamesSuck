@@ -4,10 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:WEditor="clr-namespace:WEditor;assembly=EditorCore"
+             xmlns:WEditorMaps="clr-namespace:WEditor.Maps;assembly=EditorCore"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <HierarchicalDataTemplate  DataType="{x:Type WEditor:MapEntityObject}">
+        <HierarchicalDataTemplate  DataType="{x:Type WEditorMaps:MapEntity}">
             <TextBlock Text="{Binding FourCC}"/>
         </HierarchicalDataTemplate>
     </UserControl.Resources>

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using WEditor;
+using WEditor.Maps;
 
 namespace WindEditor.UI
 {
@@ -22,7 +22,7 @@ namespace WindEditor.UI
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            MapEntityObject.Property property = (MapEntityObject.Property)item;
+            EntityProperty property = (EntityProperty)item;
             switch (property.Type)
             {
                 case PropertyType.Byte:

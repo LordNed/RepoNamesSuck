@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using WEditor;
 using WEditor.FileSystem;
 using WEditor.WindWaker;
-using WEditor.WindWaker.MapEntities;
 
 namespace WindEditor.UI
 {

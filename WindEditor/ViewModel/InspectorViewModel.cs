@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WEditor;
+﻿using System.ComponentModel;
+using WEditor.Maps;
 
 namespace WindEditor.UI
 {
@@ -12,7 +7,7 @@ namespace WindEditor.UI
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public MapEntityObject SelectedEntity
+        public MapEntity SelectedEntity
         {
             get { return m_selectedEntity; }
             set
@@ -23,7 +18,7 @@ namespace WindEditor.UI
         }
 
 
-        private MapEntityObject m_selectedEntity;
+        private MapEntity m_selectedEntity;
 
         protected void OnPropertyChanged(string propertyName)
         {

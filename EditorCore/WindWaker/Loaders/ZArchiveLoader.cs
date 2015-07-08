@@ -1,5 +1,4 @@
-﻿using WEditor.WindWaker.MapEntities;
-using System;
+﻿using System;
 using System.IO;
 using WEditor.FileSystem;
 

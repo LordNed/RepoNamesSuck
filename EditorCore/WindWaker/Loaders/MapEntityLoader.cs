@@ -1,5 +1,4 @@
 ﻿using WEditor.Common;
-using WEditor.WindWaker.MapEntities;
 using GameFormatReader.Common;
 using Newtonsoft.Json;
 using OpenTK;
@@ -8,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using WEditor.Common.Maps;
+using WEditor.Maps;
 
 namespace WEditor.WindWaker.Loaders
 {
@@ -35,9 +35,9 @@ namespace WEditor.WindWaker.Loaders
             m_templates = LoadItemTemplates();
         }
 
-        public BindingList<MapEntityData> LoadFromStream(EndianBinaryReader reader)
+        public BindingList<MapEntity> LoadFromStream(EndianBinaryReader reader)
         {
-            BindingList<MapEntityData> entities = new BindingList<MapEntityData>();
+            BindingList<MapEntity> entities = new BindingList<MapEntity>();
 
             long fileOffsetStart = reader.BaseStream.Position;
 
@@ -74,7 +74,7 @@ namespace WEditor.WindWaker.Loaders
 
                 for (int k = 0; k < chunk.ElementCount; k++)
                 {
-                    MapEntityData entityInstance = LoadMapEntityFromStream(chunk.FourCC, reader, template, entities);
+                    MapEntity entityInstance = LoadMapEntityFromStream(chunk.FourCC, reader, template, entities);
                     entities.Add(entityInstance);
                 }
             }
@@ -111,9 +111,9 @@ namespace WEditor.WindWaker.Loaders
             return itemTemplates;
         }
 
-        private MapEntityData LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, BindingList<MapEntityData> loadedEntities)
+        private MapEntity LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, BindingList<MapEntity> loadedEntities)
         {
-            MapEntityData obj = new MapEntityData(chunkFourCC);
+            MapEntity obj = new MapEntity(chunkFourCC);
 
             // We're going to examine the Template's properties and load based on the current template type.
             for (int i = 0; i < template.Properties.Count; i++)
@@ -241,7 +241,7 @@ namespace WEditor.WindWaker.Loaders
                         break;
                 }
 
-                MapEntityObject.Property instanceProp = new MapEntityObject.Property(templateProperty.Name, type, value);
+                EntityProperty instanceProp = new EntityProperty(templateProperty.Name, type, value);
                 obj.Properties.Add(instanceProp);
             }
 
@@ -250,7 +250,7 @@ namespace WEditor.WindWaker.Loaders
 
         public void PostProcess(Scene scene, Map map)
         {
-            foreach(MapEntityObject entity in scene.Entities)
+            foreach(MapEntity entity in scene.Entities)
             {
                 ItemJsonTemplate origTemplate = m_templates.Find(x => string.Compare(x.FourCC, entity.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
                 if (origTemplate == null)
@@ -259,7 +259,7 @@ namespace WEditor.WindWaker.Loaders
                     continue;
                 }
 
-                foreach(MapEntityObject.Property property in entity.Properties)
+                foreach(EntityProperty property in entity.Properties)
                 {
                     ItemJsonTemplate.Property origTemplateProperty = origTemplate.Properties.Find(x => string.Compare(x.Name, property.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
                     if(origTemplateProperty == null)
@@ -296,7 +296,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, BindingList<MapEntityData> loadedEntities, Map map)
+        private object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, BindingList<MapEntity> loadedEntities, Map map)
         {
             switch (templateProperty.ReferenceType)
             {
@@ -321,7 +321,7 @@ namespace WEditor.WindWaker.Loaders
                     // resolve the dependency by looking into the right array!
 
                     // Get an (ordered) list of all chunks of that type.
-                    List<MapEntityObject> potentialRefs = new List<MapEntityObject>();
+                    List<MapEntity> potentialRefs = new List<MapEntity>();
                     for (int i = 0; i < loadedEntities.Count; i++)
                     {
                         // Check against all potential reference types. This resolves the issue where things like  RCAM/CAMR point to AROB/RARO and they're sharing
