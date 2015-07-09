@@ -1,0 +1,13 @@
+﻿{
+	"FourCC" : "TRES",
+	"Properties" :
+	[
+		{"Name" : "Name", "Type" : "fixedLengthString" , "Length" : 8},
+		{"Name" : "Params", "Type" : "int32BitField"},
+		{"Name" : "Position", "Type" : "vector3"},
+		{"Name" : "Room", "Type" : "objectReferenceShort", "ReferenceType" : "Room"},
+		{"Name" : "Rotation", "Type" : "short"},
+		{"Name" : "Params 2", "Type" : "int32BitField"},
+		{"Name" : "Padding", "Type" : "int32BitField"},
+	]
+}
