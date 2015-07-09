@@ -285,6 +285,11 @@ namespace WEditor.WindWaker.Loaders
                         type = PropertyType.Vector3Byte;
                         value = new Vector3(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                         break;
+
+                    case "int32BitField":
+                        type = PropertyType.Int32BitField;
+                        value = reader.ReadInt32();
+                        break;
                 }
 
                 EntityProperty instanceProp = new EntityProperty(templateProperty.Name, type, value);

@@ -21,7 +21,7 @@ namespace WEditor.WindWaker
             public int Length;
 
             /// <summary> Used if ReferenceType is set to "FourCC" </summary>
-            public string[] ReferenceFourCCType;
+            public string ReferenceFourCCType;
 
             public override string ToString()
             {
