@@ -22,6 +22,11 @@ namespace WEditor.WindWaker.Loaders
             /// <summary> Offset from the start of the file to the chunk data. </summary>
             public int ChunkOffset;
 
+            // Used to fix up ACTR, TRES, and SCOB which can support up to 12 layers (+base)
+            // this is resolved at chunk load time and then stored in the chunk and passed
+            // to the entities being created.
+            public MapLayer Layer = MapLayer.Default;
+
             public override string ToString()
             {
                 return string.Format("[{0}]", FourCC);
@@ -53,6 +58,9 @@ namespace WEditor.WindWaker.Loaders
                 chunk.ElementCount = reader.ReadInt32();
                 chunk.ChunkOffset = reader.ReadInt32();
 
+                chunk.Layer = ResolveChunkFourCCToLayer(chunk.FourCC);
+                chunk.FourCC = ResolveFourCCWithLayerToName(chunk.FourCC);
+
                 chunks.Add(chunk);
             }
 
@@ -75,11 +83,49 @@ namespace WEditor.WindWaker.Loaders
                 for (int k = 0; k < chunk.ElementCount; k++)
                 {
                     MapEntity entityInstance = LoadMapEntityFromStream(chunk.FourCC, reader, template, entities);
+                    entityInstance.Layer = chunk.Layer;
                     entities.Add(entityInstance);
                 }
             }
 
             return entities;
+        }
+
+        private MapLayer ResolveChunkFourCCToLayer(string fourCC)
+        {
+            // Only ACTR, SCOB, and TRES support multiple layers so if it's not one of them, early out.
+            if (!(fourCC.StartsWith("ACT") || fourCC.StartsWith("SCO") || fourCC.StartsWith("TRE")))
+                return MapLayer.Default;
+
+            // Examine the last character, 0-9, a-b. 
+            char lastChar = fourCC[3];
+            switch(lastChar)
+            {
+                case '0': return MapLayer.Layer0;
+                case '1': return MapLayer.Layer1;
+                case '2': return MapLayer.Layer2;
+                case '3': return MapLayer.Layer3;
+                case '4': return MapLayer.Layer4;
+                case '5': return MapLayer.Layer5;
+                case '6': return MapLayer.Layer6;
+                case '7': return MapLayer.Layer7;
+                case '8': return MapLayer.Layer8;
+                case '9': return MapLayer.Layer9;
+                case 'a': return MapLayer.LayerA;
+                case 'b': return MapLayer.LayerB;
+            }
+
+            // It's passed the above check, so it's ACTR, SCOB, or TRES (default layer)
+            return MapLayer.Default;
+        }
+
+        private string ResolveFourCCWithLayerToName(string fourCC)
+        {
+            if (fourCC.StartsWith("ACT")) return "ACTR";
+            if (fourCC.StartsWith("TRE")) return "TRES";
+            if (fourCC.StartsWith("SCO")) return "SCOB";
+
+            return fourCC;
         }
 
         private List<ItemJsonTemplate> LoadItemTemplates()
