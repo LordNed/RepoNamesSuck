@@ -31,6 +31,17 @@ namespace WindEditor.UI
         public OutputLogViewModel OutputLog { get; private set; }
         public InspectorViewModel InspectorView { get; private set; }
 
+        public Map LoadedScene
+        {
+            get
+            {
+                if(m_editorCore != null)
+                    return m_editorCore.LoadedScene;
+
+                return null;
+            }
+        }
+
         private EditorCore m_editorCore;
         private System.Windows.Forms.Timer m_intervalTimer;
         private GLControl m_control;
@@ -48,6 +59,7 @@ namespace WindEditor.UI
             if (e.PropertyName == "LoadedScene")
             {
                 SceneView.SetMap(m_editorCore.LoadedScene);
+                OnPropertyChanged("LoadedScene");
             }
         }
 

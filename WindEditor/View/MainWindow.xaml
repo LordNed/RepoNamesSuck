@@ -57,8 +57,22 @@
                         <GridSplitter Grid.Row="3" Height="5" HorizontalAlignment="Stretch"/>
 
                         <!-- Bottom Pane -->
-                        <GroupBox Grid.Row="4" Header="Layer Visibility" Margin="2,0,2,0">
-
+                        <GroupBox Grid.Row="4" Header="Layer Visibility" Margin="2,0,2,0" DataContext="{Binding LoadedScene}">
+                            <ListView ItemsSource="{Binding LayerVisibilities}" HorizontalContentAlignment="Stretch">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="16"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <TextBlock Grid.Column="0" Text="{Binding Layer}"/>
+                                            <ToggleButton Grid.Column="1"  IsChecked="{Binding Visible}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
                         </GroupBox>
                     </Grid>
                 </Grid>

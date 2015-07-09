@@ -57,6 +57,7 @@
     <Compile Include="Common\FileSystem\VirtualFilesystem.cs" />
     <Compile Include="Common\Input.cs" />
     <Compile Include="Common\Maps\Arrow.cs" />
+    <Compile Include="Common\Maps\Layers.cs" />
     <Compile Include="Common\Maps\MapEntity.cs" />
     <Compile Include="Common\Maps\PointLight.cs" />
     <Compile Include="Common\Maps\ShipSpawn.cs" />

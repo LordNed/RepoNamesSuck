@@ -27,23 +27,6 @@ namespace WEditor.Maps
         Vector3Byte
     }
 
-    public enum MapLayer
-    {
-        Default, // ACTR, SOND, etc.
-        Layer0, // ACT0, etc.
-        Layer1,
-        Layer2,
-        Layer3,
-        Layer4,
-        Layer5,
-        Layer6,
-        Layer7,
-        Layer8,
-        Layer9,
-        LayerA,
-        LayerB,
-    }
-
     public class EntityProperty
     {
         public string Name { get; private set; }
