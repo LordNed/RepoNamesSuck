@@ -198,6 +198,12 @@
     <None Include="WindWaker\Templates\EntityData\Stage Properties.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="WindWaker\Templates\EntityData\RTBL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="WindWaker\Templates\EntityData\TGDR.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="WindWaker\Templates\EntityData\Treasure Chest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
