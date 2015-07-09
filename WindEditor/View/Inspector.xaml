@@ -3,11 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:wmaps="clr-namespace:WEditor.Maps;assembly=EditorCore"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type system:Enum}" x:Key="MapLayerValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="wmaps:MapLayer"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
     <Grid>
-        <TextBlock Text="Test" VerticalAlignment="Top"/>
-        <ItemsControl Margin="0,16,0,0" ItemTemplateSelector="{StaticResource InspectorItemTemplateSelector}" DataContext="{Binding SelectedEntity}" ItemsSource="{Binding Properties}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Layer:" Margin="0,3,5,0"/>
+            <ComboBox Grid.Column="1" DataContext="{Binding SelectedEntity}" ItemsSource="{Binding Source={StaticResource MapLayerValues}}" SelectedValue="{Binding Layer}" VerticalAlignment="Top" DropDownOpened="LayerCB_DropDownOpened"/>
+        </Grid>
+        <ItemsControl Margin="0,22,0,0" ItemTemplateSelector="{StaticResource InspectorItemTemplateSelector}" DataContext="{Binding SelectedEntity}" ItemsSource="{Binding Properties}"/>
 
     </Grid>
 </UserControl>

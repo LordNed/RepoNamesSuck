@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WindEditor.UI;
 
 namespace WEditor.UI.View
 {
@@ -23,6 +24,19 @@ namespace WEditor.UI.View
         public Inspector()
         {
             InitializeComponent();
+        }
+
+        /// <summary>
+        /// Block the user from opening the Layer dropdown if there's no entity selected.
+        /// </summary>
+        private void LayerCB_DropDownOpened(object sender, EventArgs e)
+        {
+            InspectorViewModel vm = (InspectorViewModel)DataContext;
+            if(vm.SelectedEntity == null)
+            {
+                ComboBox cb = sender as ComboBox;
+                cb.IsDropDownOpen = false;
+            }
         }
     }
 }
