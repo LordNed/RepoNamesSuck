@@ -1,0 +1,11 @@
+﻿{
+	"FourCC" : "TGOB",
+	"Properties" :
+	[
+		{"Name" : "Name", "Type" : "fixedLengthString", "Length" : 8},
+		{"Name" : "Parameters", "Type" : "int32BitField"},
+		{"Name" : "Position", "Type" : "vector3"},
+		{"Name" : "Rotation", "Type" : "xyzRotation"},
+		{"Name" : "Padding", "Type" : "short"}
+	]
+}

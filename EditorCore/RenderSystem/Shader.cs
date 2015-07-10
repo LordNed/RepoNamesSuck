@@ -93,7 +93,7 @@ namespace WEditor.Rendering
         }
 
 
-        public void LinkShader()
+        public bool LinkShader()
         {
             if(m_programAddress >= 0)
             {
@@ -130,6 +130,7 @@ namespace WEditor.Rendering
             if (linkStatus != 1)
             {
                 WLog.Warning(LogCategory.ShaderCompiler, this, "Error linking shader. Result: {0}", GL.GetProgramInfoLog(m_programAddress));
+                return false;
             }
 
             // Now that the program is linked, bind to our uniform locations.
@@ -153,6 +154,7 @@ namespace WEditor.Rendering
             GL.DeleteShader(m_fragmentAddress);
             m_vertexAddress = -1;
             m_fragmentAddress = -1;
+            return true;
         }
 
         public void Dispose()

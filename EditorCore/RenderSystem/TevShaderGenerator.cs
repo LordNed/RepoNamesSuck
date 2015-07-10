@@ -29,11 +29,17 @@ namespace WEditor.Rendering
             if (!success)
             {
                 WLog.Warning(LogCategory.ShaderCompiler, shader, "Failed to generate shader for material {0}", fromMat.Name);
+                shader.Dispose();
+
                 // ToDo: Generate stub-shader here that expects Pos/UV and single texture.
                 return shader;
             }
 
-            shader.LinkShader();
+            if(!shader.LinkShader())
+            {
+                shader.Dispose();
+                shader = null;
+            }
 
             return shader;
         }

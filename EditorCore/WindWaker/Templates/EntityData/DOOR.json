@@ -1,0 +1,15 @@
+﻿{
+	"FourCC" : "DOOR",
+	"Properties" :
+	[
+		{"Name" : "Name", "Type" : "fixedLengthString", "Length" : 8},
+		{"Name" : "Parameters", "Type" : "int32BitField"},
+		{"Name" : "Position", "Type" : "vector3"},
+		{"Name" : "Auxiliary Parameter", "Type" : "short"},
+		{"Name" : "Rotation", "Type" : "short"},
+		{"Name" : "Unknown 1", "Type" : "short"},
+		{"Name" : "Unknown 2", "Type" : "short"},
+		{"Name" : "Scale", "Type" : "vector3byte"},
+		{"Name" : "Padding", "Type" : "byte"}
+	]
+}
