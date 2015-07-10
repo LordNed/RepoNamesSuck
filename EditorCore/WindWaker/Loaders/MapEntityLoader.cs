@@ -357,7 +357,7 @@ namespace WEditor.WindWaker.Loaders
                     }
                     else
                     {
-                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for room {1} but index is out of range.", askingChunkFourCC, templateProperty.Name);
+                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for room but index is out of range. (Property Name: {1}, Index: {2})", askingChunkFourCC, templateProperty.Name, index);
                     }
                     return null;
 
@@ -388,7 +388,7 @@ namespace WEditor.WindWaker.Loaders
                     }
                     else
                     {
-                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for property {1} but index is out of range.", askingChunkFourCC, templateProperty.Name);
+                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for property {1} but index ({2}) is out of range.", askingChunkFourCC, templateProperty.Name, index);
                     }
                     return null;
             }
