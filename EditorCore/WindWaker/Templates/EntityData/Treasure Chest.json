@@ -8,6 +8,5 @@
 		{"Name" : "Room", "Type" : "objectReferenceShort", "ReferenceType" : "Room"},
 		{"Name" : "Rotation", "Type" : "short"},
 		{"Name" : "Params 2", "Type" : "int32BitField"},
-		{"Name" : "Padding", "Type" : "int32BitField"},
 	]
 }
