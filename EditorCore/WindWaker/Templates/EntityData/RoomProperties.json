@@ -2,10 +2,7 @@
 	"FourCC" : "FILI",
 	"Properties" :
 	[
-		{"Name" : "Time Change Settings", "Type" : "byte"},
-		{"Name" : "Wind Settings", "Type" : "byte"},
-		{"Name" : "Unknown 1", "Type" : "byte"},
-		{"Name" : "Lighting Settings", "Type" : "byte"},
-		{"Name" : "Skybox Y Height", "Type" : "float"},
+		{"Name" : "Parameters", "Type" : "int32BitField"},
+		{"Name" : "Skybox Y Height", "Type" : "float"}
 	]
 }
