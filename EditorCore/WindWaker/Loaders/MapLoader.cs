@@ -119,7 +119,8 @@ namespace WEditor.WindWaker.Loaders
                 {
                     Position = (Vector3)spawnList[i]["Position"].Value,
                     YRotation = (short)spawnList[i]["Rotation"].Value,
-                    Unknown1 = (short)spawnList[i]["Unknown 1"].Value
+                    ShipId = (byte)spawnList[i]["Ship Id"].Value,
+                    Unknown1 = (byte)spawnList[i]["Unknown 1"].Value
                 };
 
                 scene.ShipSpawns.Add(shipSpawn);

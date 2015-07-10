@@ -6,6 +6,7 @@ namespace WEditor.Common.Maps
     {
         public Vector3 Position;
         public short YRotation;
-        public short Unknown1;
+        public byte ShipId;
+        public byte Unknown1;
     }
 }

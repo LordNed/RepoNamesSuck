@@ -4,6 +4,7 @@
 	[
 		{"Name" : "Position", "Type" : "vector3"},
 		{"Name" : "Rotation", "Type" : "short"},
-		{"Name" : "Unknown 1", "Type" : "short"}
+		{"Name" : "Ship Id", "Type" : "byte"},
+		{"Name" : "Unknown 1", "Type" : "byte"}
 	]
 }
