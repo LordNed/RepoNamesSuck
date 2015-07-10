@@ -13,7 +13,7 @@
 		{"Name" : "Door Backfill", "Type" : "color24"},
 		{"Name" : "Unknown 3", "Type" : "color24"},
 		{"Name" : "Fog", "Type" : "color24"},
-		{"Name" : "Skybox Colors", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : ["Virt"]},
+		{"Name" : "Skybox Colors", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Virt"},
 		{"Name" : "Padding 1", "Type" : "byte"},
 		{"Name" : "Padding 2", "Type" : "byte"},
 		{"Name" : "Ocean Horizon", "Type" : "color32"},

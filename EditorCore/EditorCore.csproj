@@ -144,6 +144,9 @@
     <None Include="WindWaker\Templates\EntityData\Dungeon Map.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="WindWaker\Templates\EntityData\Dynamic Light - LGTV.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="WindWaker\Templates\EntityData\Dynamic Light.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -195,10 +198,19 @@
     <None Include="WindWaker\Templates\EntityData\Stage Properties.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="WindWaker\Templates\EntityData\RTBL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="WindWaker\Templates\EntityData\TGDR.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="WindWaker\Templates\EntityData\Treasure Chest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="WindWaker\Templates\EntityData\Waypoint RPPN.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Waypoint Path RPAT.json">
+    <None Include="WindWaker\Templates\EntityData\Waypoint Path - Room.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\EntityData\Waypoint Path.json">

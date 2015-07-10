@@ -19,6 +19,7 @@ namespace WindEditor.UI
         public DataTemplate Color24Template { get; set; }
         public DataTemplate Color32Template { get; set; }
         public DataTemplate Vector3ByteTemplate { get; set; }
+        public DataTemplate Int32BitField { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -55,6 +56,8 @@ namespace WindEditor.UI
                     return Color32Template;
                 case PropertyType.Vector3Byte:
                     return Vector3ByteTemplate;
+                case PropertyType.Int32BitField:
+                    return Int32BitField;
 
                 case PropertyType.None:
                 default:

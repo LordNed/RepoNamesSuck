@@ -1,0 +1,12 @@
+﻿{
+	"FourCC" : "RPAT",
+	"Properties" :
+	[
+		{"Name" : "Number of Points", "Type" : "short"},
+		{"Name" : "Unknown 1", "Type" : "short"},
+		{"Name" : "Unknown 2", "Type" : "byte"},
+		{"Name" : "Unknown 3", "Type" : "byte"},
+		{"Name" : "Unknown 4", "Type" : "short"},
+		{"Name" : "First Entry Offset", "Type" : "int"},
+	]
+}

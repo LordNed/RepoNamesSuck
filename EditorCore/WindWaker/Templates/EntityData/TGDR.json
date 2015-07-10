@@ -1,0 +1,14 @@
+﻿{
+	"FourCC" : "TGDR",
+	"Properties" :
+	[
+		{"Name" : "Name", "Type" : "fixedLengthString" , "Length" : 8},
+		{"Name" : "Params", "Type" : "int32BitField"},
+		{"Name" : "Position", "Type" : "vector3"},
+		{"Name" : "RoomLoadingParams", "Type" : "short"},
+		{"Name" : "Rotation", "Type" : "short"},
+		{"Name" : "Params 2", "Type" : "int32BitField"},
+		{"Name" : "Params 3", "Type" : "int32BitField"},
+		{"Name" : "Unknown", "Type" : "byte"}
+	]
+}

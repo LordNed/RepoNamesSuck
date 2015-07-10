@@ -1,4 +1,11 @@
 ﻿{
 	"FourCC" : "RCAM",
-	"Template" : "CAMR"
+	"Properties" :
+	[
+		{"Name" : "Camera Type", "Type" : "fixedLengthString" , "Length" : 16},
+		{"Name" : "Camera Point", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "RARO"},
+		{"Name" : "Padding 1", "Type" : "byte"},
+		{"Name" : "Padding 2", "Type" : "byte"},
+		{"Name" : "Padding 3", "Type" : "byte"},
+	]
 }

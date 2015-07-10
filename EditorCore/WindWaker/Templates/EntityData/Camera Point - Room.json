@@ -1,4 +1,9 @@
 ﻿{
 	"FourCC" : "RARO",
-	"Template" : "AROB"
+	"Properties" :
+	[
+		{"Name" : "Position", "Type" : "vector3"},
+		{"Name" : "Rotation", "Type" : "xyzRotation"},
+		{"Name" : "Padding", "Type" : "short"},
+	]
 }

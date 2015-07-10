@@ -285,6 +285,11 @@ namespace WEditor.WindWaker.Loaders
                         type = PropertyType.Vector3Byte;
                         value = new Vector3(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                         break;
+
+                    case "int32BitField":
+                        type = PropertyType.Int32BitField;
+                        value = reader.ReadInt32();
+                        break;
                 }
 
                 EntityProperty instanceProp = new EntityProperty(templateProperty.Name, type, value);
@@ -370,14 +375,9 @@ namespace WEditor.WindWaker.Loaders
                     List<MapEntity> potentialRefs = new List<MapEntity>();
                     for (int i = 0; i < loadedEntities.Count; i++)
                     {
-                        // Check against all potential reference types. This resolves the issue where things like  RCAM/CAMR point to AROB/RARO and they're sharing
-                        // a template (maybe a bad idea...) but need to object-reference against a different type. I don't think you'll have AROB/RARO in the same file
-                        // so this should work...
-                        for (int k = 0; k < templateProperty.ReferenceFourCCType.Length; k++)
-                        {
-                            if (string.Compare(loadedEntities[i].FourCC, templateProperty.ReferenceFourCCType[k]) == 0)
-                                potentialRefs.Add(loadedEntities[i]);
-                        }
+                        // Check against all potential reference types.
+                        if (string.Compare(loadedEntities[i].FourCC, templateProperty.ReferenceFourCCType) == 0)
+                            potentialRefs.Add(loadedEntities[i]);
                     }
 
                     // There's an edge-case here where some maps omit an entity (such as Fairy01 not having a Virt chunk) but use index 0 (Fairy01's Pale chunk)

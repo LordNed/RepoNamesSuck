@@ -5,7 +5,9 @@
     <!-- Convert WEditor Color24/Color32 to WPF Colors -->
     <local:Color24Converter x:Key="ItemColor24Converter"/>
     <local:Color32Converter x:Key="ItemColor32Converter"/>
-    
+    <!-- Convert integers to 4-digit separated strings and back. -->
+    <local:Int32BitFieldConverter x:Key="ItemInt32BitFieldConverter"/>
+
     <!-- BYTE TEMPLATE -->
     <DataTemplate x:Key="byteTemplate">
         <Grid>
@@ -206,6 +208,19 @@
         </Grid>
     </DataTemplate>
 
+    <!-- 32 BIT BIT FIELD TEMPLATE -->
+    <DataTemplate x:Key="int32BitField">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text="{Binding Path=Name}"/>
+            <TextBox Grid.Column="1" Text="{Binding Path=Value, Mode=TwoWay, Converter={StaticResource ItemInt32BitFieldConverter}}"/>
+        </Grid>
+    </DataTemplate>
+
     <local:InspectorTemplateSelector
             ByteTemplate="{StaticResource byteTemplate}"
             ShortTemplate="{StaticResource shortTemplate}"
@@ -220,5 +235,6 @@
             Color24Template="{StaticResource color24Template}"
             Color32Template="{StaticResource color32Template}"
             Vector3ByteTemplate="{StaticResource vector3ByteTemplate}"
+            Int32BitField="{StaticResource int32BitField}"
             x:Key="InspectorItemTemplateSelector"/>
 </ResourceDictionary>

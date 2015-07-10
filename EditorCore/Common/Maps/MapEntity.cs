@@ -24,7 +24,8 @@ namespace WEditor.Maps
         XYZRotation,
         Color24,
         Color32,
-        Vector3Byte
+        Vector3Byte,
+        Int32BitField
     }
 
     public class EntityProperty

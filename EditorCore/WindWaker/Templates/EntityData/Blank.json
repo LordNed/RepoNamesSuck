@@ -2,6 +2,6 @@
 	"FourCC" : "LBNK",
 	"Properties" :
 	[
-		{"Name" : "0xFF", "Type" : "byte"},
+		{"Name" : "Unknown", "Type" : "byte"},
 	]
 }
