@@ -51,6 +51,11 @@ namespace WEditor.WindWaker.Loaders
                     archive = new ZArchive(folderName, ArchiveType.Room);
                 }
 
+                // sea has LOD folders which don't have the right sub-folder setup, boo. This skips them for now,
+                // maybe later we can add an ArchiveType.LOD.
+                if (archive == null)
+                    continue;
+
                 // Fill the archives with their contents.
                 archiveLoader.LoadFromDirectory(archive, dirInfo.FullName);
                 archiveFolderMap[folderName.ToLower()] = archive;
