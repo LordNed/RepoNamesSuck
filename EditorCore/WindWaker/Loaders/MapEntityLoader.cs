@@ -159,7 +159,12 @@ namespace WEditor.WindWaker.Loaders
 
         private MapEntity LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, BindingList<MapEntity> loadedEntities)
         {
-            MapEntity obj = new MapEntity(chunkFourCC);
+            // Determine if this particular entity can have its layer changed after it is created.
+            // Only ACTR, SCOB, and TRES support multiple layers.
+            bool layerCanChange = (chunkFourCC == "TRES" || chunkFourCC == "ACTR" || chunkFourCC == "SCOB");
+
+
+            MapEntity obj = new MapEntity(chunkFourCC, layerCanChange);
 
             // We're going to examine the Template's properties and load based on the current template type.
             for (int i = 0; i < template.Properties.Count; i++)

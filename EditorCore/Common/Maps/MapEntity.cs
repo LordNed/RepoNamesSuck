@@ -73,13 +73,17 @@ namespace WEditor.Maps
             }
         }
 
+        public readonly bool LayerCanChange;
+
         private MapLayer m_mapLayer;
         private BindingList<EntityProperty> m_properties;
 
-        public MapEntity(string fourCC)
+        public MapEntity(string fourCC, bool layerCanChange = false)
         {
+            Layer = MapLayer.Default;
             FourCC = fourCC;
             Properties = new BindingList<EntityProperty>();
+            LayerCanChange = layerCanChange;
         }
 
         public override string ToString()
