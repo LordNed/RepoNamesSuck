@@ -108,17 +108,7 @@ namespace WEditor.FileSystem
 
     public class VirtualFilesystemFile : VirtualFilesystemNode
     {
-        public BaseFileResource File
-        {
-            get { return m_file; }
-            private set
-            {
-                m_file = value;
-                OnPropertyChanged("File");
-            }
-        }
-
-        public VirtualFileContents Data;
+        public VirtualFileContents File;
 
         public string Extension
         {
@@ -130,24 +120,14 @@ namespace WEditor.FileSystem
             }
         }
 
-        private BaseFileResource m_file;
         private string m_extension;
-
-        public VirtualFilesystemFile(string name, string extension, BaseFileResource file, ZArchive parentArc)
-            : base(parentArc)
-        {
-            Name = name;
-            Extension = extension;
-            File = file;
-            Type = NodeType.File;
-        }
 
         public VirtualFilesystemFile(string name, string extension, VirtualFileContents file, ZArchive parentArc) : base(parentArc)
         {
             Type = NodeType.File;
             Name = name;
             Extension = extension;
-            Data = file;
+            File = file;
         }
     }
 
