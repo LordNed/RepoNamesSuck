@@ -6,7 +6,7 @@
 		{"Name" : "Skipped Bit 1", "Type" : "bits", "Length" : 1},
 		{"Name" : "Unknown 1", "Type" : "bits", "Length" : 8},
 		{"Name" : "Weather?", "Type" : "bits", "Length" : 1},
-		{"Name" : "Wind Use Check", "Type" : "bits", "Length" : 2},
+		{"Name" : "Wind's Requiem Disabled", "Type" : "bits", "Length" : 2},
 		{"Name" : "Skipped Bits 2", "Type" : "bits", "Length" : 3},
 		{"Name" : "Draw Depth", "Type" : "bits", "Length" : 8},
 		{"Name" : "Padding", "Type" : "bits", "Length" : 7},
