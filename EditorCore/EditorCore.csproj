@@ -88,8 +88,6 @@
     <Compile Include="RenderSystem\TEVShaderGenerator.cs" />
     <Compile Include="RenderSystem\Texture2D.cs" />
     <Compile Include="RenderSystem\VertexDescription.cs" />
-    <Compile Include="WindWaker\BaseFileResource.cs" />
-    <Compile Include="WindWaker\J3DFileResource.cs" />
     <Compile Include="WindWaker\Loaders\J3DLoader.cs" />
     <Compile Include="WindWaker\Loaders\J3D\EVP1.cs" />
     <Compile Include="WindWaker\Loaders\J3D\DRW1.cs" />

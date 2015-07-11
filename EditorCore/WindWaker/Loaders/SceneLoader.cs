@@ -92,7 +92,7 @@ namespace WEditor.WindWaker.Loaders
             // We're going to load this DZS file into a generic list of all things contained by the DZS/DZR file, and then we'll manually pick through
             // chunks who's info we care about. Some objects will get stored on the Stage and discarded, while others will get converted into intermediate
             // formats.
-            using(EndianBinaryReader reader = new EndianBinaryReader(file.Data.GetData(), Endian.Big))
+            using(EndianBinaryReader reader = new EndianBinaryReader(file.File.GetData(), Endian.Big))
             {
                 MapEntityLoader entityLoader = new MapEntityLoader();
                 scene.Entities = entityLoader.LoadFromStream(reader);
@@ -115,7 +115,7 @@ namespace WEditor.WindWaker.Loaders
         {
             WLog.Info(LogCategory.ArchiveLoading, scene, "Loading BMD/BDL (3D Model) {0}{1}...", file.Name, file.Extension);
             
-            using(EndianBinaryReader reader = new EndianBinaryReader(file.Data.GetData(), Endian.Big))
+            using(EndianBinaryReader reader = new EndianBinaryReader(file.File.GetData(), Endian.Big))
             {
                 J3DLoader modelLoader = new J3DLoader();
                 Mesh model = modelLoader.LoadFromStream(reader);

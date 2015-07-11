@@ -11,6 +11,7 @@ namespace WEditor.WindWaker.Loaders
 {
     public partial class J3DLoader
     {
+        #region Internal Classes
         private class MeshVertexAttributeHolder
         {
             public List<Vector3> Position;
@@ -28,7 +29,7 @@ namespace WEditor.WindWaker.Loaders
             public List<int> PositionMatrixIndexes;
             public List<int> Indexes;
 
-            public List<J3DFileResource.VertexFormat> Attributes;
+            public List<VertexFormat> Attributes;
 
             public MeshVertexAttributeHolder()
             {
@@ -44,7 +45,7 @@ namespace WEditor.WindWaker.Loaders
                 Tex5 = new List<Vector2>();
                 Tex6 = new List<Vector2>();
                 Tex7 = new List<Vector2>();
-                Attributes = new List<J3DFileResource.VertexFormat>();
+                Attributes = new List<VertexFormat>();
 
                 PositionMatrixIndexes = new List<int>();
                 Indexes = new List<int>();
@@ -54,7 +55,7 @@ namespace WEditor.WindWaker.Loaders
         private class SceneNode
         {
             public List<SceneNode> Children;
-            public J3DFileResource.HierarchyDataTypes Type;
+            public HierarchyDataTypes Type;
             public ushort Value;
 
             public SceneNode()
@@ -79,6 +80,19 @@ namespace WEditor.WindWaker.Loaders
                 Indexes = new List<ushort>();
             }
         }
+
+        private class ShapeAttribute
+        {
+            public VertexArrayType ArrayType;
+            public VertexDataType DataType;
+
+            public override string ToString()
+            {
+                return string.Format("{0} - {1}", ArrayType, DataType);
+            }
+        }
+
+        #endregion
 
         public Mesh LoadFromStream(EndianBinaryReader reader)
         { 
@@ -271,17 +285,6 @@ namespace WEditor.WindWaker.Loaders
             return j3dMesh;
         }
 
-        private class ShapeAttribute
-        {
-            public J3DFileResource.VertexArrayType ArrayType;
-            public J3DFileResource.VertexDataType DataType;
-
-            public override string ToString()
-            {
-                return string.Format("{0} - {1}", ArrayType, DataType);
-            }
-        }
-
         private static void LoadSHP1SectionFromFile(MeshVertexAttributeHolder vertexData, Mesh j3dMesh, EndianBinaryReader reader, long chunkStart)
         {
             short batchCount = reader.ReadInt16();
@@ -343,10 +346,10 @@ namespace WEditor.WindWaker.Loaders
                 do
                 {
                     ShapeAttribute attribute = new ShapeAttribute();
-                    attribute.ArrayType = (J3DFileResource.VertexArrayType)reader.ReadInt32();
-                    attribute.DataType = (J3DFileResource.VertexDataType)reader.ReadInt32();
+                    attribute.ArrayType = (VertexArrayType)reader.ReadInt32();
+                    attribute.DataType = (VertexDataType)reader.ReadInt32();
 
-                    if (attribute.ArrayType == J3DFileResource.VertexArrayType.NullAttr)
+                    if (attribute.ArrayType == VertexArrayType.NullAttr)
                         break;
 
                     batchAttributes.Add(attribute);
@@ -419,11 +422,11 @@ namespace WEditor.WindWaker.Loaders
                                 uint numBytesRead = 0;
                                 switch (batchAttributes[attrib].DataType)
                                 {
-                                    case J3DFileResource.VertexDataType.Signed8:
+                                    case VertexDataType.Signed8:
                                         val = reader.ReadByte();
                                         numBytesRead = 1;
                                         break;
-                                    case J3DFileResource.VertexDataType.Signed16:
+                                    case VertexDataType.Signed16:
                                         val = reader.ReadInt16();
                                         numBytesRead = 2;
                                         break;
@@ -437,43 +440,43 @@ namespace WEditor.WindWaker.Loaders
                                 // so we need to re-duplicate them here so that we can feed them to a PC GPU in a normal fashion.
                                 switch (batchAttributes[attrib].ArrayType)
                                 {
-                                    case J3DFileResource.VertexArrayType.Position:
+                                    case VertexArrayType.Position:
                                         meshVertexData.Position.Add(vertexData.Position[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.PositionMatrixIndex:
+                                    case VertexArrayType.PositionMatrixIndex:
                                         meshVertexData.PositionMatrixIndexes.Add(val);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Normal:
+                                    case VertexArrayType.Normal:
                                         meshVertexData.Normal.Add(vertexData.Normal[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Color0:
+                                    case VertexArrayType.Color0:
                                         meshVertexData.Color0.Add(vertexData.Color0[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Color1:
+                                    case VertexArrayType.Color1:
                                         meshVertexData.Color1.Add(vertexData.Color1[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Tex0:
+                                    case VertexArrayType.Tex0:
                                         meshVertexData.Tex0.Add(vertexData.Tex0[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Tex1:
+                                    case VertexArrayType.Tex1:
                                         meshVertexData.Tex1.Add(vertexData.Tex1[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Tex2:
+                                    case VertexArrayType.Tex2:
                                         meshVertexData.Tex2.Add(vertexData.Tex2[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Tex3:
+                                    case VertexArrayType.Tex3:
                                         meshVertexData.Tex3.Add(vertexData.Tex3[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Tex4:
+                                    case VertexArrayType.Tex4:
                                         meshVertexData.Tex4.Add(vertexData.Tex4[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Tex5:
+                                    case VertexArrayType.Tex5:
                                         meshVertexData.Tex5.Add(vertexData.Tex5[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Tex6:
+                                    case VertexArrayType.Tex6:
                                         meshVertexData.Tex6.Add(vertexData.Tex6[val]);
                                         break;
-                                    case J3DFileResource.VertexArrayType.Tex7:
+                                    case VertexArrayType.Tex7:
                                         meshVertexData.Tex7.Add(vertexData.Tex7[val]);
                                         break;
                                     default:
@@ -487,7 +490,7 @@ namespace WEditor.WindWaker.Loaders
                             // Gonna try a weird hack, where if the mesh doesn't have PMI values, we're going to use just use the packet index into the matrixtable
                             // so that all meshes always have PMI values, to abstract out the ones that don't seem to (but still have matrixtable) junk. It's a guess
                             // here. 
-                            if (batchAttributes.Find(x => x.ArrayType == J3DFileResource.VertexArrayType.PositionMatrixIndex) == null)
+                            if (batchAttributes.Find(x => x.ArrayType == VertexArrayType.PositionMatrixIndex) == null)
                             {
                                 meshVertexData.PositionMatrixIndexes.Add(p);
                             }
@@ -526,11 +529,11 @@ namespace WEditor.WindWaker.Loaders
         {
             switch (node.Type)
             {
-                case J3DFileResource.HierarchyDataTypes.NewNode:
+                case HierarchyDataTypes.NewNode:
                     parentJointIndex = skeleton.Count - 1;
                     break;
 
-                case J3DFileResource.HierarchyDataTypes.Joint:
+                case HierarchyDataTypes.Joint:
                     var joint = rawJoints[node.Value];
 
                     if (parentJointIndex < skeleton.Count)
@@ -545,7 +548,7 @@ namespace WEditor.WindWaker.Loaders
 
         private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Material curMaterial, List<Material> materialList, List<ushort> remapIndexList)
         {
-            if (node.Type == J3DFileResource.HierarchyDataTypes.Material)
+            if (node.Type == HierarchyDataTypes.Material)
             {
                 // Don't ask me why this is so complicated. The node.Value has an index into the remapIndexList,
                 // which gives an index into the MaterialList, which finally gives an index into the Textures list.
@@ -563,7 +566,7 @@ namespace WEditor.WindWaker.Loaders
                 //curTexture = textures[textureIndex];
             }
 
-            if (node.Type == J3DFileResource.HierarchyDataTypes.Batch)
+            if (node.Type == HierarchyDataTypes.Batch)
                 mesh.SubMeshes[node.Value].Material = curMaterial;
 
             foreach (var child in node.Children)
