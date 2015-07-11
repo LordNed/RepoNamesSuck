@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GameFormatReader">
-      <HintPath>..\GameFormatReader.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -234,6 +231,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="WindWaker\MapEntities\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EndianBinaryStreams\EndianBinaryStreams.csproj">
+      <Project>{b83beb2f-ff4e-4d1f-be32-50ad4ca1b16d}</Project>
+      <Name>EndianBinaryStreams</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
