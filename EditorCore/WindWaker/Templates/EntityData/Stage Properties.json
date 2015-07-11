@@ -5,12 +5,15 @@
 		{"Name" : "Z Depth Min", "Type" : "float"},
 		{"Name" : "Z Depth Max", "Type" : "float"},
 		{"Name" : "Map Type", "Type" : "enum", "EnumType" : "MapDungeonTypes"},
-		{"Name" : "Loaded Particle Bank", "Type" : "short"},
-		{"Name" : "Mixed Properties (unfinished)", "Type" : "short"},
-		{"Name" : "Unknown 1", "Type" : "byte"},
-		{"Name" : "Unknown 2", "Type" : "byte"},
-		{"Name" : "Unknown 3", "Type" : "byte"},
-		{"Name" : "Unknown 4", "Type" : "byte"},
-		{"Name" : "Draw Distance", "Type" : "short"},
+		{"Name" : "Unknown Bits 1", "Type" : "bits", "Length" : 5},
+		{"Name" : "Particle Package Index?", "Type" : "bits", "Length" : 8},
+		{"Name" : "Unknown Bits 2", "Type" : "bits", "Length" : 3},
+		{"Name" : "Unknown Bits 3", "Type" : "bits", "Length" : 13},
+		{"Name" : "Unknown Bits 4", "Type" : "bits", "Length" : 11},
+		{"Name" : "EnvR Color Init", "Type" : "bits", "Length" : 8},
+		{"Name" : "Set Sch Bit 1", "Type" : "bits", "Length" : 8},
+		{"Name" : "Unknown Bits 5", "Type" : "bits", "Length" : 8},
+		{"Name" : "Set Sch Bit 2", "Type" : "bits", "Length" : 8},
+		{"Name" : "View Setup Info", "Type" : "bits", "Length" : 16}
 	]
 }

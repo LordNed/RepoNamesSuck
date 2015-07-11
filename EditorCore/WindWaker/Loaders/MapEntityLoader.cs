@@ -173,7 +173,7 @@ namespace WEditor.WindWaker.Loaders
                 {
                     case "fixedLengthString":
                         type = PropertyType.String;
-                        value = reader.ReadString((uint)templateProperty.Length).Trim(new[] { '\0' });
+                        value = reader.ReadString(templateProperty.Length).Trim(new[] { '\0' });
                         break;
 
                     case "string":
@@ -289,6 +289,11 @@ namespace WEditor.WindWaker.Loaders
                     case "int32BitField":
                         type = PropertyType.Int32BitField;
                         value = reader.ReadInt32();
+                        break;
+
+                    case "bits":
+                        type = PropertyType.Int32;
+                        value = (int)reader.ReadBits(templateProperty.Length);
                         break;
                 }
 
