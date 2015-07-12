@@ -91,39 +91,46 @@ namespace WEditor.Maps
             return FourCC;
         }
 
-        public EntityProperty this[string val]
+        public T GetProperty<T>(string propertyName)
         {
-            get
+            EntityProperty prop = null;
+            for (int i = 0; i < Properties.Count; i++)
             {
-                EntityProperty prop = null;
-                for (int i = 0; i < Properties.Count; i++)
+                if (string.Compare(propertyName, Properties[i].Name, StringComparison.InvariantCultureIgnoreCase) == 0)
                 {
-                    if (string.Compare(val, Properties[i].Name, StringComparison.InvariantCultureIgnoreCase) == 0)
-                    {
-                        prop = Properties[i];
-                        break;
-                    }
+                    prop = Properties[i];
+                    break;
                 }
-
-                return prop;
             }
-            set
+
+            if(prop == null)
             {
-                EntityProperty prop = null;
-                for (int i = 0; i < Properties.Count; i++)
-                {
-                    if (string.Compare(val, Properties[i].Name, StringComparison.InvariantCultureIgnoreCase) == 0)
-                    {
-                        prop = Properties[i];
-                        break;
-                    }
-                }
-
-                if (prop != null)
-                    prop.Value = value;
-                else
-                    WLog.Warning(LogCategory.EntityLoading, this, "Unsupported property {0}", val);
+                WLog.Warning(LogCategory.EditorCore, this, "Requested Property {0} on object {1}, but no property found!", propertyName, this);
+                return default(T);
             }
+
+            return (T) prop.Value;
+        }
+
+        public void SetProperty(string propertyName, object value)
+        {
+            EntityProperty prop = null;
+            for (int i = 0; i < Properties.Count; i++)
+            {
+                if (string.Compare(propertyName, Properties[i].Name, StringComparison.InvariantCultureIgnoreCase) == 0)
+                {
+                    prop = Properties[i];
+                    break;
+                }
+            }
+
+            if(prop != null)
+            {
+                prop.Value = value;
+                return;
+            }
+
+            WLog.Warning(LogCategory.EditorCore, this, "Tried to set Property {0} on object {1}, but no property found!", propertyName, this);
         }
 
         protected void OnPropertyChanged(string propertyName)

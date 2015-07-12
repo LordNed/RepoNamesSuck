@@ -130,11 +130,11 @@ namespace WEditor.WindWaker.Loaders
             var multList = FindAllByType("MULT", stage.Entities);
             foreach(var entry in multList)
             {
-                Vector2 translation = (Vector2)entry["Translation"].Value;
-                float yRotation = (float)((short)entry["Rotation"].Value) / 32768f * 180;
-                byte unknown1 = (byte)entry["Unknown 1"].Value;
+                Vector2 translation = entry.GetProperty<Vector2>("Translation");
+                float yRotation = (float)(entry.GetProperty<short>("Rotation")) / 32768f * 180;
+                byte unknown1 = entry.GetProperty<byte>("Unknown 1");
 
-                Room room = entry["Room"].Value as Room;
+                Room room = entry.GetProperty<Room>("Room");
 
                 if(room != null)
                 {
@@ -154,10 +154,10 @@ namespace WEditor.WindWaker.Loaders
             {
                 ShipSpawn shipSpawn = new ShipSpawn
                 {
-                    Position = (Vector3)spawnList[i]["Position"].Value,
-                    YRotation = (short)spawnList[i]["Rotation"].Value,
-                    ShipId = (byte)spawnList[i]["Ship Id"].Value,
-                    Unknown1 = (byte)spawnList[i]["Unknown 1"].Value
+                    Position = spawnList[i].GetProperty < Vector3>("Position"),
+                    YRotation = spawnList[i].GetProperty<short>("Rotation") / 32768f * 180,
+                    ShipId = spawnList[i].GetProperty<byte>("Ship Id"),
+                    Unknown1 = spawnList[i].GetProperty<byte>("Unknown 1")
                 };
 
                 scene.ShipSpawns.Add(shipSpawn);
@@ -172,16 +172,16 @@ namespace WEditor.WindWaker.Loaders
             {
                 SoundSource sndSrc = new SoundSource
                 {
-                    Name = (string)sondList[i]["Name"].Value,
-                    Position = (Vector3)sondList[i]["Position"].Value,
-                    Unknown1 = (byte)sondList[i]["Unknown 1"].Value,
-                    Unknown2 = (byte)sondList[i]["Unknown 2"].Value,
-                    Unknown3 = (byte)sondList[i]["Unknown 3"].Value,
-                    SoundId = (byte)sondList[i]["Sound ID"].Value,
-                    SoundRadius = (byte)sondList[i]["Sound Radius"].Value,
-                    Padding1 = (byte)sondList[i]["Padding 1"].Value,
-                    Padding2 = (byte)sondList[i]["Padding 2"].Value,
-                    Padding3 = (byte)sondList[i]["Padding 3"].Value
+                    Name = sondList[i].GetProperty<string>("Name"),
+                    Position = sondList[i].GetProperty<Vector3>("Position"),
+                    Unknown1 = sondList[i].GetProperty<byte>("Unknown 1"),
+                    Unknown2 = sondList[i].GetProperty<byte>("Unknown 2"),
+                    Unknown3 = sondList[i].GetProperty<byte>("Unknown 3"),
+                    SoundId = sondList[i].GetProperty<byte>("Sound ID"),
+                    SoundRadius = sondList[i].GetProperty<byte>("Sound Radius"),
+                    Padding1 = sondList[i].GetProperty<byte>("Padding 1"),
+                    Padding2 = sondList[i].GetProperty<byte>("Padding 2"),
+                    Padding3 = sondList[i].GetProperty<byte>("Padding 3")
                 };
 
                 scene.Sounds.Add(sndSrc);
@@ -196,9 +196,9 @@ namespace WEditor.WindWaker.Loaders
             {
                 Arrow arrow = new Arrow
                 {
-                    Position = (Vector3)arobList[i]["Position"].Value,
-                    Rotation = (XYZRotation)arobList[i]["Rotation"].Value,
-                    Padding = (short)arobList[i]["Padding"].Value,
+                    Position = arobList[i].GetProperty<Vector3>("Position"),
+                    Rotation = arobList[i].GetProperty<XYZRotation>("Rotation"),
+                    Padding = arobList[i].GetProperty<short>("Padding"),
                 };
 
                 scene.AROB.Add(arrow);
@@ -210,9 +210,9 @@ namespace WEditor.WindWaker.Loaders
             {
                 Arrow arrow = new Arrow
                 {
-                    Position = (Vector3)raroList[i]["Position"].Value,
-                    Rotation = (XYZRotation)raroList[i]["Rotation"].Value,
-                    Padding = (short)raroList[i]["Padding"].Value,
+                    Position = raroList[i].GetProperty<Vector3>("Position"),
+                    Rotation = raroList[i].GetProperty<XYZRotation>("Rotation"),
+                    Padding = raroList[i].GetProperty<short>("Padding"),
                 };
 
                 scene.RARO.Add(arrow);
@@ -227,9 +227,9 @@ namespace WEditor.WindWaker.Loaders
             {
                 PointLight pointLight = new PointLight
                 {
-                    Position = (Vector3)lghtList[i]["Position"].Value,
-                    Radius = (Vector3)lghtList[i]["Radius"].Value,
-                    Color = (Color32)lghtList[i]["Color"].Value
+                    Position = lghtList[i].GetProperty<Vector3>("Position"),
+                    Radius = lghtList[i].GetProperty<Vector3>("Radius"),
+                    Color = lghtList[i].GetProperty<Color32>("Color")
                 };
 
                 scene.LGHT.Add(pointLight);
@@ -241,9 +241,9 @@ namespace WEditor.WindWaker.Loaders
             {
                 PointLight pointLight = new PointLight
                 {
-                    Position = (Vector3)lgtvList[i]["Position"].Value,
-                    Radius = (Vector3)lgtvList[i]["Radius"].Value,
-                    Color = (Color32)lgtvList[i]["Color"].Value
+                    Position = lgtvList[i].GetProperty<Vector3>("Position"),
+                    Radius = lgtvList[i].GetProperty<Vector3>("Radius"),
+                    Color = lgtvList[i].GetProperty<Color32>("Color")
                 };
 
                 scene.LGTV.Add(pointLight);
