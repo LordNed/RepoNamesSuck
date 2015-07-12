@@ -72,6 +72,7 @@
     <Compile Include="Common\WObject.cs" />
     <Compile Include="Common\WWorld.cs" />
     <Compile Include="EditorCore.cs" />
+    <Compile Include="Extensions\ClassExtensions.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderSystem\Camera.cs" />

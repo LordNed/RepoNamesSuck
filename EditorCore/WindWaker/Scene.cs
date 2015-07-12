@@ -29,6 +29,8 @@ namespace WEditor.WindWaker
         public BindingList<MapEntity> Entities { get; set; }
         public BindingList<Mesh> Meshes { get; set; }
 
+        public string Name { get; set; }
+
         public Scene()
         {
             LGHT = new BindingList<PointLight>();

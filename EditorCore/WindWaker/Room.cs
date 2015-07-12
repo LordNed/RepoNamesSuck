@@ -8,5 +8,9 @@ namespace WEditor.WindWaker
 {
     public class Room : Scene
     {
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

@@ -27,11 +27,15 @@ namespace WEditor.WindWaker.Loaders
 
             ZArchiveLoader archiveLoader = new ZArchiveLoader();
 
+            // Sort the directories in rootFolderInfo into natural order, instead of alphabetical order which solves issues
+            // where room indexes were getting remapped to the wrong one.
+            IEnumerable<DirectoryInfo> subFolders = rootFolderInfo.GetDirectories().OrderByNatural(x => x.Name);
+
             // Maps are stored in two distinct parts. A Stage which encompasses global data for all rooms, and then
             // one or more rooms. We're going to load both the room and stage into ZArchives and then load the data
             // stored in them into different data.
             var archiveFolderMap = new Dictionary<string, ZArchive>();
-            foreach (var dirInfo in rootFolderInfo.GetDirectories())
+            foreach (var dirInfo in subFolders)
             {
                 ZArchive archive = null;
 
@@ -76,11 +80,13 @@ namespace WEditor.WindWaker.Loaders
                 if(kvp.Key.StartsWith("room"))
                 {
                     Room room = sceneLoader.LoadFromArchive<Room>(world, kvp.Value);
+                    room.Name = kvp.Key;
                     newMap.Rooms.Add(room);
                 }
                 else if (kvp.Key.StartsWith("stage"))
                 {
                     newMap.Stage = sceneLoader.LoadFromArchive<Stage>(world, kvp.Value);
+                    newMap.Stage.Name = "Stage";
                 }
             }
 
