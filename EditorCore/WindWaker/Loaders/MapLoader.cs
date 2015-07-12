@@ -96,12 +96,12 @@ namespace WEditor.WindWaker.Loaders
             // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
             if(newMap.Stage != null)
             {
-                PostProcessScene(newMap.Stage, world);
+                PostProcessStage(newMap.Stage, world);
             }
 
             foreach(var room in newMap.Rooms)
             {
-                PostProcessScene(room, world);
+                PostProcessRoom(room, world);
             }
 
 
@@ -114,6 +114,37 @@ namespace WEditor.WindWaker.Loaders
             PostProcessArrows(scene, world);
             PostProcessSoundSources(scene, world);
             PostProcessShipSpawns(scene, world);
+        }
+
+        private void PostProcessRoom(Room room, WWorld world)
+        {
+            PostProcessScene(room, world);
+
+
+        }
+
+        private void PostProcessStage(Stage stage, WWorld world)
+        {
+            // We're going to extract the information from the MULT chunk and
+            // apply it to the rooms so they have the correct offset.
+            var multList = FindAllByType("MULT", stage.Entities);
+            foreach(var entry in multList)
+            {
+                Vector2 translation = (Vector2)entry["Translation"].Value;
+                float yRotation = (float)((short)entry["Rotation"].Value) / 32768f * 180;
+                byte unknown1 = (byte)entry["Unknown 1"].Value;
+
+                Room room = entry["Room"].Value as Room;
+
+                if(room != null)
+                {
+                    room.Translation = new Vector3(translation.X, 0, translation.Y);
+                    room.YRotation = yRotation;
+                    room.MULT_Unknown1 = unknown1;
+                }
+            }
+
+            PostProcessScene(stage, world);
         }
 
         private void PostProcessShipSpawns(Scene scene, WWorld world)
