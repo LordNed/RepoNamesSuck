@@ -1,10 +1,10 @@
 ﻿using OpenTK;
+using WEditor.Maps;
 
 namespace WEditor.Common.Maps
 {
-    public class PointLight : WObject
+    public class PointLight : SceneComponent
     {
-        public Vector3 Position;
         public Vector3 Radius;
         public Color Color;
     }

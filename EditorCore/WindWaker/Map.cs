@@ -91,6 +91,17 @@ namespace WEditor.WindWaker
             }
         }
 
+        public bool LayerIsVisible(MapLayer layer)
+        {
+            for(int i = 0; i < LayerVisibilities.Count; i++)
+            {
+                if (LayerVisibilities[i].Layer == layer)
+                    return LayerVisibilities[i].Visible;
+            }
+
+            return false;
+        }
+
         protected void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WEditor.Maps
 {
@@ -47,11 +43,11 @@ namespace WEditor.Maps
         }
     }
 
-    public class MapEntity : INotifyPropertyChanged
+    public class MapEntity : WObject, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public string FourCC { get; private set; }
+        public string FourCC { get; internal set; }
 
         public BindingList<EntityProperty> Properties
         {
@@ -73,17 +69,17 @@ namespace WEditor.Maps
             }
         }
 
-        public readonly bool LayerCanChange;
+        public bool LayerCanChange { get; internal set; }
 
         private MapLayer m_mapLayer;
         private BindingList<EntityProperty> m_properties;
 
-        public MapEntity(string fourCC, bool layerCanChange = false)
+        public MapEntity()
         {
             Layer = MapLayer.Default;
-            FourCC = fourCC;
+            FourCC = string.Empty;
             Properties = new BindingList<EntityProperty>();
-            LayerCanChange = layerCanChange;
+            LayerCanChange = false;
         }
 
         public override string ToString()

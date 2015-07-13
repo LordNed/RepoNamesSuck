@@ -1,11 +1,10 @@
 ﻿using OpenTK;
+using WEditor.Maps;
 
 namespace WEditor.Common.Maps
 {
-    public class ShipSpawn : WObject
+    public class ShipSpawn : SceneComponent
     {
-        public Vector3 Position;
-        public float YRotation;
         public byte ShipId;
         public byte Unknown1;
     }

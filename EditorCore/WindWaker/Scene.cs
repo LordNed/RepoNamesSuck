@@ -28,6 +28,8 @@ namespace WEditor.WindWaker
 
         public BindingList<MapEntity> Entities { get; set; }
         public BindingList<Mesh> Meshes { get; set; }
+        public BindingList<SceneComponent> Objects { get; set; }
+
 
         public string Name { get; set; }
 
@@ -42,6 +44,7 @@ namespace WEditor.WindWaker
 
             Entities = new BindingList<MapEntity>();
             Meshes = new BindingList<Mesh>();
+            Objects = new BindingList<SceneComponent>();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WEditor.Common.Maps;
 using WEditor.FileSystem;
+using WEditor.Maps;
 using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
@@ -119,9 +120,14 @@ namespace WEditor.WindWaker.Loaders
             {
                 J3DLoader modelLoader = new J3DLoader();
                 Mesh model = modelLoader.LoadFromStream(reader);
-                world.RenderSystem.RegisterMesh(model);
 
-                scene.Meshes.Add(model);
+                MeshSceneComponent entity = new MeshSceneComponent();
+                entity.Mesh = model;
+                scene.Objects.Add(entity);
+
+                //world.RenderSystem.RegisterMesh(model);
+
+                //scene.Meshes.Add(model);
             }
 
 

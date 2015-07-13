@@ -56,7 +56,9 @@
     <Compile Include="Common\Maps\Arrow.cs" />
     <Compile Include="Common\Maps\Layers.cs" />
     <Compile Include="Common\Maps\MapEntity.cs" />
+    <Compile Include="Common\Maps\MeshSceneComponent.cs" />
     <Compile Include="Common\Maps\PointLight.cs" />
+    <Compile Include="Common\Maps\SceneComponent.cs" />
     <Compile Include="Common\Maps\ShipSpawn.cs" />
     <Compile Include="Common\Maps\SoundSource.cs" />
     <Compile Include="Common\Nintendo\BinaryTextureImage.cs" />
@@ -228,9 +230,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="WindWaker\MapEntities\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\EndianBinaryStreams\EndianBinaryStreams.csproj">
       <Project>{b83beb2f-ff4e-4d1f-be32-50ad4ca1b16d}</Project>

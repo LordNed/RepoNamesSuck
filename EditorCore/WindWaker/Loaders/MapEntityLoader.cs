@@ -164,7 +164,9 @@ namespace WEditor.WindWaker.Loaders
             bool layerCanChange = (chunkFourCC == "TRES" || chunkFourCC == "ACTR" || chunkFourCC == "SCOB");
 
 
-            MapEntity obj = new MapEntity(chunkFourCC, layerCanChange);
+            MapEntity obj = new MapEntity();
+            obj.FourCC = chunkFourCC;
+            obj.LayerCanChange = layerCanChange;
 
             // We're going to examine the Template's properties and load based on the current template type.
             for (int i = 0; i < template.Properties.Count; i++)

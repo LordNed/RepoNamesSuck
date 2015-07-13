@@ -1,11 +1,11 @@
 ﻿using OpenTK;
+using WEditor.Maps;
 
 namespace WEditor.Common.Maps
 {
-    public class SoundSource : WObject
+    public class SoundSource : SceneComponent
     {
         public string Name;
-        public Vector3 Position;
         public byte Unknown1;
         public byte Unknown2;
         public byte Unknown3;
@@ -17,7 +17,7 @@ namespace WEditor.Common.Maps
 
         public override void OnDrawGizmos()
         {
-            World.Gizmos.DrawWireCube(Position, new Vector3(SoundRadius * 10f, SoundRadius * 10f, SoundRadius * 10f));
+            World.Gizmos.DrawWireCube(Transform.Position, new Vector3(SoundRadius * 10f, SoundRadius * 10f, SoundRadius * 10f));
         }
     }
 }

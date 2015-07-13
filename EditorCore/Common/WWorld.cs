@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using WEditor.Rendering;
+using WEditor.WindWaker;
 
 namespace WEditor
 {
@@ -26,6 +27,8 @@ namespace WEditor
         {
             get { return m_worldName; }
         }
+
+        public Map Map { get; set; }
 
         /// <summary> Used to calculate the delta time of the Tick loop. </summary>
         private Stopwatch m_dtStopwatch;

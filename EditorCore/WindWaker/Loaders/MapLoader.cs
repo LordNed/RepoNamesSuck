@@ -44,7 +44,7 @@ namespace WEditor.WindWaker.Loaders
                 {
                     archive = new ZArchive(folderName, ArchiveType.Stage);
 
-                    if(archiveFolderMap.ContainsKey("stage"))
+                    if (archiveFolderMap.ContainsKey("stage"))
                     {
                         WLog.Warning(LogCategory.EditorCore, null, "{0} contains more than one stage archive, ignoring second...", folderPath);
                         continue;
@@ -75,9 +75,9 @@ namespace WEditor.WindWaker.Loaders
             // and it wouldn't surprise me if somewhere, a room references something in a stage. Because of this, we're going to load
             // maps in two passes. The first pass does not resolve the reference (and instead leaves them as their indexes) and then
             // once the stage and all rooms have been loaded, we can then do a second pass and turn the indexes into object references.
-            foreach(var kvp in archiveFolderMap)
+            foreach (var kvp in archiveFolderMap)
             {
-                if(kvp.Key.StartsWith("room"))
+                if (kvp.Key.StartsWith("room"))
                 {
                     Room room = sceneLoader.LoadFromArchive<Room>(world, kvp.Value);
                     room.Name = kvp.Key;
@@ -94,12 +94,12 @@ namespace WEditor.WindWaker.Loaders
             sceneLoader.PostProcessEntityData(newMap);
 
             // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
-            if(newMap.Stage != null)
+            if (newMap.Stage != null)
             {
                 PostProcessStage(newMap.Stage, world);
             }
 
-            foreach(var room in newMap.Rooms)
+            foreach (var room in newMap.Rooms)
             {
                 PostProcessRoom(room, world);
             }
@@ -128,7 +128,7 @@ namespace WEditor.WindWaker.Loaders
             // We're going to extract the information from the MULT chunk and
             // apply it to the rooms so they have the correct offset.
             var multList = FindAllByType("MULT", stage.Entities);
-            foreach(var entry in multList)
+            foreach (var entry in multList)
             {
                 Vector2 translation = entry.GetProperty<Vector2>("Translation");
                 float yRotation = (float)(entry.GetProperty<short>("Rotation")) / 32768f * 180;
@@ -136,7 +136,7 @@ namespace WEditor.WindWaker.Loaders
 
                 Room room = entry.GetProperty<Room>("Room");
 
-                if(room != null)
+                if (room != null)
                 {
                     room.Translation = new Vector3(translation.X, 0, translation.Y);
                     room.YRotation = yRotation;
@@ -150,15 +150,16 @@ namespace WEditor.WindWaker.Loaders
         private void PostProcessShipSpawns(Scene scene, WWorld world)
         {
             var spawnList = FindAllByType("SHIP", scene.Entities);
-            for(int i = 0; i < spawnList.Count; i++)
+            for (int i = 0; i < spawnList.Count; i++)
             {
-                ShipSpawn shipSpawn = new ShipSpawn
-                {
-                    Position = spawnList[i].GetProperty < Vector3>("Position"),
-                    YRotation = spawnList[i].GetProperty<short>("Rotation") / 32768f * 180,
-                    ShipId = spawnList[i].GetProperty<byte>("Ship Id"),
-                    Unknown1 = spawnList[i].GetProperty<byte>("Unknown 1")
-                };
+                ShipSpawn shipSpawn = new ShipSpawn();
+                shipSpawn.Transform.Position = spawnList[i].GetProperty<Vector3>("Position");
+
+                float yRotation = spawnList[i].GetProperty<short>("Rotation") / 32768f * 180;
+                shipSpawn.Transform.Rotation = new Quaternion(0f, yRotation, 0f, 0f);
+
+                shipSpawn.ShipId = spawnList[i].GetProperty<byte>("Ship Id");
+                shipSpawn.Unknown1 = spawnList[i].GetProperty<byte>("Unknown 1");
 
                 scene.ShipSpawns.Add(shipSpawn);
                 world.RegisterObject(shipSpawn);
@@ -168,21 +169,20 @@ namespace WEditor.WindWaker.Loaders
         private void PostProcessSoundSources(Scene scene, WWorld world)
         {
             var sondList = FindAllByType("SOND", scene.Entities);
-            for(int i = 0; i < sondList.Count; i++)
+            for (int i = 0; i < sondList.Count; i++)
             {
-                SoundSource sndSrc = new SoundSource
-                {
-                    Name = sondList[i].GetProperty<string>("Name"),
-                    Position = sondList[i].GetProperty<Vector3>("Position"),
-                    Unknown1 = sondList[i].GetProperty<byte>("Unknown 1"),
-                    Unknown2 = sondList[i].GetProperty<byte>("Unknown 2"),
-                    Unknown3 = sondList[i].GetProperty<byte>("Unknown 3"),
-                    SoundId = sondList[i].GetProperty<byte>("Sound ID"),
-                    SoundRadius = sondList[i].GetProperty<byte>("Sound Radius"),
-                    Padding1 = sondList[i].GetProperty<byte>("Padding 1"),
-                    Padding2 = sondList[i].GetProperty<byte>("Padding 2"),
-                    Padding3 = sondList[i].GetProperty<byte>("Padding 3")
-                };
+                SoundSource sndSrc = new SoundSource();
+
+                sndSrc.Name = sondList[i].GetProperty<string>("Name");
+                sndSrc.Transform.Position = sondList[i].GetProperty<Vector3>("Position");
+                sndSrc.Unknown1 = sondList[i].GetProperty<byte>("Unknown 1");
+                sndSrc.Unknown2 = sondList[i].GetProperty<byte>("Unknown 2");
+                sndSrc.Unknown3 = sondList[i].GetProperty<byte>("Unknown 3");
+                sndSrc.SoundId = sondList[i].GetProperty<byte>("Sound ID");
+                sndSrc.SoundRadius = sondList[i].GetProperty<byte>("Sound Radius");
+                sndSrc.Padding1 = sondList[i].GetProperty<byte>("Padding 1");
+                sndSrc.Padding2 = sondList[i].GetProperty<byte>("Padding 2");
+                sndSrc.Padding3 = sondList[i].GetProperty<byte>("Padding 3");
 
                 scene.Sounds.Add(sndSrc);
                 world.RegisterObject(sndSrc);
@@ -192,14 +192,14 @@ namespace WEditor.WindWaker.Loaders
         private void PostProcessArrows(Scene scene, WWorld world)
         {
             var arobList = FindAllByType("AROB", scene.Entities);
-            for(int i = 0; i < arobList.Count; i++)
+            for (int i = 0; i < arobList.Count; i++)
             {
-                Arrow arrow = new Arrow
-                {
-                    Position = arobList[i].GetProperty<Vector3>("Position"),
-                    Rotation = arobList[i].GetProperty<XYZRotation>("Rotation"),
-                    Padding = arobList[i].GetProperty<short>("Padding"),
-                };
+                Arrow arrow = new Arrow();
+
+                arrow.Transform.Position = arobList[i].GetProperty<Vector3>("Position");
+                XYZRotation fullRot = arobList[i].GetProperty<XYZRotation>("Rotation");
+                arrow.Transform.Rotation = new Quaternion(fullRot.X, fullRot.Y, fullRot.Z, 0f);
+                arrow.Padding = arobList[i].GetProperty<short>("Padding");
 
                 scene.AROB.Add(arrow);
                 world.RegisterObject(arrow);
@@ -208,12 +208,13 @@ namespace WEditor.WindWaker.Loaders
             var raroList = FindAllByType("RARO", scene.Entities);
             for (int i = 0; i < raroList.Count; i++)
             {
-                Arrow arrow = new Arrow
-                {
-                    Position = raroList[i].GetProperty<Vector3>("Position"),
-                    Rotation = raroList[i].GetProperty<XYZRotation>("Rotation"),
-                    Padding = raroList[i].GetProperty<short>("Padding"),
-                };
+                Arrow arrow = new Arrow();
+
+                arrow.Transform.Position = raroList[i].GetProperty<Vector3>("Position");
+                XYZRotation fullRot = raroList[i].GetProperty<XYZRotation>("Rotation");
+                arrow.Transform.Rotation = new Quaternion(fullRot.X, fullRot.Y, fullRot.Z, 0f);
+                arrow.Padding = raroList[i].GetProperty<short>("Padding");
+
 
                 scene.RARO.Add(arrow);
                 world.RegisterObject(arrow);
@@ -223,14 +224,12 @@ namespace WEditor.WindWaker.Loaders
         private void PostProcessPointLights(Scene scene, WWorld world)
         {
             var lghtList = FindAllByType("LGHT", scene.Entities);
-            for(int i = 0; i < lghtList.Count; i++)
+            for (int i = 0; i < lghtList.Count; i++)
             {
-                PointLight pointLight = new PointLight
-                {
-                    Position = lghtList[i].GetProperty<Vector3>("Position"),
-                    Radius = lghtList[i].GetProperty<Vector3>("Radius"),
-                    Color = lghtList[i].GetProperty<Color32>("Color")
-                };
+                PointLight pointLight = new PointLight();
+                pointLight.Transform.Position = lghtList[i].GetProperty<Vector3>("Position");
+                pointLight.Radius = lghtList[i].GetProperty<Vector3>("Radius");
+                pointLight.Color = lghtList[i].GetProperty<Color32>("Color");
 
                 scene.LGHT.Add(pointLight);
                 world.RegisterObject(pointLight);
@@ -239,18 +238,16 @@ namespace WEditor.WindWaker.Loaders
             var lgtvList = FindAllByType("LGTV", scene.Entities);
             for (int i = 0; i < lgtvList.Count; i++)
             {
-                PointLight pointLight = new PointLight
-                {
-                    Position = lgtvList[i].GetProperty<Vector3>("Position"),
-                    Radius = lgtvList[i].GetProperty<Vector3>("Radius"),
-                    Color = lgtvList[i].GetProperty<Color32>("Color")
-                };
+                PointLight pointLight = new PointLight();
+                pointLight.Transform.Position = lgtvList[i].GetProperty<Vector3>("Position");
+                pointLight.Radius = lgtvList[i].GetProperty<Vector3>("Radius");
+                pointLight.Color = lgtvList[i].GetProperty<Color32>("Color");
 
                 scene.LGTV.Add(pointLight);
                 world.RegisterObject(pointLight);
             }
         }
-        
+
         private List<MapEntity> FindAllByType(string fourCC, BindingList<MapEntity> fromList)
         {
             List<MapEntity> results = new List<MapEntity>();

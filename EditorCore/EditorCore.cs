@@ -98,6 +98,7 @@ namespace WEditor
 #endif
 
             LoadedScene = newMap;
+            GetWorldByName("main").Map = newMap;
         }
 
         public void UnloadMap()
