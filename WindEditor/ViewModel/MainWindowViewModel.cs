@@ -25,6 +25,15 @@ namespace WindEditor.UI
         public bool CanClose { get { return m_editorCore.LoadedScene != null; } }
         public bool CanUndo { get { return false; } }
         public bool CanRedo { get { return false; } }
+        public string WindowTitle
+        {
+            get { return m_windowTitle; }
+            set
+            {
+                m_windowTitle = value;
+                OnPropertyChanged("WindowTitle");
+            }
+        }
 
         public SceneViewViewModel SceneView { get; private set; }
         public EntityOutlinerViewModel EntityOutliner { get; private set; }
@@ -45,6 +54,7 @@ namespace WindEditor.UI
         private EditorCore m_editorCore;
         private System.Windows.Forms.Timer m_intervalTimer;
         private GLControl m_control;
+        private string m_windowTitle;
 
         public MainWindowViewModel()
         {
@@ -52,6 +62,7 @@ namespace WindEditor.UI
             EntityOutliner = new EntityOutlinerViewModel(this);
             OutputLog = new OutputLogViewModel();
             InspectorView = new InspectorViewModel();
+            WindowTitle = "Wind Editor";
         }
 
         void OnEditorPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -60,6 +71,14 @@ namespace WindEditor.UI
             {
                 SceneView.SetMap(m_editorCore.LoadedScene);
                 OnPropertyChanged("LoadedScene");
+                if (m_editorCore.LoadedScene == null)
+                {
+                    WindowTitle = "Wind Editor";
+                }
+                else
+                {
+                    WindowTitle = string.Format("{0} - Wind Editor", m_editorCore.LoadedScene.Name);
+                }
             }
         }
 

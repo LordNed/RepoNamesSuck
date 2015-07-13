@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:self="clr-namespace:WindEditor.UI"
         Closing="Window_Closing"
-        Title="Wind Editor" Height="720" Width="1280" ResizeMode="CanResizeWithGrip" Icon="/WindEditor;component/Resources/middlewindwakersymbol256.ico">
+        Title="{Binding WindowTitle}" Height="720" Width="1280" ResizeMode="CanResizeWithGrip" Icon="/WindEditor;component/Resources/middlewindwakersymbol256.ico">
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open" Executed="OnOpenCommand_Executed"/>
         <CommandBinding Command="ApplicationCommands.Save" CanExecute="OnSaveCommand_CanExecute" Executed="OnSaveCommand_Executed"/>
