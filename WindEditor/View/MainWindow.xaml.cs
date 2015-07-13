@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using WEditor.UI.View;
 using WindEditor.UI;
 
 namespace WindEditor
@@ -159,6 +160,12 @@ namespace WindEditor
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             m_viewModel.OnWindowClosing(sender, e);
+        }
+
+        private void OnAboutWindowClicked(object sender, RoutedEventArgs e)
+        {
+            AboutWindow aboutWindow = new AboutWindow();
+            aboutWindow.ShowDialog();
         }
     }
 }

@@ -111,6 +111,9 @@
     <Compile Include="ViewModel\InspectorViewModel.cs" />
     <Compile Include="ViewModel\OutputLogViewModel.cs" />
     <Compile Include="ViewModel\SceneViewViewModel.cs" />
+    <Compile Include="View\AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Inspector.xaml.cs">
       <DependentUpon>Inspector.xaml</DependentUpon>
     </Compile>
@@ -121,6 +124,10 @@
       <DependentUpon>SceneView.xaml</DependentUpon>
     </Compile>
     <Page Include="Common\InspectorTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -203,7 +210,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\the_wind_waker__forbidden_woods_by_purrdemonium-d4hk6lt.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\middlewindwakersymbol256.ico" />
   </ItemGroup>
