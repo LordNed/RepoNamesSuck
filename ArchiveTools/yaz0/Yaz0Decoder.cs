@@ -9,9 +9,9 @@ using System.Collections;
 
 namespace ArchiveTools.yaz0
 {
-    public class Yaz0Decoder
+    public static class Yaz0Decoder
     {
-        public EndianBinaryWriter Decode(EndianBinaryReader stream)
+        public static EndianBinaryWriter Decode(EndianBinaryReader stream)
         {
             // 16 byte Header
             if (stream.ReadUInt32() != 0x59617A30) // "Yaz0" Magic
