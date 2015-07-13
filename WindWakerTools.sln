@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindEditor", "WindEditor\Wi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndianBinaryStreams", "EndianBinaryStreams\EndianBinaryStreams.csproj", "{B83BEB2F-FF4E-4D1F-BE32-50AD4CA1B16D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchiveTools", "ArchiveTools\ArchiveTools.csproj", "{290F8F12-32B0-400C-8DFF-F295D04106C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B83BEB2F-FF4E-4D1F-BE32-50AD4CA1B16D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B83BEB2F-FF4E-4D1F-BE32-50AD4CA1B16D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B83BEB2F-FF4E-4D1F-BE32-50AD4CA1B16D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{290F8F12-32B0-400C-8DFF-F295D04106C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{290F8F12-32B0-400C-8DFF-F295D04106C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{290F8F12-32B0-400C-8DFF-F295D04106C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{290F8F12-32B0-400C-8DFF-F295D04106C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
