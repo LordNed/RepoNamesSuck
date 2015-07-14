@@ -301,7 +301,7 @@ namespace WEditor.WindWaker.Loaders
         }
         #endregion
 
-        public List<Material> LoadMAT3SectionFromStream(EndianBinaryReader reader, long chunkStart, int chunkSize, List<ushort> indexToMaterialIndex)
+        public List<Material> LoadMAT3SectionFromStream(EndianBinaryReader reader, long chunkStart, int chunkSize)
         {
             short materialCount = reader.ReadInt16();
             short padding = reader.ReadInt16();
@@ -313,14 +313,7 @@ namespace WEditor.WindWaker.Loaders
             for (int i = 0; i < offsets.Length; i++)
                 offsets[i] = reader.ReadInt32();
 
-            List<Common.Nintendo.J3D.Material> materialList = new List<Material>();
-
-            // Read the materialIndexOffset section into our outRemapIndexes since there's a weird extra level of redirection here.
-            reader.BaseStream.Position = chunkStart + offsets[1];
-            for (int i = 0; i < materialCount; i++)
-            {
-                indexToMaterialIndex.Add(reader.ReadUInt16());
-            }
+            List<Material> materialList = new List<Material>();
 
             /* MATERIAL REMAP TABLE (See start of Material loader below) */
             var matIndexToMaterial = ReadSection<short>(reader, chunkStart, chunkSize, offsets, 1, ReadShort, 2);

@@ -95,11 +95,10 @@ namespace WEditor.WindWaker.Loaders
         #endregion
 
         public Mesh LoadFromStream(EndianBinaryReader reader)
-        { 
+        {
             MeshVertexAttributeHolder vertexData = null;
             SceneNode rootNode = new SceneNode();
             List<Texture2D> textureList = new List<Texture2D>();
-            List<ushort> materialRemapIndexs = new List<ushort>();
             List<WEditor.Common.Nintendo.J3D.Material> materialList = null;
             List<SkeletonBone> joints = new List<SkeletonBone>();
             DrawInfo drawInfo = null;
@@ -109,7 +108,7 @@ namespace WEditor.WindWaker.Loaders
 
             // Read the Header
             int magic = reader.ReadInt32(); // J3D1, J3D2, etc
-            if(magic != 1244873778)
+            if (magic != 1244873778)
             {
                 WLog.Warning(LogCategory.ModelLoading, null, "Attempted to load model with invalid magic, ignoring!");
                 return null;
@@ -158,7 +157,7 @@ namespace WEditor.WindWaker.Loaders
                         break;
                     // MATERIAL - Stores materials (which describes how textures, etc. are drawn)
                     case "MAT3":
-                        materialList = LoadMAT3SectionFromStream(reader, chunkStart, chunkSize, materialRemapIndexs);
+                        materialList = LoadMAT3SectionFromStream(reader, chunkStart, chunkSize);
                         break;
                     // TEXTURES - Stores binary texture images.
                     case "TEX1":
@@ -195,7 +194,7 @@ namespace WEditor.WindWaker.Loaders
 
             // We're going to do something a little crazy - we're going to read the scene view and apply textures to meshes (for now)
             Material curMat = null;
-            AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref curMat, materialList, materialRemapIndexs);
+            AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref curMat, materialList);
 
 
             List<SkeletonBone> skeleton = new List<SkeletonBone>();
@@ -233,7 +232,7 @@ namespace WEditor.WindWaker.Loaders
                         bool isWeighted = drawInfo.IsWeighted[drw1Index];
                         BoneWeight weight = new BoneWeight();
 
-                        if(isWeighted)
+                        if (isWeighted)
                         {
                             // Something on this doesn't work for models that actually specify a PositionMatrixIndex.
                             // So... some math is off somewhere and I don't know where for the moment.
@@ -243,14 +242,14 @@ namespace WEditor.WindWaker.Loaders
 
                             // "Much WTFs"
                             ushort offset = 0;
-                            for(ushort e = 0; e < envelopes.indexRemap[drw1Index]; e++)
+                            for (ushort e = 0; e < envelopes.indexRemap[drw1Index]; e++)
                             {
                                 offset += envelopes.numBonesAffecting[e];
                             }
 
                             offset *= 2;
                             Matrix4 finalTransform = Matrix4.Identity;
-                            for(ushort k = 0; k < numBonesAffecting; k++)
+                            for (ushort k = 0; k < numBonesAffecting; k++)
                             {
                                 ushort boneIndex = envelopes.indexRemap[offset + (k * 0x2)];
                                 float boneWeight = envelopes.weights[(offset / 2) + k];
@@ -273,7 +272,7 @@ namespace WEditor.WindWaker.Loaders
 
                             // I think we can just assign full weight to the first bone index and call it good.
                             weight.BoneIndexes = new[] { drawInfo.Indexes[drw1Index] };
-                            weight.BoneWeights = new [] { 1f };
+                            weight.BoneWeights = new[] { 1f };
                         }
 
                         batch.BoneWeights[j] = weight;
@@ -546,31 +545,21 @@ namespace WEditor.WindWaker.Loaders
                 BuildSkeletonRecursive(child, skeleton, rawJoints, parentJointIndex);
         }
 
-        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Material curMaterial, List<Material> materialList, List<ushort> remapIndexList)
+        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Material curMaterial, List<Material> materialList)
         {
-            if (node.Type == HierarchyDataTypes.Material)
+            switch (node.Type)
             {
-                // Don't ask me why this is so complicated. The node.Value has an index into the remapIndexList,
-                // which gives an index into the MaterialList, which finally gives an index into the Textures list.
-                // And no, I dont' know why texIndex is an array.
-                //
-                // Apparently it gets one step more complicated. You then have to take the textureIndex provided by the material
-                // and index into the finalTextureIndex list that comes from the MAT3 section, lol.
-                ushort materialIndex = remapIndexList[node.Value];
-                short textureIndex = materialList[materialIndex].TextureIndexes[0];
+                case HierarchyDataTypes.Material:
+                    curMaterial = materialList[node.Value];
+                    break;
 
-                curMaterial = materialList[materialIndex];
-
-                // Models that don't use textures will have a textureIndex of -1.
-                //if(textureIndex >= 0)
-                //curTexture = textures[textureIndex];
+                case HierarchyDataTypes.Batch:
+                    mesh.SubMeshes[node.Value].Material = curMaterial;
+                    break;
             }
 
-            if (node.Type == HierarchyDataTypes.Batch)
-                mesh.SubMeshes[node.Value].Material = curMaterial;
-
             foreach (var child in node.Children)
-                AssignTextureToMeshRecursive(child, mesh, textures, ref curMaterial, materialList, remapIndexList);
+                AssignTextureToMeshRecursive(child, mesh, textures, ref curMaterial, materialList);
         }
     }
 
