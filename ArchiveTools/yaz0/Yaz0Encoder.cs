@@ -29,18 +29,18 @@ namespace ArchiveTools.yaz0
 
         private static void EncodeYaz0(MemoryStream input, EndianBinaryWriter output)
         {
+            int srcPos = 0;
+            int dstPos = 0;
             byte[] dst = new byte[24]; // 8 codes * 3 bytes maximum per code.
             int dstSize = 0;
             int percent = -1;
 
             int validBitCount = 0;
             byte curCodeByte = 0;
-            int srcPos = 0;
-            int dstPos = 0;
 
             byte[] src = input.ToArray();
 
-            while(srcPos < input.Length)
+            while(srcPos < src.Length)
             {
                 int numBytes, matchPos, srcPosBak;
                 NintendoYaz0Encode(src, srcPos, out numBytes, out matchPos);
@@ -50,6 +50,7 @@ namespace ArchiveTools.yaz0
                     // Straight Copy
                     dst[dstPos] = src[srcPos];
                     srcPos++;
+                    dstPos++;
 
                     // Set flag for straight copy
                     curCodeByte |= (byte)(0x80 >> validBitCount);
@@ -137,24 +138,24 @@ namespace ArchiveTools.yaz0
         /// <param name="srcPos"></param>
         /// <param name="numBytes"></param>
         /// <param name="matchPos"></param>
-        private static void NintendoYaz0Encode(byte[] src, int srcPos, out int numBytes, out int matchPos)
+        private static void NintendoYaz0Encode(byte[] src, int srcPos, out int outNumBytes, out int outMatchPos)
         {
-            //int startPos = srcPos - 0x1000;
-            numBytes = 1;
+            int startPos = srcPos - 0x1000;
+            int numBytes = 1;
 
             // If prevFlag is set, it means that the previous position was determined by the look-ahead try so use
             // that. This is not the best optimization, but apparently Nintendo's choice for speed.
             if(sPrevFlag)
             {
-                matchPos = sMatchPos;
+                outMatchPos = sMatchPos;
                 sPrevFlag = false;
-                numBytes = sNumBytes1;
+                outNumBytes = sNumBytes1;
                 return;
             }
 
             sPrevFlag = false;
             SimpleRLEEncode(src, srcPos + 1, out numBytes, out sMatchPos);
-            matchPos = sMatchPos;
+            outMatchPos = sMatchPos;
 
             // If this position is RLE encoded, then compare to copying 1 byte and next pos (srcPos + 1) encoding.
             if(numBytes >= 3)
@@ -169,13 +170,15 @@ namespace ArchiveTools.yaz0
                     sPrevFlag = true;
                 }
             }
+
+            outNumBytes = numBytes;
         }
 
-        private static void SimpleRLEEncode(byte[] src, int srcPos, out int numBytes, out int matchPos)
+        private static void SimpleRLEEncode(byte[] src, int srcPos, out int outNumBytes, out int outMatchPos)
         {
             int startPos = srcPos - 0x1000;
-            numBytes = 1;
-            matchPos = 0;
+            int numBytes = 1;
+            int matchPos = 0;
 
             if (startPos < 0)
                 startPos = 0;
@@ -199,6 +202,9 @@ namespace ArchiveTools.yaz0
 
             if (numBytes == 2)
                 numBytes = 1;
+
+            outMatchPos = matchPos;
+            outNumBytes = numBytes;
         }
     }
 }
