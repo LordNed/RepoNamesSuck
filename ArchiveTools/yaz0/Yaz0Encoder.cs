@@ -22,13 +22,12 @@ namespace ArchiveTools.yaz0
             // Write 8 bytes padding.
             output.Write((long)0);
 
-            int compressedSize = EncodeYaz0(input, output);
-            Console.WriteLine("Compressed to {0} bytes from input.", compressedSize);
+            EncodeYaz0(input, output);
 
             return output;
         }
 
-        private static int EncodeYaz0(MemoryStream input, EndianBinaryWriter output)
+        private static void EncodeYaz0(MemoryStream input, EndianBinaryWriter output)
         {
             int srcPos = 0;
             int dstPos = 0;
@@ -44,8 +43,8 @@ namespace ArchiveTools.yaz0
             while(srcPos < src.Length)
             {
                 int numBytes, matchPos, srcPosBak;
-                numBytes = NintendoYaz0Encode(src, srcPos, out matchPos);
-                Console.WriteLine("srcPos {0} numBytes {1} matchPos {2}", srcPos, numBytes, matchPos);
+                NintendoYaz0Encode(src, srcPos, out numBytes, out matchPos);
+
                 if(numBytes < 3)
                 {
                     // Straight Copy
@@ -59,7 +58,7 @@ namespace ArchiveTools.yaz0
                 else
                 {
                     // RLE part
-                    uint dist = (uint)(srcPos - matchPos - 1);
+                    int dist = srcPos - matchPos - 1;
                     byte byte1, byte2, byte3;
 
                     // Requires a 3 byte encoding
@@ -98,10 +97,8 @@ namespace ArchiveTools.yaz0
                     // And then any bytes in the dst buffer.
                     for(int i = 0; i < dstPos; i++)
                         output.Write(dst[i]);
-
-                    output.Flush();                    
+                    
                     dstSize += dstPos + 1;
-
                     srcPosBak = srcPos;
                     curCodeByte = 0;
                     validBitCount = 0;
@@ -129,8 +126,6 @@ namespace ArchiveTools.yaz0
                 validBitCount = 0;
                 dstPos = 0;
             }
-
-            return dstSize;
         }
 
         static int sNumBytes1, sMatchPos;
@@ -143,7 +138,7 @@ namespace ArchiveTools.yaz0
         /// <param name="srcPos"></param>
         /// <param name="numBytes"></param>
         /// <param name="matchPos"></param>
-        private static int NintendoYaz0Encode(byte[] src, int srcPos, out int outMatchPos)
+        private static void NintendoYaz0Encode(byte[] src, int srcPos, out int outNumBytes, out int outMatchPos)
         {
             int startPos = srcPos - 0x1000;
             int numBytes = 1;
@@ -154,7 +149,8 @@ namespace ArchiveTools.yaz0
             {
                 outMatchPos = sMatchPos;
                 sPrevFlag = false;
-                return sNumBytes1;
+                outNumBytes = sNumBytes1;
+                return;
             }
 
             sPrevFlag = false;
@@ -164,7 +160,7 @@ namespace ArchiveTools.yaz0
             // If this position is RLE encoded, then compare to copying 1 byte and next pos (srcPos + 1) encoding.
             if(numBytes >= 3)
             {
-                sNumBytes1 = SimpleRLEEncode(src, srcPos + 1, out sMatchPos);
+                SimpleRLEEncode(src, srcPos + 1, out sNumBytes1, out sMatchPos);
 
                 // If the next position encoding is +2 longer than current position, choose it.
                 // This does not gurantee the best optimization, but fairly good optimization with speed.
@@ -175,10 +171,10 @@ namespace ArchiveTools.yaz0
                 }
             }
 
-            return numBytes;
+            outNumBytes = numBytes;
         }
 
-        private static int SimpleRLEEncode(byte[] src, int srcPos, out int outMatchPos)
+        private static void SimpleRLEEncode(byte[] src, int srcPos, out int outNumBytes, out int outMatchPos)
         {
             int startPos = srcPos - 0x1000;
             int numBytes = 1;
@@ -204,11 +200,11 @@ namespace ArchiveTools.yaz0
                 }
             }
 
-            outMatchPos = matchPos;
             if (numBytes == 2)
                 numBytes = 1;
 
-            return numBytes;
+            outMatchPos = matchPos;
+            outNumBytes = numBytes;
         }
     }
 }
