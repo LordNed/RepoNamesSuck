@@ -225,16 +225,8 @@ namespace WEditor.Rendering
                     
                     while (bone != null)
                     {
-
-                        //Vector3 scaledPos = Vector3.Multiply(bone.Translation, bone.Scale); // Tried to scale position to see if that'd help
-                        //Vector3 rotatedPos = Vector3.Transform(bone.Translation, bone.Parent.Rotation);
-                        //Vector3 jntTrans = bone.Parent.Translation + rotatedPos;
-
-                        //Quaternion jntRot = bone.Rotation * bone.Parent.Rotation;
-                        //jntRot.Normalize();
-
                         // Also tried adding a Matrix4.CreateScale which should scale the whole thing?
-                        cumulativeTransform = Matrix4.CreateTranslation(bone.Translation) * Matrix4.CreateScale(1f) * cumulativeTransform;
+                        cumulativeTransform = Matrix4.CreateScale(bone.Scale) * Matrix4.CreateFromQuaternion(bone.Rotation) * Matrix4.CreateTranslation(bone.Translation) * cumulativeTransform;
                         bone = bone.Parent;
                     }
 
