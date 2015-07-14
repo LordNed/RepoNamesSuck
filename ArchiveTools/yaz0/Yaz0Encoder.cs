@@ -184,10 +184,10 @@ namespace ArchiveTools.yaz0
                 startPos = 0;
 
             // Search backwards through the stream for an already encoded bit.
-            for(int i = 0; i < srcPos; i++)
+            for(int i = startPos; i < srcPos; i++)
             {
-                int j = 0;
-                for(; j < src.Length-srcPos; j++)
+                int j;
+                for(j = 0; j < src.Length-srcPos; j++)
                 {
                     if (src[i + j] != src[j + srcPos])
                         break;
