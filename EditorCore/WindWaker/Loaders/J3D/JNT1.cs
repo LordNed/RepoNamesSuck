@@ -49,11 +49,18 @@ namespace WEditor.WindWaker.Loaders
                 for (int f = 0; f < 3; f++)
                     bone.Scale[f] = reader.ReadSingle();
 
-                Vector3 boneRot = new Vector3();
+                Vector3 eulerAngles = new Vector3();
                 for (int f = 0; f < 3; f++)
-                    boneRot[f] = reader.ReadInt16() * (180 / 32786f);
+                    eulerAngles[f] = (reader.ReadInt16() * (180 / 32786f));
 
-                bone.Rotation = Quaternion.FromAxisAngle(boneRot, 0);
+                Quaternion xAxis = Quaternion.FromAxisAngle(new Vector3(1, 0, 0), eulerAngles.X * MathE.Deg2Rad);
+                Quaternion yAxis = Quaternion.FromAxisAngle(new Vector3(0, 1, 0), eulerAngles.Y * MathE.Deg2Rad);
+                Quaternion zAxis = Quaternion.FromAxisAngle(new Vector3(0, 0, 1), eulerAngles.Z * MathE.Deg2Rad);
+
+                // Swizzling to the ZYX order seems to be the right one.
+                Quaternion finalRot = zAxis * yAxis * xAxis;
+
+                bone.Rotation = finalRot;
                 Debug.Assert(reader.ReadUInt16() == 0xFFFF); // Padding
                 for (int f = 0; f < 3; f++)
                     bone.Translation[f] = reader.ReadSingle();
