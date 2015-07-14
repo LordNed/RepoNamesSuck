@@ -234,7 +234,7 @@ namespace WEditor.Rendering
                         //jntRot.Normalize();
 
                         // Also tried adding a Matrix4.CreateScale which should scale the whole thing?
-                        cumulativeTransform = Matrix4.CreateScale(bone.Scale) * Matrix4.CreateTranslation(bone.Translation) * Matrix4.CreateFromQuaternion(bone.Rotation) * cumulativeTransform;
+                        cumulativeTransform = Matrix4.CreateTranslation(bone.Translation) * Matrix4.CreateScale(1f) * cumulativeTransform;
                         bone = bone.Parent;
                     }
 
@@ -251,14 +251,14 @@ namespace WEditor.Rendering
                 for (int v = 0; v < vertices.Length; v++)
                 {
                     BoneWeight weights = batch.BoneWeights[v];
-                    Matrix4 finalMatrix = Matrix4.Identity;
+                    Matrix4 finalMatrix = Matrix4.Zero;
 
                     for (int w = 0; w < weights.BoneIndexes.Length; w++)
                     {
                         Matrix4 boneInfluence = boneTransforms[weights.BoneIndexes[w]];
                         float weight = weights.BoneWeights[w];
 
-                        finalMatrix = (boneInfluence * weight) * finalMatrix;
+                        finalMatrix = (boneInfluence * weight) + finalMatrix;
                     }
 
                     vertices[v] = Vector3.TransformPosition(vertices[v], finalMatrix);
