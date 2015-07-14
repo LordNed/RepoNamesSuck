@@ -93,6 +93,8 @@ namespace WEditor.Rendering
             get { return m_height; }
         }
 
+        public string Name { get; set; }
+
         private TextureWrapMode m_wrapS;
         private TextureWrapMode m_wrapT;
         private TextureMinFilter m_minFilter;
@@ -172,6 +174,11 @@ namespace WEditor.Rendering
             m_textureBuffer = -1;
 
             m_disposed = true;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

@@ -28,12 +28,13 @@ namespace WEditor.WindWaker.Loaders
                 texture.Load(reader, chunkStart + 0x20, t);
 
                 Texture2D texture2D = new Texture2D(texture.Width, texture.Height);
+                texture2D.Name = stringTable[t];
                 texture2D.PixelData = texture.GetData();
                 textureList.Add(texture2D);
 
 
                 string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                texture.SaveImageToDisk(executionPath + "/TextureDump/" + string.Format("[{2}]_{0}_{1}.png", stringTable[t], texture.Format, t));
+                texture.SaveImageToDisk(executionPath + "/TextureDump/" + string.Format("{0}_({1}-{2}).png", stringTable[t], texture.Format, t));
             }
 
             return textureList;
