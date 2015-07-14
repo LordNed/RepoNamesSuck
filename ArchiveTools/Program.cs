@@ -13,15 +13,30 @@ namespace ArchiveTools
     {
         static void Main(string[] args)
         {
-            using(EndianBinaryReader reader = new EndianBinaryReader(File.Open(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage.arc", FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Endian.Big))
+            Console.WriteLine("Decompressing stage.arc");
+            using(EndianBinaryReader reader = new EndianBinaryReader(File.Open(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage_compressed.arc", FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Endian.Big))
             {
                 var outputStream = Yaz0Decoder.Decode(reader);
 
-                var fileStream = File.Create(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage_decompressed.arc");
+                using(var decompressedArchive = File.Create(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage_decompressed.arc"))
+                {
                 outputStream.Seek(0, SeekOrigin.Begin);
-                outputStream.CopyTo(fileStream);
-                fileStream.Close();
+                outputStream.CopyTo(decompressedArchive);
+                decompressedArchive.Close();
+                }
+
             }
+
+            //Console.WriteLine("Compressing stage_decompressed.arc");
+            //byte[] data = File.ReadAllBytes(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage_decompressed.arc");
+            //var compressedArc = Yaz0Encoder.Encode(new MemoryStream(data));
+
+            //using(var compressedARchive = File.Create(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage_compressed.arc"))
+            //{
+            //    compressedArc.Seek(0, SeekOrigin.Begin);
+            //    compressedArc.BaseStream.CopyTo(compressedARchive);
+            //    compressedARchive.Close();
+            //}
         }
     }
 }

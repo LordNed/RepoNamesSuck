@@ -1,8 +1,10 @@
 ﻿using GameFormatReader.Common;
 using System.IO;
 
+// Port of thakis' yaz0dec.cpp to C# for use in C# applications. 
 namespace ArchiveTools.yaz0
 {
+ 
     public static class Yaz0Decoder
     {
         /// <summary>
