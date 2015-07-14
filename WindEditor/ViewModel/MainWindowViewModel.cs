@@ -62,7 +62,7 @@ namespace WindEditor.UI
             EntityOutliner = new EntityOutlinerViewModel(this);
             OutputLog = new OutputLogViewModel();
             InspectorView = new InspectorViewModel();
-            WindowTitle = "Wind Editor";
+            UpdateWindowTitle();
         }
 
         void OnEditorPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -70,15 +70,21 @@ namespace WindEditor.UI
             if (e.PropertyName == "LoadedScene")
             {
                 SceneView.SetMap(m_editorCore.LoadedScene);
+                UpdateWindowTitle();
+
                 OnPropertyChanged("LoadedScene");
-                if (m_editorCore.LoadedScene == null)
-                {
-                    WindowTitle = "Wind Editor";
-                }
-                else
-                {
-                    WindowTitle = string.Format("{0} - Wind Editor", m_editorCore.LoadedScene.Name);
-                }
+            }
+        }
+
+        private void UpdateWindowTitle()
+        {
+            if (m_editorCore == null || m_editorCore.LoadedScene == null)
+            {
+                WindowTitle = "Wind Editor";
+            }
+            else
+            {
+                WindowTitle = string.Format("{0} - Wind Editor", m_editorCore.LoadedScene.Name);
             }
         }
 
