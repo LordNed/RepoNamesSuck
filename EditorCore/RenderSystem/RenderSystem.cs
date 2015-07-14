@@ -140,9 +140,9 @@ namespace WEditor.Rendering
                         continue;
 
                     var meshObj = obj as MeshSceneComponent;
-                    if(meshObj != null)
+                    if (meshObj != null)
                     {
-                        DrawMesh(meshObj.Mesh, camera, roomOffset); 
+                        DrawMesh(meshObj.Mesh, camera, roomOffset);
                     }
                 }
             }
@@ -218,63 +218,29 @@ namespace WEditor.Rendering
 
                 // Before we draw it, we're going to do something incredibly stupid, and try to add bone support.
                 Matrix4[] boneTransforms = new Matrix4[mesh.Skeleton.Count];
-                for(int i = 0; i < mesh.Skeleton.Count; i++)
+                for (int i = 0; i < mesh.Skeleton.Count; i++)
                 {
                     SkeletonBone bone = mesh.Skeleton[i];
-                    if (bone.Parent == null)
-                        continue;
+                    Matrix4 cumulativeTransform = Matrix4.Identity;
+                    
+                    while (bone != null)
+                    {
 
-                    Vector3 rotatedPos = Vector3.Transform(bone.Translation, bone.Parent.Rotation);
-                    Vector3 jntTrans = bone.Parent.Translation + rotatedPos;
-                    Quaternion jntRot = bone.Rotation * bone.Parent.Rotation;
-                    jntRot.Normalize();
+                        //Vector3 scaledPos = Vector3.Multiply(bone.Translation, bone.Scale); // Tried to scale position to see if that'd help
+                        //Vector3 rotatedPos = Vector3.Transform(bone.Translation, bone.Parent.Rotation);
+                        //Vector3 jntTrans = bone.Parent.Translation + rotatedPos;
 
-                    boneTransforms[i] = boneTransforms[i] * Matrix4.CreateTranslation(jntTrans) * Matrix4.CreateFromQuaternion(jntRot);
+                        //Quaternion jntRot = bone.Rotation * bone.Parent.Rotation;
+                        //jntRot.Normalize();
+
+                        // Also tried adding a Matrix4.CreateScale which should scale the whole thing?
+                        cumulativeTransform = Matrix4.CreateScale(bone.Scale) * Matrix4.CreateTranslation(bone.Translation) * Matrix4.CreateFromQuaternion(bone.Rotation) * cumulativeTransform;
+                        bone = bone.Parent;
+                    }
+
+
+                    boneTransforms[i] = cumulativeTransform;
                 }
-
-                //SkeletonBone[] boneCopy = new SkeletonBone[mesh.Skeleton.Count];
-                //for (int s = 0; s < boneCopy.Length; s++)
-                //    boneCopy[s] = new SkeletonBone(mesh.Skeleton[s]);
-
-                //// For each bone, multiply it by its parent rotation/translation to go get its final position.
-                //for (int bone = 0; bone < boneCopy.Length; bone++)
-                //{
-                //    SkeletonBone joint = boneCopy[bone];
-                //    if (joint.Parent != null)
-                //    {
-                //        Vector3 rotatedPos = Vector3.Transform(joint.Translation, joint.Parent.Rotation);
-                //        joint.Translation = joint.Parent.Translation + rotatedPos;
-                //        joint.Rotation = joint.Rotation * joint.Parent.Rotation;
-                //        joint.Rotation.Normalize();
-                //    }
-                //}
-
-                //// Each boneCopy is now in it's final position, so we can apply that to the vertexes based on their bone weighting.
-                //// However, vertex positions have already been uploaded once, so we're uh... going to hack it and re-upload them.
-                //Vector3[] origVerts = batch.Vertices;
-                //Vector3[] vertices = new Vector3[origVerts.Length];
-                //Array.Copy(origVerts, vertices, origVerts.Length);
-
-                //for (int v = 0; v < vertices.Length; v++)
-                //{
-                //    BoneWeight weights = batch.BoneWeights[v];
-                //    Matrix4 translationMtx = Matrix4.Identity;
-                //    Matrix4 rotationMtx = Matrix4.Identity;
-
-                //    for (int w = 0; w < weights.BoneIndexes.Length; w++)
-                //    {
-                //        SkeletonBone bone = boneCopy[weights.BoneIndexes[w]];
-                //        Matrix4 boneInfluence = boneTransforms[weights.BoneIndexes[w]];
-                //        float weight = weights.BoneWeights[w];
-
-
-                //        translationMtx = Matrix4.CreateTranslation(bone.Translation) * weight * translationMtx;
-                //        rotationMtx = Matrix4.CreateFromQuaternion(bone.Rotation) * weight * rotationMtx;
-                //    }
-
-                //    Matrix4 finalMatrix = rotationMtx * translationMtx;
-                //    vertices[v] = Vector3.TransformPosition(vertices[v], finalMatrix);
-                //}
 
                 // Each boneCopy is now in it's final position, so we can apply that to the vertexes based on their bone weighting.
                 // However, vertex positions have already been uploaded once, so we're uh... going to hack it and re-upload them.
@@ -292,7 +258,7 @@ namespace WEditor.Rendering
                         Matrix4 boneInfluence = boneTransforms[weights.BoneIndexes[w]];
                         float weight = weights.BoneWeights[w];
 
-                        finalMatrix = finalMatrix + (boneInfluence * weight);
+                        finalMatrix = (boneInfluence * weight) * finalMatrix;
                     }
 
                     vertices[v] = Vector3.TransformPosition(vertices[v], finalMatrix);
