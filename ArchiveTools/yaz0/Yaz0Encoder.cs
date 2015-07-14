@@ -78,7 +78,7 @@ namespace ArchiveTools.yaz0
                     // 2 byte encoding
                     else
                     {
-                        byte1 = (byte)(((numBytes - 2) << 4) | (dist >> 8));
+                        byte1 = (byte)((uint)((numBytes - 2) << 4) | (dist >> 8));
                         byte2 = (byte)(dist & 0xFF);
                         dst[dstPos++] = byte1;
                         dst[dstPos++] = byte2;
@@ -154,7 +154,7 @@ namespace ArchiveTools.yaz0
             }
 
             sPrevFlag = false;
-            SimpleRLEEncode(src, srcPos + 1, out numBytes, out sMatchPos);
+            numBytes = SimpleRLEEncode(src, srcPos, out sMatchPos);
             outMatchPos = sMatchPos;
 
             // If this position is RLE encoded, then compare to copying 1 byte and next pos (srcPos + 1) encoding.
