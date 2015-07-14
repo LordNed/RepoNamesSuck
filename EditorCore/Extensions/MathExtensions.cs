@@ -5,8 +5,8 @@ namespace WEditor
 {
     public static class MathE
     {
-        public const double Rad2Deg = 180f / Math.PI;
-        public const double Deg2Rad = Math.PI / 180f;
+        public const float Rad2Deg = (float)(180.0 / Math.PI);
+        public const float Deg2Rad = (float)(Math.PI / 180.0);
 
         /// <summary>
         /// Multiplies the rotation by the vector and returns the rotated vector. Useful for converting from
