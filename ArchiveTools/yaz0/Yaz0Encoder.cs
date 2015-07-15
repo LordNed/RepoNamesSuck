@@ -32,8 +32,7 @@ namespace ArchiveTools.yaz0
             int srcPos = 0;
             int dstPos = 0;
             byte[] dst = new byte[24]; // 8 codes * 3 bytes maximum per code.
-            int dstSize = 0;
-            int percent = -1;
+            int progressPercent = -1;
 
             int validBitCount = 0;
             byte curCodeByte = 0;
@@ -42,9 +41,9 @@ namespace ArchiveTools.yaz0
 
             while(srcPos < src.Length)
             {
-                int numBytes, matchPos, srcPosBak;
+                int numBytes, matchPos;
                 NintendoYaz0Encode(src, srcPos, out numBytes, out matchPos);
-
+                Console.WriteLine("srcPos {0} numBytes {1} matchPos {2}", srcPos, numBytes, matchPos);
                 if(numBytes < 3)
                 {
                     // Straight Copy
@@ -58,7 +57,7 @@ namespace ArchiveTools.yaz0
                 else
                 {
                     // RLE part
-                    int dist = srcPos - matchPos - 1;
+                    uint dist = (uint)(srcPos - matchPos - 1);
                     byte byte1, byte2, byte3;
 
                     // Requires a 3 byte encoding
@@ -97,17 +96,18 @@ namespace ArchiveTools.yaz0
                     // And then any bytes in the dst buffer.
                     for(int i = 0; i < dstPos; i++)
                         output.Write(dst[i]);
-                    
-                    dstSize += dstPos + 1;
-                    srcPosBak = srcPos;
+
+                    output.Flush();                    
+
                     curCodeByte = 0;
                     validBitCount = 0;
                     dstPos = 0;
                 }
 
-                if((srcPos + 1) * 100/input.Length != percent)
+                if((srcPos + 1) * 100/input.Length != progressPercent)
                 {
-                    percent = (int)((srcPos + 1) * 100 / input.Length);
+                    progressPercent = (int)((srcPos + 1) * 100 / input.Length);
+                    Console.WriteLine("progress: " + progressPercent);
                 }
             }
 
@@ -121,7 +121,6 @@ namespace ArchiveTools.yaz0
                 for (int i = 0; i < dstPos; i++)
                     output.Write(dst[i]);
 
-                dstSize += dstPos + 1;
                 curCodeByte = 0;
                 validBitCount = 0;
                 dstPos = 0;
@@ -154,7 +153,7 @@ namespace ArchiveTools.yaz0
             }
 
             sPrevFlag = false;
-            numBytes = SimpleRLEEncode(src, srcPos, out sMatchPos);
+            SimpleRLEEncode(src, srcPos, out numBytes, out sMatchPos);
             outMatchPos = sMatchPos;
 
             // If this position is RLE encoded, then compare to copying 1 byte and next pos (srcPos + 1) encoding.
@@ -200,10 +199,10 @@ namespace ArchiveTools.yaz0
                 }
             }
 
+            outMatchPos = matchPos;
             if (numBytes == 2)
                 numBytes = 1;
 
-            outMatchPos = matchPos;
             outNumBytes = numBytes;
         }
     }
