@@ -11,32 +11,235 @@ namespace ArchiveTools
 {
     class Program
     {
+        private static bool m_wasError;
+        private static bool m_verboseOutput;
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Decompressing stage.arc");
-            using(EndianBinaryReader reader = new EndianBinaryReader(File.Open(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage_compressed.arc", FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Endian.Big))
+            if (args.Length == 0)
             {
-                var outputStream = Yaz0Decoder.Decode(reader);
+                Console.WriteLine("===== RARC Extractor =====");
+                Console.WriteLine("        Written by        ");
+                Console.WriteLine("Lord Ned & Sage of Mirrors");
+                Console.WriteLine("  yaz0 decoder by thakis  ");
+                Console.WriteLine(" yaz0 encoder by shevious ");
+                Console.WriteLine("   Built on the backs of  ");
+                Console.WriteLine(" those who come before us ");
+                Console.WriteLine("==========================");
 
-                using(var decompressedArchive = File.Create(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage_decompressed.arc"))
-                {
-                outputStream.Seek(0, SeekOrigin.Begin);
-                outputStream.CopyTo(decompressedArchive);
-                decompressedArchive.Close();
-                }
-
+                Console.WriteLine("usage: rarcExtract <list of archives or folders separated by space>");
+                Console.WriteLine("arguments: -help, -verbose");
+                Console.WriteLine("Press any key to continue.");
+                Console.ReadKey();
+                return;
             }
 
-            //Console.WriteLine("Compressing stage_decompressed.arc");
-            //byte[] data = File.ReadAllBytes(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage_decompressed.arc");
-            //var compressedArc = Yaz0Encoder.Encode(new MemoryStream(data));
+            bool displayedHelp = ProcessArguments(args, out m_verboseOutput);
 
-            //using(var compressedARchive = File.Create(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\stage_compressed.arc"))
+            if (displayedHelp)
+            {
+                Console.ReadKey();
+                return;
+            }
+
+            string rootFolder = GetRootFolderForArguments(args);
+            rootFolder += "/extracted_archives/";
+            Directory.CreateDirectory(rootFolder);
+
+            // Users can drop in either archives or folders (which presumably contain archives). For each given
+            // argument on the command line, determine if it's a directory, or a file and handle appropriately.
+            foreach (string arg in args)
+            {
+                if (arg.StartsWith("-"))
+                    continue;
+
+                try
+                {
+                    if (Directory.Exists(arg))
+                    {
+                        RecursivelyExtractArchivesFromDir(rootFolder, arg);
+                    }
+                    else if (File.Exists(arg))
+                    {
+                        ExtractArchive(rootFolder, arg);
+                    }
+                    
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.ToString());
+                    m_wasError = true;
+                }
+                
+            }
+
+            if (m_wasError)
+            {
+                Console.WriteLine("Caught exception while extracting files. See above for more information if possible.");
+                Console.ReadKey();
+            }
+            //Console.WriteLine("Decompressing stage.arc");
+            //using (EndianBinaryReader reader = new EndianBinaryReader(File.Open(@"C:\Wind Waker\Archive Compression Tests\Stage.arc", FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Endian.Big))
+            //{
+            //    var outputStream = Yaz0Decoder.Decode(reader);
+
+            //    using (var decompressedArchive = File.Create(@"C:\Wind Waker\Archive Compression Tests\Stage_Decompressed.arc"))
+            //    {
+            //        outputStream.Seek(0, SeekOrigin.Begin);
+            //        outputStream.CopyTo(decompressedArchive);
+            //        decompressedArchive.Close();
+            //    }
+
+            //}
+            //Console.WriteLine("Finished.");
+            //Yaz0 yaz0 = new Yaz0();
+
+
+            //Console.WriteLine("Compressing Stage.arc");
+            //byte[] data = File.ReadAllBytes(@"C:\Wind Waker\Archive Compression Tests\Stage_Decompressed_4Managed.arc");
+            //var compressedArc = yaz0.Encode(new MemoryStream(data));
+
+            //using (var compressedArchive = File.Create(@"C:\Wind Waker\Archive Compression Tests\Stage_CompressedByManaged.arc"))
             //{
             //    compressedArc.Seek(0, SeekOrigin.Begin);
-            //    compressedArc.BaseStream.CopyTo(compressedARchive);
-            //    compressedARchive.Close();
+            //    compressedArc.BaseStream.CopyTo(compressedArchive);
+            //    compressedArchive.Close();
             //}
+        }
+
+        private static void ExtractArchive(string outputFolder, string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("Warning: Tried to extract archive from filePath \"{0}\" but not a file!", filePath);
+                return;
+            }
+
+            if (m_verboseOutput)
+                Console.Write("Extracting archive {0}... ", Path.GetFileName(filePath));
+
+            try
+            {
+                using (EndianBinaryReader fileReader = new EndianBinaryReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Endian.Big))
+                {
+                    // Read the first 4 bytes to see if it's a compressed file (Yaz0) or a plain RARC file.
+                    uint fileMagic = fileReader.ReadUInt32();
+                    fileReader.BaseStream.Position = 0L; // Reset to the start so that the next thing to read it is at the start like it expects.
+
+                    MemoryStream decompressedFile = null;
+
+                    if (fileMagic == 0x59617A30) // Yaz0
+                    {
+                        if (m_verboseOutput)
+                            Console.Write("Archive compressed with Yaz0, decompressing... ");
+
+                        Yaz0 yaz0 = new Yaz0();
+                        decompressedFile = yaz0.Decode(fileReader);
+                    }
+                    else if (fileMagic == 0x52415243) // RARC
+                    {
+                        // Copy the fileReader stream to a new memorystream.
+                        decompressedFile = new MemoryStream((int)fileReader.BaseStream.Length);
+                        fileReader.BaseStream.CopyTo(decompressedFile);
+                    }
+
+                    if (decompressedFile == null)
+                    {
+                        if (m_verboseOutput)
+                            Console.WriteLine("Skipping archive, not a Yaz0 or RARC file.");
+                        return;
+                    }
+
+                    // Decompress the archive into a directory named to match the ArchiveName.
+                    Directory.CreateDirectory(outputFolder + Path.GetFileNameWithoutExtension(filePath));
+
+                    // ToDo: Implement ARC dumping.
+                    Console.WriteLine("Completed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Caught Exception: " + ex.ToString());
+                m_wasError = true;
+            }
+        }
+
+        private static void RecursivelyExtractArchivesFromDir(string outputFolder, string dir)
+        {
+            DirectoryInfo dirInfo = new DirectoryInfo(dir);
+
+            // Replicate our current directory into the output folder.
+            outputFolder += dirInfo.Name + "/";
+            foreach (var subDir in dirInfo.GetDirectories())
+            {
+                RecursivelyExtractArchivesFromDir(outputFolder, subDir.FullName);
+            }
+
+            foreach (var subFile in dirInfo.GetFiles())
+            {
+                ExtractArchive(outputFolder, subFile.FullName);
+            }
+        }
+
+        private static string GetRootFolderForArguments(string[] args)
+        {
+            // Get a list of the arguments without exta parameters.
+            List<string> argList = new List<string>(args);
+            argList.RemoveAll(x => x.StartsWith("-"));
+
+            if (argList.Count == 0)
+                return string.Empty;
+
+            // Fix up slashes to always use the same separator.
+            for (int i = 0; i < argList.Count; i++)
+            {
+                argList[i] = argList[i].Replace("\\", "/");
+            }
+
+            return FindCommonPath("/", argList);
+        }
+
+        private static bool ProcessArguments(string[] args, out bool verboseOutput)
+        {
+            List<string> argList = new List<string>(args);
+
+            verboseOutput = argList.Contains("-verbose");
+            if (argList.Contains("-help"))
+            {
+                Console.WriteLine("Documentation:");
+                Console.WriteLine("-verbose");
+                Console.WriteLine("\tDisplays verbose output and percentages of extraction. Can be slow on large numbers of files.");
+                return true;
+            }
+
+            return false;
+        }
+
+        public static string FindCommonPath(string separator, List<string> paths)
+        {
+            string CommonPath = String.Empty;
+            List<string> SeparatedPath = paths
+                .First(str => str.Length == paths.Max(st2 => st2.Length))
+                .Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+
+            foreach (string PathSegment in SeparatedPath.AsEnumerable())
+            {
+                if (CommonPath.Length == 0 && paths.All(str => str.StartsWith(PathSegment)))
+                {
+                    CommonPath = PathSegment;
+                }
+                else if (paths.All(str => str.StartsWith(CommonPath + separator + PathSegment)))
+                {
+                    CommonPath += separator + PathSegment;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return CommonPath;
         }
     }
 }
