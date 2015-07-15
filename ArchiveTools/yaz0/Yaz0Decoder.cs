@@ -1,11 +1,15 @@
 ﻿using GameFormatReader.Common;
 using System.IO;
 
-// Port of thakis' yaz0dec.cpp to C# for use in C# applications. 
 namespace ArchiveTools.yaz0
 {
- 
-    public static class Yaz0Decoder
+    /// <summary>
+    /// Compress and Decompress Yaz0 encoded files.
+    /// 
+    /// Port of thakis' yaz0dec.cpp and shevious' yaz0enc.cpp for C#. Minor code cleanup in 2015 by Lord Ned (@LordNed) but otherwise
+    /// unmodified versions of thakis' and shevious' work. 
+    /// </summary>
+    public partial class Yaz0
     {
         /// <summary>
         /// Decode the specified stream as a Yaz0 encoded file and return the decoded data as a MemoryStream.
@@ -13,7 +17,7 @@ namespace ArchiveTools.yaz0
         /// </summary>
         /// <param name="stream">Stream to read data from.</param>
         /// <returns>Decoded file as <see cref="MemoryStream"/></returns>
-        public static MemoryStream Decode(EndianBinaryReader stream)
+        public MemoryStream Decode(EndianBinaryReader stream)
         {
             // 16 byte Header
             if (stream.ReadUInt32() != 0x59617A30) // "Yaz0" Magic
@@ -23,7 +27,6 @@ namespace ArchiveTools.yaz0
 
             int uncompressedSize = stream.ReadInt32();
             stream.ReadBytes(8); // Padding
-
 
             byte[] output = new byte[uncompressedSize];
             int destPos = 0;

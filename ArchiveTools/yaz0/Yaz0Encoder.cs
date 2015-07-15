@@ -1,17 +1,29 @@
 ﻿using GameFormatReader.Common;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArchiveTools.yaz0
 {
-    public static class Yaz0Encoder
+    /// <summary>
+    /// Compress and Decompress Yaz0 encoded files.
+    /// 
+    /// Port of thakis' yaz0dec.cpp and shevious' yaz0enc.cpp for C#. Minor code cleanup in 2015 by Lord Ned (@LordNed) but otherwise
+    /// unmodified versions of thakis' and shevious' work. 
+    /// </summary>
+    public partial class Yaz0
     {
-        public static EndianBinaryWriter Encode(MemoryStream input)
+        /// <summary>
+        /// Incode the data in the specified MemoryStream into a yaz0 compressed file.
+        /// </summary>
+        /// <param name="input">Data to be compressed.</param>
+        /// <returns>A stream filled with the written data of the yaz0 compressed file.</returns>
+        public EndianBinaryWriter Encode(MemoryStream input)
         {
+            if (input == null)
+                throw new ArgumentNullException("input", "input MemoryStream should not be null!");
+            if (input.Length == 0)
+                throw new ArgumentNullException("input", "input MemoryStream is empty!");
+
             // Write 'Yaz0' Header
             EndianBinaryWriter output = new EndianBinaryWriter(new MemoryStream(), Endian.Big);
             output.Write(0x59617A30);
@@ -43,7 +55,6 @@ namespace ArchiveTools.yaz0
             {
                 int numBytes, matchPos;
                 NintendoYaz0Encode(src, srcPos, out numBytes, out matchPos);
-                Console.WriteLine("srcPos {0} numBytes {1} matchPos {2}", srcPos, numBytes, matchPos);
                 if(numBytes < 3)
                 {
                     // Straight Copy
@@ -107,7 +118,6 @@ namespace ArchiveTools.yaz0
                 if((srcPos + 1) * 100/input.Length != progressPercent)
                 {
                     progressPercent = (int)((srcPos + 1) * 100 / input.Length);
-                    Console.WriteLine("progress: " + progressPercent);
                 }
             }
 
