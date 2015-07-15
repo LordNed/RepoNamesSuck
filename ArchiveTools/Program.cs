@@ -1,11 +1,10 @@
-﻿using ArchiveTools.yaz0;
+﻿using ArchiveTools.rarc;
+using ArchiveTools.yaz0;
 using GameFormatReader.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArchiveTools
 {
@@ -16,6 +15,16 @@ namespace ArchiveTools
 
         static void Main(string[] args)
         {
+            // Unpack stuff.
+            RARC rarc = new RARC();
+            using(EndianBinaryReader reader = new EndianBinaryReader(File.Open(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\Room0.arc", FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Endian.Big))
+            {
+                rarc.ReadFile(reader);
+            }
+
+
+
+
             if (args.Length == 0)
             {
                 Console.WriteLine("===== RARC Extractor =====");
