@@ -1,10 +1,5 @@
 ﻿using GameFormatReader.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WEditor.Common.Maps;
 using WEditor.FileSystem;
 using WEditor.Maps;
 using WEditor.Rendering;

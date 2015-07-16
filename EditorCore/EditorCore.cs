@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using WEditor.Rendering;
 using WEditor.WindWaker;
 using WEditor.WindWaker.Loaders;
 
