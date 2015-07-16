@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using WEditor.FileSystem;
 
 namespace ArchiveTools
 {
@@ -12,19 +13,10 @@ namespace ArchiveTools
     {
         private static bool m_wasError;
         private static bool m_verboseOutput;
+        private static bool m_printFS;
 
         static void Main(string[] args)
         {
-            // Unpack stuff.
-            RARC rarc = new RARC();
-            using(EndianBinaryReader reader = new EndianBinaryReader(File.Open(@"E:\New_Data_Drive\WindwakerModding\root\res\Stage\Abesso\Room0.arc", FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Endian.Big))
-            {
-                rarc.ReadFile(reader);
-            }
-
-
-
-
             if (args.Length == 0)
             {
                 Console.WriteLine("===== RARC Extractor =====");
@@ -37,13 +29,13 @@ namespace ArchiveTools
                 Console.WriteLine("==========================");
 
                 Console.WriteLine("usage: rarcExtract <list of archives or folders separated by space>");
-                Console.WriteLine("arguments: -help, -verbose");
+                Console.WriteLine("arguments: -help, -verbose -printFS");
                 Console.WriteLine("Press any key to continue.");
                 Console.ReadKey();
                 return;
             }
 
-            bool displayedHelp = ProcessArguments(args, out m_verboseOutput);
+            bool displayedHelp = ProcessArguments(args, out m_verboseOutput, out m_printFS);
 
             if (displayedHelp)
             {
@@ -87,33 +79,39 @@ namespace ArchiveTools
                 Console.WriteLine("Caught exception while extracting files. See above for more information if possible.");
                 Console.ReadKey();
             }
-            //Console.WriteLine("Decompressing stage.arc");
-            //using (EndianBinaryReader reader = new EndianBinaryReader(File.Open(@"C:\Wind Waker\Archive Compression Tests\Stage.arc", FileMode.Open, FileAccess.Read, FileShare.ReadWrite), Endian.Big))
-            //{
-            //    var outputStream = Yaz0Decoder.Decode(reader);
+        }
 
-            //    using (var decompressedArchive = File.Create(@"C:\Wind Waker\Archive Compression Tests\Stage_Decompressed.arc"))
-            //    {
-            //        outputStream.Seek(0, SeekOrigin.Begin);
-            //        outputStream.CopyTo(decompressedArchive);
-            //        decompressedArchive.Close();
-            //    }
+        private static void PrintFileSystem(VirtualFilesystemDirectory root)
+        {
+            Console.WriteLine("Archive Filesystem:");
+            Console.WriteLine(string.Format("{0} (Root)", root.Name));
+            RecursivePrintFS(1, root);
+        }
 
-            //}
-            //Console.WriteLine("Finished.");
-            //Yaz0 yaz0 = new Yaz0();
+        private static void RecursivePrintFS(int indentCount, VirtualFilesystemDirectory dir)
+        {
+            foreach(var node in dir.Children)
+            {
+                string indentStr = string.Empty;
 
+                if (node.Type == NodeType.File)
+                {
+                    for (int i = 0; i <= indentCount; i++)
+                        indentStr += " ";
+                    indentStr += "-";
 
-            //Console.WriteLine("Compressing Stage.arc");
-            //byte[] data = File.ReadAllBytes(@"C:\Wind Waker\Archive Compression Tests\Stage_Decompressed_4Managed.arc");
-            //var compressedArc = yaz0.Encode(new MemoryStream(data));
+                    Console.WriteLine("{0}{1}{2}", indentStr, node.Name, (node as VirtualFilesystemFile).Extension);
+                }
+                else
+                {
+                    for (int i = 0; i < indentCount; i++)
+                        indentStr += " ";
+                    indentStr += "=";
 
-            //using (var compressedArchive = File.Create(@"C:\Wind Waker\Archive Compression Tests\Stage_CompressedByManaged.arc"))
-            //{
-            //    compressedArc.Seek(0, SeekOrigin.Begin);
-            //    compressedArc.BaseStream.CopyTo(compressedArchive);
-            //    compressedArchive.Close();
-            //}
+                    Console.WriteLine("{0}{1}", indentStr, node.Name);
+                    RecursivePrintFS(indentCount + 1, node as VirtualFilesystemDirectory);
+                }
+            }
         }
 
         private static void ExtractArchive(string outputFolder, string filePath)
@@ -150,6 +148,7 @@ namespace ArchiveTools
                         // Copy the fileReader stream to a new memorystream.
                         decompressedFile = new MemoryStream((int)fileReader.BaseStream.Length);
                         fileReader.BaseStream.CopyTo(decompressedFile);
+                        decompressedFile.Position = 0L;
                     }
 
                     if (decompressedFile == null)
@@ -159,8 +158,17 @@ namespace ArchiveTools
                         return;
                     }
 
-                    // Decompress the archive into a directory named to match the ArchiveName.
-                    Directory.CreateDirectory(outputFolder + Path.GetFileNameWithoutExtension(filePath));
+                    // Decompress the archive into the folder. It'll generate a sub-folder with the Archive's ROOT name.
+                    RARC rarc = new RARC();
+                    using (EndianBinaryReader reader = new EndianBinaryReader(decompressedFile, Endian.Big))
+                    {
+                        VirtualFilesystemDirectory root = rarc.ReadFile(reader);
+                        if(m_printFS)
+                            PrintFileSystem(root);
+
+                        // Write it to disk.
+                        root.ExportToDisk(outputFolder);
+                    }
 
                     // ToDo: Implement ARC dumping.
                     Console.WriteLine("Completed.");
@@ -208,11 +216,13 @@ namespace ArchiveTools
             return FindCommonPath("/", argList);
         }
 
-        private static bool ProcessArguments(string[] args, out bool verboseOutput)
+        private static bool ProcessArguments(string[] args, out bool verboseOutput, out bool printFileSystem)
         {
             List<string> argList = new List<string>(args);
 
             verboseOutput = argList.Contains("-verbose");
+            printFileSystem = argList.Contains("-printFS");
+
             if (argList.Contains("-help"))
             {
                 Console.WriteLine("Documentation:");

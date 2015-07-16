@@ -1,6 +1,8 @@
 ﻿using GameFormatReader.Common;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using WEditor.FileSystem;
 
 namespace ArchiveTools.rarc
 {
@@ -15,12 +17,17 @@ namespace ArchiveTools.rarc
             public string Type { get; internal set; }
             /// <summary>Directory name's offset within the string table.</summary>
             public string Name { get; internal set; }
-            /// <summary> String hash of the <see cref="Name"/> field.</summary>
+            /// <summary>Hash of the <see cref="Name"/> field.</summary>
             public ushort NameHashcode { get; internal set; }
             /// <summary>The offset for the first file in this node.</summary>
             public uint FirstFileOffset { get; internal set; }
             /// <summary>The entries within this Node.</summary>
             public FileEntry[] Entries { get; internal set; }
+
+            public override string ToString()
+            {
+                return Name;
+            }
         }
 
         /// <summary>
@@ -46,20 +53,20 @@ namespace ArchiveTools.rarc
             // Non actual struct items
 
             /// <summary>Whether or not this entry is a directory.</summary>
-            public bool IsDirectory { get { return ID == 0xFFF; } }
+            public bool IsDirectory { get { return ID == 0xFFFF; } }
             /// <summary>Node index representing the subdirectory. Will only be non-zero if IsDirectory is true.</summary>
             public uint SubDirIndex { get; internal set; }
+
+            public override string ToString()
+            {
+                return Name;
+            }
         }
 
-        public void ReadFile(EndianBinaryReader reader)
-        {
-            ReadHeader(reader);
-        }
-
-        private void ReadHeader(EndianBinaryReader reader)
+        public VirtualFilesystemDirectory ReadFile(EndianBinaryReader reader)
         {
             if (reader.ReadUInt32() != 0x52415243) // "RARC"
-                throw new InvalidDataException("Invalid Magic, not a Yaz0 File");
+                throw new InvalidDataException("Invalid Magic, not a RARC File");
 
             uint fileSize = reader.ReadUInt32();
             reader.SkipUInt32(); // Unknown
@@ -88,9 +95,19 @@ namespace ArchiveTools.rarc
             }
 
 
-            // Now read the node entries.
+            // Create a virtual directory for every folder within the ARC before we process any of them.
+            List<VirtualFilesystemDirectory> allDirs = new List<VirtualFilesystemDirectory>(nodes.Length);
             foreach(Node node in nodes)
             {
+                VirtualFilesystemDirectory vfDir = new VirtualFilesystemDirectory(node.Name);
+                allDirs.Add(vfDir);
+            }
+
+            for(int k = 0; k < nodes.Length; k++)
+            {
+                Node node = nodes[k];
+                VirtualFilesystemDirectory curDir = allDirs[k];
+
                 for(int i = 0; i < node.Entries.Length; i++)
                 {
                     // Jump to the entry's offset in the file.
@@ -104,6 +121,10 @@ namespace ArchiveTools.rarc
                         Name = ReadStringAtOffset(reader, stringTableOffset, reader.ReadUInt16())
                     };
 
+                    // Skip these ones cause I don't know how computers work.
+                    if (node.Entries[i].Name == "." || node.Entries[i].Name == "..")
+                        continue;
+
                     uint entryDataOffset = reader.ReadUInt32();
                     uint dataSize = reader.ReadUInt32();
 
@@ -111,14 +132,27 @@ namespace ArchiveTools.rarc
                     if(node.Entries[i].IsDirectory)
                     {
                         node.Entries[i].SubDirIndex = entryDataOffset;
+                        var newSubDir = allDirs[(int)entryDataOffset];
+                        curDir.Children.Add(newSubDir);
                     }
                     else
                     {
                         node.Entries[i].Data = reader.ReadBytesAt(dataOffset + entryDataOffset, (int)dataSize);
+
+                        string fileName = Path.GetFileNameWithoutExtension(node.Entries[i].Name);
+                        string extension = Path.GetExtension(node.Entries[i].Name);
+
+                        var vfFileContents = new VirtualFileContents(node.Entries[i].Data);
+                        VirtualFilesystemFile vfFile = new VirtualFilesystemFile(fileName, extension, vfFileContents);
+                        curDir.Children.Add(vfFile);
                     }
                     node.Entries[i].ZeroPadding = reader.ReadUInt32();
                 }
             }
+
+            // The ROOT directory should always be the first node. We don't have access to the node's TYPE anymore
+            // so we're going to assume its always the first one listed.
+            return allDirs.Count > 0 ? allDirs[0] : null;
         }
 
         private string ReadStringAtOffset(EndianBinaryReader reader, uint stringTableOffset, uint offset)
