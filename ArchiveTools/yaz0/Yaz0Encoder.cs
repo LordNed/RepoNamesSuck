@@ -25,7 +25,7 @@ namespace ArchiveTools.yaz0
                 throw new ArgumentNullException("input", "input MemoryStream is empty!");
 
             // Write 'Yaz0' Header
-            EndianBinaryWriter output = new EndianBinaryWriter(new MemoryStream(), Endian.Big);
+            EndianBinaryWriter output = new EndianBinaryWriter(new MemoryStream((int)input.Length), Endian.Big);
             output.Write(0x59617A30);
 
             // Write uncompressed data size.
@@ -108,7 +108,7 @@ namespace ArchiveTools.yaz0
                     for(int i = 0; i < dstPos; i++)
                         output.Write(dst[i]);
 
-                    output.Flush();                    
+                    //output.Flush();                    
 
                     curCodeByte = 0;
                     validBitCount = 0;
@@ -118,6 +118,7 @@ namespace ArchiveTools.yaz0
                 if((srcPos + 1) * 100/input.Length != progressPercent)
                 {
                     progressPercent = (int)((srcPos + 1) * 100 / input.Length);
+                    Console.WriteLine("{0}%", progressPercent);
                 }
             }
 
@@ -185,7 +186,7 @@ namespace ArchiveTools.yaz0
 
         private static void SimpleRLEEncode(byte[] src, int srcPos, out int outNumBytes, out int outMatchPos)
         {
-            int startPos = srcPos - 0x1000;
+            int startPos = srcPos - 0x400;
             int numBytes = 1;
             int matchPos = 0;
 

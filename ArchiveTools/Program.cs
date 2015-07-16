@@ -3,6 +3,7 @@ using ArchiveTools.yaz0;
 using GameFormatReader.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using WEditor.FileSystem;
@@ -17,6 +18,22 @@ namespace ArchiveTools
 
         static void Main(string[] args)
         {
+            Yaz0 newYaz0 = new Yaz0();
+            byte[] unpData = File.ReadAllBytes(@"C:\Users\Matt\Downloads\extracted_pinnaBeach\1-1.sarc");
+            var memStream = new MemoryStream(unpData);
+            Stopwatch sw = Stopwatch.StartNew();
+            var compressedArc = newYaz0.Encode(memStream);
+            sw.Stop();
+
+            using (var compressedArchive = File.Create(@"C:\Users\Matt\Downloads\extracted_pinnaBeach\CompressedByManaged.yaz0"))
+            {
+                compressedArc.Seek(0, SeekOrigin.Begin);
+                compressedArc.BaseStream.CopyTo(compressedArchive);
+                compressedArchive.Close();
+            }
+
+            Console.Write("{0}ms", sw.ElapsedMilliseconds);
+
             if (args.Length == 0)
             {
                 Console.WriteLine("===== RARC Extractor =====");
