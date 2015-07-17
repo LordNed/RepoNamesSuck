@@ -11,9 +11,9 @@ namespace WEditor.WindWaker.Loaders
         public T LoadFromArchive<T>(WWorld world, ZArchive archive) where T : Scene, new()
         {
             if (world == null)
-                throw new ArgumentNullException("world must not be null!");
+                throw new ArgumentNullException("world");
             if (archive == null)
-                throw new ArgumentNullException("archive must not be null!");
+                throw new ArgumentNullException("archive");
 
             T scene = new T();
 
