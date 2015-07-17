@@ -89,7 +89,7 @@ namespace WEditor.WindWaker.Loaders
             return entities;
         }
 
-        private MapLayer ResolveChunkFourCCToLayer(string fourCC)
+        private static MapLayer ResolveChunkFourCCToLayer(string fourCC)
         {
             // Only ACTR, SCOB, and TRES support multiple layers so if it's not one of them, early out.
             if (!(fourCC.StartsWith("ACT") || fourCC.StartsWith("SCO") || fourCC.StartsWith("TRE")))
@@ -117,7 +117,7 @@ namespace WEditor.WindWaker.Loaders
             return MapLayer.Default;
         }
 
-        private string ResolveFourCCWithLayerToName(string fourCC)
+        private static string ResolveFourCCWithLayerToName(string fourCC)
         {
             if (fourCC.StartsWith("ACT")) return "ACTR";
             if (fourCC.StartsWith("TRE")) return "TRES";
@@ -126,7 +126,7 @@ namespace WEditor.WindWaker.Loaders
             return fourCC;
         }
 
-        private List<ItemJsonTemplate> LoadItemTemplates()
+        private static List<ItemJsonTemplate> LoadItemTemplates()
         {
             string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             executionPath += "/WindWaker/Templates/EntityData/";
@@ -155,7 +155,7 @@ namespace WEditor.WindWaker.Loaders
             return itemTemplates;
         }
 
-        private MapEntity LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, BindingList<MapEntity> loadedEntities)
+        private static MapEntity LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, BindingList<MapEntity> loadedEntities)
         {
             // Determine if this particular entity can have its layer changed after it is created.
             // Only ACTR, SCOB, and TRES support multiple layers.
@@ -357,7 +357,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, BindingList<MapEntity> loadedEntities, Map map)
+        private static object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, BindingList<MapEntity> loadedEntities, Map map)
         {
             switch (templateProperty.ReferenceType)
             {

@@ -194,7 +194,7 @@ namespace WEditor.WindWaker.Loaders
             return dataHolder;
         }
 
-        private List<T> LoadVertexAttribute<T>(EndianBinaryReader reader, int totalAttributeDataLength, byte decimalPoint, VertexArrayType arrayType, VertexDataType dataType, VertexColorType colorType) where T : new()
+        private static List<T> LoadVertexAttribute<T>(EndianBinaryReader reader, int totalAttributeDataLength, byte decimalPoint, VertexArrayType arrayType, VertexDataType dataType, VertexColorType colorType) where T : new()
         {
             int componentCount = 0;
             switch (arrayType)
@@ -340,7 +340,7 @@ namespace WEditor.WindWaker.Loaders
         }
 
 
-        private int GetVertexDataLength(int[] dataOffsets, int currentIndex, int endChunkOffset)
+        private static int GetVertexDataLength(int[] dataOffsets, int currentIndex, int endChunkOffset)
         {
             int currentOffset = dataOffsets[currentIndex];
 

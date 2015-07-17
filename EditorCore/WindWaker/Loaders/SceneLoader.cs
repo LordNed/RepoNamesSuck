@@ -81,7 +81,7 @@ namespace WEditor.WindWaker.Loaders
             return scene;
         }
 
-        private void LoadEntityData(VirtualFilesystemFile file, Scene scene, WWorld world)
+        private static void LoadEntityData(VirtualFilesystemFile file, Scene scene, WWorld world)
         {
             WLog.Info(LogCategory.ArchiveLoading, scene, "Loading DZR/DZS (Room/Stage Entity Data) {0}{1}...", file.Name, file.Extension);
 
@@ -107,7 +107,7 @@ namespace WEditor.WindWaker.Loaders
                 entityLoader.PostProcess(room, map);
         }
 
-        private void LoadModelData(VirtualFilesystemFile file, Scene scene, WWorld world)
+        private static void LoadModelData(VirtualFilesystemFile file, Scene scene, WWorld world)
         {
             WLog.Info(LogCategory.ArchiveLoading, scene, "Loading BMD/BDL (3D Model) {0}{1}...", file.Name, file.Extension);
             

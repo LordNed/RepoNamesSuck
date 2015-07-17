@@ -54,7 +54,7 @@ namespace WEditor.WindWaker.Loaders
          * 
          */
 
-        private List<T> Collect<T>(EndianBinaryReader stream, LoadTypeFromStream<T> function, int count)
+        private static List<T> Collect<T>(EndianBinaryReader stream, LoadTypeFromStream<T> function, int count)
         {
             List<T> values = new List<T>();
             for (int i = 0; i < count; i++)
@@ -65,7 +65,7 @@ namespace WEditor.WindWaker.Loaders
             return values;
         }
 
-        private List<T> ReadSection<T>(EndianBinaryReader stream, long chunkStart, int chunkSize, int[] offsets, int offset, LoadTypeFromStream<T> function, int itemSize)
+        private static List<T> ReadSection<T>(EndianBinaryReader stream, long chunkStart, int chunkSize, int[] offsets, int offset, LoadTypeFromStream<T> function, int itemSize)
         {
             // If there's none of this value, early out and return an empty list, otherwise it parses
             // everything from the chunk start up to the next one as the requested section.
@@ -77,18 +77,18 @@ namespace WEditor.WindWaker.Loaders
         }
 
         #region Stream Decoding Functions
-        private Color ReadColor32(EndianBinaryReader stream)
+        private static Color ReadColor32(EndianBinaryReader stream)
         {
             return new Color(stream.ReadByte() / 255f, stream.ReadByte() / 255f, stream.ReadByte() / 255f, stream.ReadByte() / 255f);
         }
 
-        private Color ReadColorShort(EndianBinaryReader stream)
+        private static Color ReadColorShort(EndianBinaryReader stream)
         {
             // ToDo: Are these actually just divided by 255f? Wouldn't they be divided by short.MaxValue?
             return new Color(stream.ReadInt16() / 255f, stream.ReadInt16() / 255f, stream.ReadInt16() / 255f, stream.ReadInt16() / 255f);
         }
 
-        private ZMode ReadZMode(EndianBinaryReader stream)
+        private static ZMode ReadZMode(EndianBinaryReader stream)
         {
             var retVal = new ZMode
             {
@@ -101,7 +101,7 @@ namespace WEditor.WindWaker.Loaders
             return retVal;
         }
 
-        private AlphaCompare ReadAlphaCompare(EndianBinaryReader stream)
+        private static AlphaCompare ReadAlphaCompare(EndianBinaryReader stream)
         {
             var retVal = new AlphaCompare
             {
@@ -118,7 +118,7 @@ namespace WEditor.WindWaker.Loaders
             return retVal;
         }
 
-        private BlendMode ReadBlendMode(EndianBinaryReader stream)
+        private static BlendMode ReadBlendMode(EndianBinaryReader stream)
         {
             return new BlendMode
             {
@@ -129,7 +129,7 @@ namespace WEditor.WindWaker.Loaders
             };
         }
 
-        private ChanCtrl ReadChannelControl(EndianBinaryReader stream)
+        private static ChanCtrl ReadChannelControl(EndianBinaryReader stream)
         {
             var retVal = new ChanCtrl
             {
@@ -145,7 +145,7 @@ namespace WEditor.WindWaker.Loaders
             return retVal;
         }
 
-        private TexCoordGen ReadTexCoordGen(EndianBinaryReader stream)
+        private static TexCoordGen ReadTexCoordGen(EndianBinaryReader stream)
         {
             var retVal = new TexCoordGen
             {
@@ -158,7 +158,7 @@ namespace WEditor.WindWaker.Loaders
             return retVal;
         }
 
-        private TexMatrix ReadTexMatrix(EndianBinaryReader stream)
+        private static TexMatrix ReadTexMatrix(EndianBinaryReader stream)
         {
             var retVal = new TexMatrix();
             retVal.Projection = stream.ReadByte();
@@ -185,12 +185,12 @@ namespace WEditor.WindWaker.Loaders
             return retVal;
         }
 
-        private TevIn ReadTevIn(EndianBinaryReader stream)
+        private static TevIn ReadTevIn(EndianBinaryReader stream)
         {
             return new TevIn { A = stream.ReadByte(), B = stream.ReadByte(), C = stream.ReadByte(), D = stream.ReadByte() };
         }
 
-        private TevOp ReadTevOp(EndianBinaryReader stream)
+        private static TevOp ReadTevOp(EndianBinaryReader stream)
         {
             return new TevOp
             {
@@ -202,7 +202,7 @@ namespace WEditor.WindWaker.Loaders
             };
         }
 
-        private TevOrder ReadTevOrder(EndianBinaryReader stream)
+        private static TevOrder ReadTevOrder(EndianBinaryReader stream)
         {
             var retVal = new TevOrder
             {
@@ -215,7 +215,7 @@ namespace WEditor.WindWaker.Loaders
             return retVal;
         }
 
-        private TevStage ReadTevCombinerStage(EndianBinaryReader stream)
+        private static TevStage ReadTevCombinerStage(EndianBinaryReader stream)
         {
             var retVal = new TevStage();
             retVal.Unknown0 = stream.ReadByte();
@@ -240,7 +240,7 @@ namespace WEditor.WindWaker.Loaders
             return retVal;
         }
 
-        private TevSwapMode ReadTevSwapMode(EndianBinaryReader stream)
+        private static TevSwapMode ReadTevSwapMode(EndianBinaryReader stream)
         {
             var retVal = new TevSwapMode
             {
@@ -252,7 +252,7 @@ namespace WEditor.WindWaker.Loaders
             return retVal;
         }
 
-        private TevSwapModeTable ReadTevSwapModeTable(EndianBinaryReader stream)
+        private static TevSwapModeTable ReadTevSwapModeTable(EndianBinaryReader stream)
         {
             return new TevSwapModeTable
                 {
@@ -263,7 +263,7 @@ namespace WEditor.WindWaker.Loaders
                 };
         }
 
-        private FogInfo ReadFogInfo(EndianBinaryReader stream)
+        private static FogInfo ReadFogInfo(EndianBinaryReader stream)
         {
             var retVal = new FogInfo();
 
@@ -282,22 +282,22 @@ namespace WEditor.WindWaker.Loaders
             return retVal;
         }
 
-        private int ReadInt32(EndianBinaryReader stream)
+        private static int ReadInt32(EndianBinaryReader stream)
         {
             return stream.ReadInt32();
         }
 
-        private byte ReadByte(EndianBinaryReader stream)
+        private static byte ReadByte(EndianBinaryReader stream)
         {
             return stream.ReadByte();
         }
 
-        private short ReadShort(EndianBinaryReader stream)
+        private static short ReadShort(EndianBinaryReader stream)
         {
             return stream.ReadInt16();
         }
 
-        private bool ReadBool(EndianBinaryReader stream)
+        private static bool ReadBool(EndianBinaryReader stream)
         {
             return stream.ReadBoolean();
         }
@@ -585,7 +585,7 @@ namespace WEditor.WindWaker.Loaders
             return materialList;
         }
 
-        private int GetOffsetLength(int[] dataOffsets, int currentIndex, int endChunkOffset)
+        private static int GetOffsetLength(int[] dataOffsets, int currentIndex, int endChunkOffset)
         {
             int currentOffset = dataOffsets[currentIndex];
 
