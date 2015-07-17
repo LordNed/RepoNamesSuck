@@ -206,10 +206,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\the_wind_waker__forbidden_woods_by_purrdemonium-d4hk6lt.png" />
+    <Resource Include="Resources\AboutWindowLogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\middlewindwakersymbol256.ico" />
+    <Resource Include="Resources\ApplicationIcon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EditorCore\EditorCore.csproj">
