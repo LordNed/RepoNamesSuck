@@ -743,8 +743,8 @@ namespace WEditor.Rendering
                         // out_color = (d + (dot(a.bgr, bgrTo24Bit) > dot(b.bgr, bgrTo24Bit) ? c : 0));
                         string compareOp = (op == GXTevOp.Comp_BGR24_GT) ? ">" : "==";
                         string bgrTo24Bit = "vec3(255.0/16777215.0, 255.0 * 256.0/16777215.0, 255.0*65536.0/16777215.0)";
-                        sb.AppendLine(string.Format("{0} = ({1} + (dot({2}.bgr, {4}) {5} ({2}.bgr, {4}) ? {3} : 0));",
-                            dest, colorInputs[3], colorInputs[0], colorInputs[1], colorInputs[2], colorInputs[3], bgrTo24Bit, compareOp));
+                        sb.AppendLine(string.Format("{0} = ({1} + (dot({2}.bgr, {5}) {6} dot({3}.bgr, {5}) ? {4} : 0));",
+                            dest, colorInputs[3], colorInputs[0], colorInputs[1], colorInputs[2], bgrTo24Bit, compareOp));
                     }
                     break;
                 case GXTevOp.Comp_RGB8_GT:
