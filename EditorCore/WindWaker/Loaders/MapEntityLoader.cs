@@ -11,7 +11,7 @@ namespace WEditor.WindWaker.Loaders
 {
     public class MapEntityLoader
     {
-        private class ChunkHeader
+        private sealed class ChunkHeader
         {
             /// <summary> FourCC Tag of the Chunk </summary>
             public string FourCC;

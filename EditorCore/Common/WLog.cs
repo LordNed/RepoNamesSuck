@@ -64,7 +64,7 @@ namespace WEditor
             }
         }
 
-        private class MessageSubscriber
+        private sealed class MessageSubscriber
         {
             public LogCategory Category { get; private set;}
             public RecieveLogMessage Callback { get; private set; }
