@@ -75,14 +75,36 @@ namespace WEditor.FileSystem
         /// </summary>
         /// <param name="extension">File extension (including period, ie: ".arc")</param>
         /// <returns>List of files matching that extension</returns>
-        public List<VirtualFilesystemFile> FindByExtension(string extension)
+        public List<VirtualFilesystemFile> FindByExtension(params string[] extensions)
         {
-            return FindByExtension(new string[] { extension });
-        }
+            if (extensions.Length == 0)
+                throw new ArgumentException("You must specify at least one extension", "extensions");
 
-        public List<VirtualFilesystemFile> FindByExtension(string[] extensions)
-        {
-            return FindByExtensionRecursive(extensions);
+            List<VirtualFilesystemFile> validFiles = new List<VirtualFilesystemFile>();
+
+            foreach (var child in Children)
+            {
+                if (child.Type == NodeType.File)
+                {
+                    VirtualFilesystemFile file = (VirtualFilesystemFile)child;
+                    for (int i = 0; i < extensions.Length; i++)
+                    {
+                        string extension = extensions[i];
+                        if (string.Compare(file.Extension, extension, System.StringComparison.InvariantCultureIgnoreCase) == 0)
+                        {
+                            validFiles.Add(file);
+                            break;
+                        }
+                    }
+                }
+                else if (child.Type == NodeType.Directory)
+                {
+                    VirtualFilesystemDirectory dir = (VirtualFilesystemDirectory)child;
+                    validFiles.AddRange(dir.FindByExtension(extensions));
+                }
+            }
+
+            return validFiles;
         }
 
         /// <summary>
@@ -135,34 +157,6 @@ namespace WEditor.FileSystem
                     }
                 }
             }
-        }
-
-        private List<VirtualFilesystemFile> FindByExtensionRecursive(string[] extensions)
-        {
-            List<VirtualFilesystemFile> validFiles = new List<VirtualFilesystemFile>();
-
-            foreach (var child in Children)
-            {
-                if (child.Type == NodeType.File)
-                {
-                    VirtualFilesystemFile file = (VirtualFilesystemFile)child;
-                    foreach (var extension in extensions)
-                    {
-                        if (string.Compare(file.Extension, extension, System.StringComparison.InvariantCultureIgnoreCase) == 0)
-                        {
-                            validFiles.Add(file);
-                            break;
-                        }
-                    }
-                }
-                else if (child.Type == NodeType.Directory)
-                {
-                    VirtualFilesystemDirectory dir = (VirtualFilesystemDirectory)child;
-                    validFiles.AddRange(dir.FindByExtensionRecursive(extensions));
-                }
-            }
-
-            return validFiles;
         }
 
         public override string ToString()
