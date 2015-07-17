@@ -94,7 +94,7 @@ namespace WEditor.Rendering
             stream.AppendLine("    // Konst TEV Colors");
             for (int i = 0; i < 4; i++)
             {
-                stream.AppendLine(string.Format("    vec4 konst{0} = vec4({0}, {1}, {2}, {3});", i, mat.TevKonstColors[i].R, mat.TevKonstColors[i].G, mat.TevKonstColors[i].B, mat.TevKonstColors[i].A));
+                stream.AppendLine(string.Format("    vec4 konst{0} = vec4({1}, {2}, {3}, {4});", i, mat.TevKonstColors[i].R, mat.TevKonstColors[i].G, mat.TevKonstColors[i].B, mat.TevKonstColors[i].A));
             }
             stream.AppendLine();
 
