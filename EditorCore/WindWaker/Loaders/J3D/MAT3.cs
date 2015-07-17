@@ -97,7 +97,7 @@ namespace WEditor.WindWaker.Loaders
                 UpdateEnable = stream.ReadBoolean(),
             };
 
-            stream.ReadByte(); // Padding
+            Trace.Assert(stream.ReadByte() == 0xFF); // Padding
             return retVal;
         }
 
@@ -112,7 +112,9 @@ namespace WEditor.WindWaker.Loaders
                 Reference1 = stream.ReadByte()
             };
 
-            stream.ReadBytes(3); // Padding
+            Trace.Assert(stream.ReadByte() == 0xFF); // Padding
+            Trace.Assert(stream.ReadByte() == 0xFF); // Padding
+            Trace.Assert(stream.ReadByte() == 0xFF); // Padding
             return retVal;
         }
 
@@ -139,7 +141,7 @@ namespace WEditor.WindWaker.Loaders
                 AmbientSrc = (GXColorSrc)stream.ReadByte()
             };
 
-            stream.ReadBytes(2); // Padding
+            Trace.Assert(stream.ReadUInt16() == 0xFFFF); // Padding
             return retVal;
         }
 
@@ -152,7 +154,7 @@ namespace WEditor.WindWaker.Loaders
                 TexMatrixSource = (GXTexMatrix)stream.ReadByte()
             };
 
-            stream.ReadByte(); // Padding
+            Trace.Assert(stream.ReadByte() == 0xFF); // Padding
             return retVal;
         }
 
@@ -161,14 +163,14 @@ namespace WEditor.WindWaker.Loaders
             var retVal = new TexMatrix();
             retVal.Projection = stream.ReadByte();
             retVal.Type = stream.ReadByte();
-            stream.ReadUInt16(); // Padding
+            Trace.Assert(stream.ReadUInt16() == 0xFFFF); // Padding
             retVal.CenterS = stream.ReadSingle();
             retVal.CenterT = stream.ReadSingle();
             retVal.Unknown0 = stream.ReadSingle();
             retVal.ScaleS = stream.ReadSingle();
             retVal.ScaleT = stream.ReadSingle();
             retVal.Rotation = stream.ReadInt16() * (180 / 32768f);
-            stream.ReadUInt16(); // Padding
+            Trace.Assert(stream.ReadUInt16() == 0xFFFF); // Padding
             retVal.TranslateS = stream.ReadSingle();
             retVal.TranslateT = stream.ReadSingle();
             retVal.PreMatrix = new float[4, 4];
@@ -209,7 +211,7 @@ namespace WEditor.WindWaker.Loaders
                 ChannelId = (GXColorChannelId)stream.ReadByte()
             };
 
-            stream.ReadByte(); // Padding
+            Trace.Assert(stream.ReadByte() == 0xFF); // Padding
             return retVal;
         }
 
@@ -246,7 +248,7 @@ namespace WEditor.WindWaker.Loaders
                 TexSel = stream.ReadByte()
             };
 
-            stream.ReadBytes(2); // Padding
+            Trace.Assert(stream.ReadUInt16() == 0xFFFF); // Padding
             return retVal;
         }
 
@@ -304,7 +306,8 @@ namespace WEditor.WindWaker.Loaders
         public List<Material> LoadMAT3SectionFromStream(EndianBinaryReader reader, long chunkStart, int chunkSize)
         {
             short materialCount = reader.ReadInt16();
-            short padding = reader.ReadInt16();
+            Trace.Assert(reader.ReadUInt16() == 0xFFFF); // Padding
+
 
             // Nintendo sets unused offsets to zero, so we can't just use the next variable name in the list. Instead we have to search
             // until we find a non-zero one and calculate the difference that way. Thus, we convert all of the offsets into an int[] for
