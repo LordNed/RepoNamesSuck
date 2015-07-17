@@ -268,7 +268,7 @@ namespace GameFormatReader.Common
                     numBits = (byte)numBitsLeft;
 
                 byte mask = (byte)(0xFF >> (8 - numBits));
-                output = (uint)((output << numBits) | ((m_bitPool >> (m_bitPoolSize-numBits)) & mask));
+                output = (uint)((output << numBits) | (uint)(((m_bitPool >> (m_bitPoolSize-numBits))) & mask));
                 numBitsSoFar += numBits;
                 m_bitPoolSize -= numBits;
             }
