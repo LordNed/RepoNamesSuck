@@ -112,7 +112,7 @@ namespace WEditor.Rendering
                 default:
                     WLog.Warning(LogCategory.Rendering, null, "Unsupported GXBlendModeControl: \"{0}\" in GetOpenGLBlendSrc!", gxMode);
                     return BlendingFactorSrc.SrcAlpha;
-            };
+            }
         }
     }
 }
