@@ -192,7 +192,7 @@ namespace WEditor.WindWaker.Loaders
 
             // We're going to do something a little crazy - we're going to read the scene view and apply textures to meshes (for now)
             Material curMat = null;
-            AssignTextureToMeshRecursive(rootNode, j3dMesh, textureList, ref curMat, materialList);
+            AssignMaterialsToMeshRecursive(rootNode, j3dMesh, ref curMat, materialList);
 
 
             List<SkeletonBone> skeleton = new List<SkeletonBone>();
@@ -543,7 +543,7 @@ namespace WEditor.WindWaker.Loaders
                 BuildSkeletonRecursive(child, skeleton, rawJoints, parentJointIndex);
         }
 
-        private static void AssignTextureToMeshRecursive(SceneNode node, Mesh mesh, List<Texture2D> textures, ref Material curMaterial, List<Material> materialList)
+        private static void AssignMaterialsToMeshRecursive(SceneNode node, Mesh mesh, ref Material curMaterial, List<Material> materialList)
         {
             switch (node.Type)
             {
@@ -557,7 +557,7 @@ namespace WEditor.WindWaker.Loaders
             }
 
             foreach (var child in node.Children)
-                AssignTextureToMeshRecursive(child, mesh, textures, ref curMaterial, materialList);
+                AssignMaterialsToMeshRecursive(child, mesh, ref curMaterial, materialList);
         }
     }
 
