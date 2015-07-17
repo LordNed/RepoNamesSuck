@@ -10,7 +10,7 @@ namespace WEditor.WindWaker.Loaders
     public partial class J3DLoader
     {
         #region Internal Classes
-        private class MeshVertexAttributeHolder
+        private sealed class MeshVertexAttributeHolder
         {
             public List<Vector3> Position;
             public List<Vector3> Normal;
@@ -50,7 +50,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private class SceneNode
+        private sealed class SceneNode
         {
             public List<SceneNode> Children;
             public HierarchyDataTypes Type;
@@ -67,7 +67,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private class DrawInfo
+        private sealed class DrawInfo
         {
             public List<bool> IsWeighted;
             public List<ushort> Indexes;
@@ -79,7 +79,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private class ShapeAttribute
+        private sealed class ShapeAttribute
         {
             public VertexArrayType ArrayType;
             public VertexDataType DataType;

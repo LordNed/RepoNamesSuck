@@ -86,7 +86,7 @@ namespace WEditor
         /// The Palette simply stores the color data as loaded from the file.
         /// It does not convert the files based on the Palette type to RGBA8.
         /// </summary>
-        private class Palette
+        private sealed class Palette
         {
             private byte[] _paletteData;
 

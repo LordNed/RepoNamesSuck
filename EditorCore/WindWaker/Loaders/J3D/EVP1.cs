@@ -6,7 +6,7 @@ namespace WEditor.WindWaker.Loaders
 {
     public partial class J3DLoader
     {
-        private class Envelopes
+        private sealed class Envelopes
         {
             public List<ushort> numBonesAffecting;
             public List<ushort> indexRemap;
