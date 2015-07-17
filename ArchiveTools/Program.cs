@@ -25,6 +25,7 @@ namespace ArchiveTools
                 Console.WriteLine("Lord Ned & Sage of Mirrors");
                 Console.WriteLine("  yaz0 decoder by thakis  ");
                 Console.WriteLine(" yaz0 encoder by shevious ");
+                Console.WriteLine(" RARC loading by Lioncash ");
                 Console.WriteLine("   Built on the backs of  ");
                 Console.WriteLine(" those who come before us ");
                 Console.WriteLine("==========================");
@@ -171,7 +172,6 @@ namespace ArchiveTools
                         root.ExportToDisk(outputFolder);
                     }
 
-                    // ToDo: Implement ARC dumping.
                     Console.WriteLine("Completed.");
                 }
             }
