@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ArchiveTools")]
+[assembly: AssemblyTitle("WArchiveTools")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ArchiveTools")]
+[assembly: AssemblyProduct("WArchiveTools")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3afd3aee-725f-483e-b7fd-6b30956b82cb")]
+[assembly: Guid("07ef36b0-1415-4fe4-810e-8e730ed6bb92")]
 
 // Version information for an assembly consists of the following four values:
 //

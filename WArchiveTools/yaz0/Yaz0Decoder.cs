@@ -1,7 +1,7 @@
 ﻿using GameFormatReader.Common;
 using System.IO;
 
-namespace ArchiveTools.yaz0
+namespace WArchiveTools.yaz0
 {
     /// <summary>
     /// Compress and Decompress Yaz0 encoded files.

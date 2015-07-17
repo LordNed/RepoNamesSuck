@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using WEditor.FileSystem;
 
-namespace ArchiveTools.rarc
+namespace WArchiveTools.rarc
 {
     public class RARC
     {
