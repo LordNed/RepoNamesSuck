@@ -5,7 +5,7 @@ namespace WEditor.WindWaker.Loaders
 {
     public partial class J3DLoader
     {
-        private DrawInfo LoadDRW1FromStream(EndianBinaryReader reader, long chunkStart)
+        private static DrawInfo LoadDRW1FromStream(EndianBinaryReader reader, long chunkStart)
         {
             DrawInfo drawInfo = new DrawInfo();
 

@@ -9,7 +9,7 @@ namespace WEditor
             WLog.Subscribe(LogCategory.None, OnRecieveLoggerMessage, null);
         }
 
-        private void OnRecieveLoggerMessage(WLog.Entry message)
+        private static void OnRecieveLoggerMessage(WLog.Entry message)
         {
             string messagePrefix = "";
             if(message.Severity == LogSeverity.Warning)

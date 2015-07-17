@@ -9,10 +9,9 @@ namespace WEditor.WindWaker.Loaders
 {
     public partial class J3DLoader
     {
-        private List<SkeletonBone> LoadJNT1SectionFromStream(EndianBinaryReader reader, long chunkStart)
+        private static List<SkeletonBone> LoadJNT1SectionFromStream(EndianBinaryReader reader, long chunkStart)
         {
-            List<SkeletonBone> skeletonBones;
-            skeletonBones = new List<SkeletonBone>();
+            List<SkeletonBone> skeletonBones = new List<SkeletonBone>();
 
             ushort numJoints = reader.ReadUInt16();
             ushort padding = reader.ReadUInt16();

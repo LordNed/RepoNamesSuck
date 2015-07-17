@@ -76,7 +76,7 @@ namespace WEditor
             MousePosition = new Vector3(mousePos.X, mousePos.Y, 0);
         }
 
-        private int MouseButtonEnumToInt(MouseButton button)
+        private static int MouseButtonEnumToInt(MouseButton button)
         {
             switch (button)
             {

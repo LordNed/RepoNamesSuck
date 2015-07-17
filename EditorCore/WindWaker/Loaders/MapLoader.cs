@@ -108,7 +108,7 @@ namespace WEditor.WindWaker.Loaders
             return newMap;
         }
 
-        private void PostProcessScene(Scene scene, WWorld world)
+        private static void PostProcessScene(Scene scene, WWorld world)
         {
             PostProcessPointLights(scene, world);
             PostProcessArrows(scene, world);
@@ -116,14 +116,12 @@ namespace WEditor.WindWaker.Loaders
             PostProcessShipSpawns(scene, world);
         }
 
-        private void PostProcessRoom(Room room, WWorld world)
+        private static void PostProcessRoom(Room room, WWorld world)
         {
             PostProcessScene(room, world);
-
-
         }
 
-        private void PostProcessStage(Stage stage, WWorld world)
+        private static void PostProcessStage(Stage stage, WWorld world)
         {
             // We're going to extract the information from the MULT chunk and
             // apply it to the rooms so they have the correct offset.
@@ -147,7 +145,7 @@ namespace WEditor.WindWaker.Loaders
             PostProcessScene(stage, world);
         }
 
-        private void PostProcessShipSpawns(Scene scene, WWorld world)
+        private static void PostProcessShipSpawns(Scene scene, WWorld world)
         {
             var spawnList = FindAllByType("SHIP", scene.Entities);
             for (int i = 0; i < spawnList.Count; i++)
@@ -166,7 +164,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private void PostProcessSoundSources(Scene scene, WWorld world)
+        private static void PostProcessSoundSources(Scene scene, WWorld world)
         {
             var sondList = FindAllByType("SOND", scene.Entities);
             for (int i = 0; i < sondList.Count; i++)
@@ -189,7 +187,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private void PostProcessArrows(Scene scene, WWorld world)
+        private static void PostProcessArrows(Scene scene, WWorld world)
         {
             var arobList = FindAllByType("AROB", scene.Entities);
             for (int i = 0; i < arobList.Count; i++)
@@ -221,7 +219,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private void PostProcessPointLights(Scene scene, WWorld world)
+        private static void PostProcessPointLights(Scene scene, WWorld world)
         {
             var lghtList = FindAllByType("LGHT", scene.Entities);
             for (int i = 0; i < lghtList.Count; i++)
@@ -248,7 +246,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private List<MapEntity> FindAllByType(string fourCC, BindingList<MapEntity> fromList)
+        private static List<MapEntity> FindAllByType(string fourCC, BindingList<MapEntity> fromList)
         {
             List<MapEntity> results = new List<MapEntity>();
             foreach (var item in fromList)

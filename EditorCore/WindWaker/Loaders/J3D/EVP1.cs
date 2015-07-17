@@ -22,7 +22,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private Envelopes LoadEVP1FromStream(EndianBinaryReader reader, long chunkStart)
+        private static Envelopes LoadEVP1FromStream(EndianBinaryReader reader, long chunkStart)
         {
             Envelopes envelopes = new Envelopes();
             ushort numEnvelopes = reader.ReadUInt16();

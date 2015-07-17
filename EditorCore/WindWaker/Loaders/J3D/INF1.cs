@@ -21,7 +21,7 @@ namespace WEditor.WindWaker.Loaders
             Batch = 0x12, //ie Batch
         }
 
-        private SceneNode LoadINF1FromFile(SceneNode rootNode, EndianBinaryReader reader, long chunkStart)
+        private static SceneNode LoadINF1FromFile(SceneNode rootNode, EndianBinaryReader reader, long chunkStart)
         {
             ushort unknown1 = reader.ReadUInt16(); // A lot of Link's models have it but no idea what it means. Alt. doc says: "0 for BDL, 01 for BMD"
             ushort padding = reader.ReadUInt16();
@@ -57,7 +57,7 @@ namespace WEditor.WindWaker.Loaders
         /// <param name="allNodes"></param>
         /// <param name="currentListIndex"></param>
         /// <returns></returns>
-        private int ConvertInfoHiearchyToSceneGraph(ref SceneNode parent, List<InfoNode> allNodes, int currentListIndex)
+        private static int ConvertInfoHiearchyToSceneGraph(ref SceneNode parent, List<InfoNode> allNodes, int currentListIndex)
         {
             for (int i = currentListIndex; i < allNodes.Count; i++)
             {

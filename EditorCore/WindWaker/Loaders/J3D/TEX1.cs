@@ -8,7 +8,7 @@ namespace WEditor.WindWaker.Loaders
 {
     public partial class J3DLoader
     {
-        private List<Texture2D> LoadTEX1FromFile(EndianBinaryReader reader, long chunkStart)
+        private static List<Texture2D> LoadTEX1FromFile(EndianBinaryReader reader, long chunkStart)
         {
             ushort textureCount = reader.ReadUInt16();
             ushort padding = reader.ReadUInt16(); // Usually 0xFFFF?
