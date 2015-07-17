@@ -53,13 +53,24 @@ namespace WEditor.FileSystem
     {
         public BindingList<VirtualFilesystemNode> Children { get; private set; }
 
-        public VirtualFilesystemDirectory(string name)
+        /// <summary>
+        /// Represents a virtual directory which can have any number of children 
+        /// who are either more <see cref="VirtualFilesystemDirectory"/>s or <see cref="VirtualFilesystemFile"/>s.
+        /// </summary>
+        /// <param name="dirName">Name of the directory.</param>
+        public VirtualFilesystemDirectory(string dirName)
         {
             Children = new BindingList<VirtualFilesystemNode>();
-            Name = name;
+            Name = dirName;
             Type = NodeType.Directory;
         }
 
+        /// <summary>
+        /// Returns a list of files with the given extension, or an empty list if no files are found. Searches
+        /// all child directories recursively to look for files.
+        /// </summary>
+        /// <param name="extension">File extension (including period, ie: ".arc")</param>
+        /// <returns>List of files matching that extension</returns>
         public List<VirtualFilesystemFile> FindByExtension(string extension)
         {
             return FindByExtension(new string[] { extension });
@@ -70,39 +81,11 @@ namespace WEditor.FileSystem
             return FindByExtensionRecursive(extensions);
         }
 
-        private List<VirtualFilesystemFile> FindByExtensionRecursive(string[] extensions)
-        {
-            List<VirtualFilesystemFile> validFiles = new List<VirtualFilesystemFile>();
-
-            foreach(var child in Children)
-            {
-                if(child.Type == NodeType.File)
-                {
-                    VirtualFilesystemFile file = (VirtualFilesystemFile)child;
-                    foreach(var extension in extensions)
-                    {
-                        if (string.Compare(file.Extension, extension, System.StringComparison.InvariantCultureIgnoreCase) == 0)
-                        {
-                            validFiles.Add(file);
-                            break;
-                        }
-                    }
-                }
-                else if(child.Type == NodeType.Directory)
-                {
-                    VirtualFilesystemDirectory dir = (VirtualFilesystemDirectory)child;
-                    validFiles.AddRange(dir.FindByExtensionRecursive(extensions));
-                }
-            }
-
-            return validFiles;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("[Dir] {0}", Name);
-        }
-
+        /// <summary>
+        /// Recursively iterates through the Virtual Filesystem directory and creates directories on disk for the
+        /// child directories and writes <see cref="VirtualFilesystemFile"/>'s to disk in their appropriate location.
+        /// </summary>
+        /// <param name="folder">Path to place this directory (and its children) into.</param>
         public void ExportToDisk(string folder)
         {
             ExportToDiskRecursive(folder, this);
@@ -148,6 +131,39 @@ namespace WEditor.FileSystem
                     }
                 }
             }
+        }
+
+        private List<VirtualFilesystemFile> FindByExtensionRecursive(string[] extensions)
+        {
+            List<VirtualFilesystemFile> validFiles = new List<VirtualFilesystemFile>();
+
+            foreach (var child in Children)
+            {
+                if (child.Type == NodeType.File)
+                {
+                    VirtualFilesystemFile file = (VirtualFilesystemFile)child;
+                    foreach (var extension in extensions)
+                    {
+                        if (string.Compare(file.Extension, extension, System.StringComparison.InvariantCultureIgnoreCase) == 0)
+                        {
+                            validFiles.Add(file);
+                            break;
+                        }
+                    }
+                }
+                else if (child.Type == NodeType.Directory)
+                {
+                    VirtualFilesystemDirectory dir = (VirtualFilesystemDirectory)child;
+                    validFiles.AddRange(dir.FindByExtensionRecursive(extensions));
+                }
+            }
+
+            return validFiles;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[Dir] {0}", Name);
         }
     }
 
