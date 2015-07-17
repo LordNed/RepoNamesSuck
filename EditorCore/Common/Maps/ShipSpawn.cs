@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using WEditor.Maps;
+﻿using WEditor.Maps;
 
 namespace WEditor.Common.Maps
 {

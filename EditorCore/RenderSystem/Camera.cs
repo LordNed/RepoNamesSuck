@@ -1,6 +1,4 @@
 ﻿using OpenTK;
-using System;
-using WEditor.Common;
 
 namespace WEditor.Rendering
 {

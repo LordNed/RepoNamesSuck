@@ -1,9 +1,5 @@
 ﻿using GameFormatReader.Common;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using WEditor.Common.Nintendo.J3D;
-using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
 {

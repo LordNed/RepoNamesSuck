@@ -1,9 +1,7 @@
 ﻿using GameFormatReader.Common;
 using OpenTK;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using WEditor.Common.Nintendo.J3D;
 using WEditor.Rendering;
 

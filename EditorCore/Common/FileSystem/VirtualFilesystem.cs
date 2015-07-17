@@ -1,5 +1,4 @@
-﻿using GameFormatReader.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using WEditor.WindWaker;
 

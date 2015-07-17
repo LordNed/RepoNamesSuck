@@ -1,12 +1,10 @@
-﻿using WEditor.Common;
-using GameFormatReader.Common;
+﻿using GameFormatReader.Common;
 using Newtonsoft.Json;
 using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using WEditor.Common.Maps;
 using WEditor.Maps;
 
 namespace WEditor.WindWaker.Loaders

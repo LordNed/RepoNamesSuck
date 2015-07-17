@@ -1,5 +1,4 @@
 ﻿using GameFormatReader.Common;
-using System;
 using System.Collections.Generic;
 
 namespace WEditor.WindWaker.Loaders
