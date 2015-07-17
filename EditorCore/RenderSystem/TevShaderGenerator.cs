@@ -579,7 +579,7 @@ namespace WEditor.Rendering
                     break;
             }
 
-            if (string.Compare(outStr, "false") == 0 || string.Compare(outStr, "true") == 0)
+            if (outStr == "false" || outStr == "true")
                 return outStr;
 
             return string.Format("{0} {1} {2}", a, outStr, fRef);
