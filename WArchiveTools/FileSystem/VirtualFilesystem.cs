@@ -117,6 +117,16 @@ namespace WEditor.FileSystem
             ExportToDiskRecursive(folder, this);
         }
 
+        /// <summary>
+        /// Recursively iterates through the filesystem directory and creates a <see cref="VirtualFilesystemDirectory"/> 
+        /// replicate, including <see cref="VirtualFilesystemFile"/>s.
+        /// </summary>
+        /// <param name="folder"></param>
+        public void ImportFromDisk(string folder)
+        {
+            ImportFromDiskRecursive(folder, this);
+        }
+
         private void ExportToDiskRecursive(string folder, VirtualFilesystemDirectory dir)
         {
             // Create the directory that this node represents.
@@ -155,6 +165,35 @@ namespace WEditor.FileSystem
                     {
                         Console.WriteLine("Caught exception while trying to write file {0}: {1}", filePath, ex.ToString());
                     }
+                }
+            }
+        }
+
+        private void ImportFromDiskRecursive(string folder, VirtualFilesystemDirectory dir)
+        {
+            if (!Directory.Exists(folder))
+                throw new ArgumentException("You must specify a directory that exists", "folder");
+
+            // For each directory that is a child of the specified folder into ourselves, and then import the contents.
+            DirectoryInfo dirInfo = new DirectoryInfo(folder);
+            foreach(var diskDir in dirInfo.GetDirectories())
+            {
+                VirtualFilesystemDirectory vfDir = new VirtualFilesystemDirectory(diskDir.Name);
+                dir.Children.Add(vfDir);
+
+                ImportFromDiskRecursive(diskDir.FullName, vfDir);
+            }
+
+            foreach(var diskFile in dirInfo.GetFiles())
+            {
+                using(BinaryReader reader = new BinaryReader(File.Open(diskFile.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(diskFile.Name);
+                    string fileExt = Path.GetExtension(diskFile.Name);
+
+                    byte[] data = reader.ReadBytes((int)reader.BaseStream.Length);
+                    VirtualFilesystemFile vfFile = new VirtualFilesystemFile(fileName, fileExt, new VirtualFileContents(data));
+                    dir.Children.Add(vfFile);
                 }
             }
         }

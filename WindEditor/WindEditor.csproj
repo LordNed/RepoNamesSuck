@@ -220,6 +220,10 @@
       <Project>{b83beb2f-ff4e-4d1f-be32-50ad4ca1b16d}</Project>
       <Name>EndianBinaryStreams</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WArchiveTools\WArchiveTools.csproj">
+      <Project>{b715685d-1603-4ce3-8ea1-552b01c2ba4b}</Project>
+      <Name>WArchiveTools</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

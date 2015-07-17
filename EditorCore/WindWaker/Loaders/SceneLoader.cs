@@ -8,7 +8,7 @@ namespace WEditor.WindWaker.Loaders
 {
     public class SceneLoader
     {
-        public T LoadFromArchive<T>(WWorld world, ZArchive archive) where T : Scene, new()
+        public T LoadFromArchive<T>(WWorld world, VirtualFilesystemDirectory archive) where T : Scene, new()
         {
             if (world == null)
                 throw new ArgumentNullException("world");
@@ -19,7 +19,7 @@ namespace WEditor.WindWaker.Loaders
 
             // Wind Waker only supports one-level deep of folders (ie: root/<folders>/<files>) so
             // we don't load this recursively.
-            foreach (var vFolder in archive.Contents.Children)
+            foreach (var vFolder in archive.Children)
             {
                 // Skip loose files alongside the top level folders inside the root.
                 if (vFolder.Type != NodeType.Directory)
@@ -119,12 +119,7 @@ namespace WEditor.WindWaker.Loaders
                 MeshSceneComponent entity = new MeshSceneComponent();
                 entity.Mesh = model;
                 scene.Objects.Add(entity);
-
-                //world.RenderSystem.RegisterMesh(model);
-
-                //scene.Meshes.Add(model);
             }
-
 
             WLog.Info(LogCategory.ArchiveLoading, scene, "Loaded {0}{1}.", file.Name, file.Extension);
         }

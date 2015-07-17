@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="Common\Colors.cs" />
     <Compile Include="Common\Components\EditorCameraMovement.cs" />
-    <Compile Include="Common\FileSystem\VirtualFilesystem.cs" />
     <Compile Include="Common\Input.cs" />
     <Compile Include="Common\Maps\Arrow.cs" />
     <Compile Include="Common\Maps\Layers.cs" />
@@ -97,13 +96,11 @@
     <Compile Include="WindWaker\Loaders\MapEntityLoader.cs" />
     <Compile Include="WindWaker\Loaders\MapLoader.cs" />
     <Compile Include="WindWaker\Loaders\SceneLoader.cs" />
-    <Compile Include="WindWaker\Loaders\ZArchiveLoader.cs" />
     <Compile Include="WindWaker\Map.cs" />
     <Compile Include="WindWaker\ItemJsonTemplate.cs" />
     <Compile Include="WindWaker\Room.cs" />
     <Compile Include="WindWaker\Scene.cs" />
     <Compile Include="WindWaker\Stage.cs" />
-    <Compile Include="WindWaker\ZArchive.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -230,6 +227,10 @@
     <ProjectReference Include="..\EndianBinaryStreams\EndianBinaryStreams.csproj">
       <Project>{b83beb2f-ff4e-4d1f-be32-50ad4ca1b16d}</Project>
       <Name>EndianBinaryStreams</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WArchiveTools\WArchiveTools.csproj">
+      <Project>{b715685d-1603-4ce3-8ea1-552b01c2ba4b}</Project>
+      <Name>WArchiveTools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

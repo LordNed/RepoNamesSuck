@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using WEditor.Common.Maps;
+using WEditor.FileSystem;
 using WEditor.Maps;
 
 namespace WEditor.WindWaker.Loaders
@@ -25,7 +26,6 @@ namespace WEditor.WindWaker.Loaders
             DirectoryInfo rootFolderInfo = new DirectoryInfo(folderPath);
             string mapName = rootFolderInfo.Name;
 
-            ZArchiveLoader archiveLoader = new ZArchiveLoader();
 
             // Sort the directories in rootFolderInfo into natural order, instead of alphabetical order which solves issues
             // where room indexes were getting remapped to the wrong one.
@@ -34,15 +34,15 @@ namespace WEditor.WindWaker.Loaders
             // Maps are stored in two distinct parts. A Stage which encompasses global data for all rooms, and then
             // one or more rooms. We're going to load both the room and stage into ZArchives and then load the data
             // stored in them into different data.
-            var archiveFolderMap = new Dictionary<string, ZArchive>();
+            var archiveFolderMap = new Dictionary<string, VirtualFilesystemDirectory>();
             foreach (var dirInfo in subFolders)
             {
-                ZArchive archive = null;
+                VirtualFilesystemDirectory archive = null;
 
                 string folderName = dirInfo.Name;
                 if (folderName.ToLower().StartsWith("stage"))
                 {
-                    archive = new ZArchive(folderName, ArchiveType.Stage);
+                    archive = new VirtualFilesystemDirectory(folderName);
 
                     if (archiveFolderMap.ContainsKey("stage"))
                     {
@@ -52,7 +52,7 @@ namespace WEditor.WindWaker.Loaders
                 }
                 else if (folderName.ToLower().StartsWith("room"))
                 {
-                    archive = new ZArchive(folderName, ArchiveType.Room);
+                    archive = new VirtualFilesystemDirectory(folderName);
                 }
 
                 // sea has LOD folders which don't have the right sub-folder setup, boo. This skips them for now,
@@ -61,7 +61,7 @@ namespace WEditor.WindWaker.Loaders
                     continue;
 
                 // Fill the archives with their contents.
-                archiveLoader.LoadFromDirectory(archive, dirInfo.FullName);
+                archive.ImportFromDisk(dirInfo.FullName);
                 archiveFolderMap[folderName.ToLower()] = archive;
             }
 
