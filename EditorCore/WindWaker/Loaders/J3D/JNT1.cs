@@ -60,7 +60,7 @@ namespace WEditor.WindWaker.Loaders
                 Quaternion finalRot = zAxis * yAxis * xAxis;
 
                 bone.Rotation = finalRot;
-                Debug.Assert(reader.ReadUInt16() == 0xFFFF); // Padding
+                Trace.Assert(reader.ReadUInt16() == 0xFFFF); // Padding
                 for (int f = 0; f < 3; f++)
                     bone.Translation[f] = reader.ReadSingle();
                 bone.BoundingSphereDiameter = reader.ReadSingle();

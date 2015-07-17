@@ -233,8 +233,8 @@ namespace WEditor.WindWaker.Loaders
             retVal.AlphaRegId = stream.ReadByte();
             retVal.Unknown1 = stream.ReadByte();
 
-            Debug.Assert(retVal.Unknown0 == 0xFF);
-            Debug.Assert(retVal.Unknown1 == 0xFF);
+            Trace.Assert(retVal.Unknown0 == 0xFF);
+            Trace.Assert(retVal.Unknown1 == 0xFF);
             return retVal;
         }
 

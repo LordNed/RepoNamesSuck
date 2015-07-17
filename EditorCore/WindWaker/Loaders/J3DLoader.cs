@@ -288,7 +288,7 @@ namespace WEditor.WindWaker.Loaders
             short padding = reader.ReadInt16();
             int batchOffset = reader.ReadInt32();
             int unknownTableOffset = reader.ReadInt32(); // Another one of those 0->(n-1) counters. I think all sections have it? Might be part of the way they used inheritance to write files.
-            int alwaysZero = reader.ReadInt32(); Debug.Assert(alwaysZero == 0);
+            int alwaysZero = reader.ReadInt32(); Trace.Assert(alwaysZero == 0);
             int attributeOffset = reader.ReadInt32();
             int matrixTableOffset = reader.ReadInt32();
             int primitiveDataOffset = reader.ReadInt32();
@@ -316,12 +316,12 @@ namespace WEditor.WindWaker.Loaders
                 long batchStart = reader.BaseStream.Position;
 
                 byte matrixType = reader.ReadByte();
-                Debug.Assert(reader.ReadByte() == 0xFF); // Padding
+                Trace.Assert(reader.ReadByte() == 0xFF); // Padding
                 ushort packetCount = reader.ReadUInt16();
                 ushort batchAttributeOffset = reader.ReadUInt16();
                 ushort firstMatrixIndex = reader.ReadUInt16();
                 ushort firstPacketIndex = reader.ReadUInt16();
-                ushort unknownpadding = reader.ReadUInt16(); Debug.Assert(unknownpadding == 0xFFFF);
+                ushort unknownpadding = reader.ReadUInt16(); Trace.Assert(unknownpadding == 0xFFFF);
 
                 float boundingSphereDiameter = reader.ReadSingle();
                 Vector3 boundingBoxMin = new Vector3();

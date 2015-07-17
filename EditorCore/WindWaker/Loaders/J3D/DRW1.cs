@@ -10,7 +10,7 @@ namespace WEditor.WindWaker.Loaders
             DrawInfo drawInfo = new DrawInfo();
 
             ushort sectionCount = reader.ReadUInt16();
-            Debug.Assert(reader.ReadUInt16() == 0xFFFF); // Padding
+            Trace.Assert(reader.ReadUInt16() == 0xFFFF); // Padding - 0xFFFF
             uint isWeightedOffset = reader.ReadUInt32();
             uint indexOffset = reader.ReadUInt32();
 
