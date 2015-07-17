@@ -17,12 +17,18 @@ namespace WEditor.FileSystem
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// <see cref="NodeType"/> of this node. This allows you to tell if the node is a <see cref="VirtualFilesystemDirectory"/> or a <see cref="VirtualFilesystemFile"/>.
+        /// </summary>
         public NodeType Type
         {
             get { return m_type; }
             protected set { m_type = value; }
         }
 
+        /// <summary>
+        /// The string name of the node. If a <see cref="VirtualFilesystemDirectory"/> the name is the name of the directory. If a <see cref="VirtualFilesystemFile"/> then it is the name of the file.
+        /// </summary>
         public string Name
         {
             get { return m_name; }
@@ -169,8 +175,14 @@ namespace WEditor.FileSystem
 
     public class VirtualFilesystemFile : VirtualFilesystemNode
     {
+        /// <summary>
+        /// Contents of the file that this <see cref="VirtualFilesystemFile"/> represents.
+        /// </summary>
         public VirtualFileContents File;
 
+        /// <summary>
+        /// Extension of the file including the period.
+        /// </summary>
         public string Extension
         {
             get { return m_extension; }
@@ -184,6 +196,12 @@ namespace WEditor.FileSystem
         private string m_extension;
 
         public VirtualFilesystemFile(string name, string extension, VirtualFileContents file)
+        /// <summary>
+        /// Represents a file inside of a <see cref="VirtualFilesystemDirectory"/>. Stores the file data in memory, as well as the file name/extension.
+        /// </summary>
+        /// <param name="name">Name of the file (without extension)</param>
+        /// <param name="extension">Extension of the file (including period)</param>
+        /// <param name="file">Contents of the file for this node to store.</param>
         {
             Type = NodeType.File;
             Name = name;
