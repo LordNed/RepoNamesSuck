@@ -13,7 +13,7 @@ namespace WEditor.WindWaker.Loaders
         public Map CreateFromDirectory(WWorld world, string folderPath)
         {
             if (world == null)
-                throw new ArgumentNullException("No world to load map into specified.");
+                throw new ArgumentNullException("world", "No world to load map into specified.");
 
             if (string.IsNullOrEmpty(folderPath))
                 throw new ArgumentException("folderPath is null or empty!");
