@@ -62,11 +62,9 @@ namespace WEditor.Rendering
             GL.PrimitiveRestartIndex(0xFFFF);
             GL.DepthMask(true);
 
-            for (int i = 0; i < m_cameraList.Count; i++)
+            foreach (var camera in m_cameraList)
             {
-                /* SETUP THE VIEWPORT FOR THE CAMERA */
-                Camera camera = m_cameraList[i];
-
+                // Set up the viewport for the camera
                 Rect pixelRect = camera.PixelRect;
                 GL.Viewport((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
                 GL.Scissor((int)pixelRect.X, (int)pixelRect.Y, (int)pixelRect.Width, (int)pixelRect.Height);
@@ -98,9 +96,8 @@ namespace WEditor.Rendering
         public void SetOutputSize(float width, float height)
         {
             // Re-Calculate perspective camera ratios here.
-            for (int i = 0; i < m_cameraList.Count; i++)
+            foreach (var camera in m_cameraList)
             {
-                Camera camera = m_cameraList[i];
                 camera.PixelWidth = width;
                 camera.PixelHeight = height;
             }
@@ -202,10 +199,9 @@ namespace WEditor.Rendering
         {
             Matrix4 viewMatrix = camera.ViewMatrix;
             Matrix4 projMatrix = camera.ProjectionMatrix;
-            for (int b = 0; b < mesh.SubMeshes.Count; b++)
-            {
-                MeshBatch batch = mesh.SubMeshes[b];
 
+            foreach (var batch in mesh.SubMeshes)
+            {
                 // Bind the shader
                 if (batch.Material != null)
                 {
