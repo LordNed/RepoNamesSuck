@@ -17,7 +17,7 @@
 
         public override string ToString()
         {
-            return string.Format("(x: {1} y: {2} width: {3} height: {4})", X, Y, Width, Height);
+            return string.Format("(x: {0} y: {1} width: {2} height: {3})", X, Y, Width, Height);
         }
     }
 }
