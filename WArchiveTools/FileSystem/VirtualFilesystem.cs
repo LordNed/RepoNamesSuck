@@ -42,10 +42,10 @@ namespace WEditor.FileSystem
         private NodeType m_type;
         private string m_name;
 
-        public VirtualFilesystemNode()
+        protected VirtualFilesystemNode(NodeType type, string name)
         {
-            Type = NodeType.None;
-            Name = string.Empty;
+            Type = type;
+            Name = name;
         }
 
         protected void OnPropertyChanged(string propertyName)
@@ -64,11 +64,9 @@ namespace WEditor.FileSystem
         /// who are either more <see cref="VirtualFilesystemDirectory"/>s or <see cref="VirtualFilesystemFile"/>s.
         /// </summary>
         /// <param name="dirName">Name of the directory.</param>
-        public VirtualFilesystemDirectory(string dirName)
+        public VirtualFilesystemDirectory(string dirName) : base(NodeType.Directory, dirName)
         {
             Children = new BindingList<VirtualFilesystemNode>();
-            Name = dirName;
-            Type = NodeType.Directory;
         }
 
         /// <summary>
@@ -195,16 +193,14 @@ namespace WEditor.FileSystem
 
         private string m_extension;
 
-        public VirtualFilesystemFile(string name, string extension, VirtualFileContents file)
         /// <summary>
         /// Represents a file inside of a <see cref="VirtualFilesystemDirectory"/>. Stores the file data in memory, as well as the file name/extension.
         /// </summary>
         /// <param name="name">Name of the file (without extension)</param>
         /// <param name="extension">Extension of the file (including period)</param>
         /// <param name="file">Contents of the file for this node to store.</param>
+        public VirtualFilesystemFile(string name, string extension, VirtualFileContents file) : base (NodeType.File, name)
         {
-            Type = NodeType.File;
-            Name = name;
             Extension = extension;
             File = file;
         }
@@ -221,7 +217,7 @@ namespace WEditor.FileSystem
 
         public VirtualFileContents(byte[] data)
         {
-            m_data = data;    
+            m_data = data;
         }
 
         public byte[] GetData()
