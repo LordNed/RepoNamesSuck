@@ -55,7 +55,7 @@ namespace WEditor.FileSystem
         }
     }
 
-    public class VirtualFilesystemDirectory : VirtualFilesystemNode
+    public sealed class VirtualFilesystemDirectory : VirtualFilesystemNode
     {
         public BindingList<VirtualFilesystemNode> Children { get; private set; }
 
@@ -204,7 +204,7 @@ namespace WEditor.FileSystem
         }
     }
 
-    public class VirtualFilesystemFile : VirtualFilesystemNode
+    public sealed class VirtualFilesystemFile : VirtualFilesystemNode
     {
         /// <summary>
         /// Contents of the file that this <see cref="VirtualFilesystemFile"/> represents.
@@ -244,7 +244,7 @@ namespace WEditor.FileSystem
         }
     }
 
-    public class VirtualFileContents
+    public sealed class VirtualFileContents
     {
         private byte[] m_data;
 
