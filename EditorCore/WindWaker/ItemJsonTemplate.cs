@@ -35,7 +35,7 @@ namespace WEditor.WindWaker
         [JsonProperty("Properties")]
         public List<Property> Properties;
 
-        /// <summary Only used if this references another template instead of defining a unique set of properties. </summary>
+        /// <summary>Only used if this references another template instead of defining a unique set of properties. </summary>
         [JsonProperty("Template")]
         public string Template;
 
