@@ -18,22 +18,6 @@ namespace ArchiveTools
 
         static void Main(string[] args)
         {
-            Yaz0 newYaz0 = new Yaz0();
-            byte[] unpData = File.ReadAllBytes(@"C:\Users\Matt\Downloads\extracted_pinnaBeach\1-1.sarc");
-            var memStream = new MemoryStream(unpData);
-            Stopwatch sw = Stopwatch.StartNew();
-            var compressedArc = newYaz0.Encode(memStream);
-            sw.Stop();
-
-            using (var compressedArchive = File.Create(@"C:\Users\Matt\Downloads\extracted_pinnaBeach\CompressedByManaged.yaz0"))
-            {
-                compressedArc.Seek(0, SeekOrigin.Begin);
-                compressedArc.BaseStream.CopyTo(compressedArchive);
-                compressedArchive.Close();
-            }
-
-            Console.Write("{0}ms", sw.ElapsedMilliseconds);
-
             if (args.Length == 0)
             {
                 Console.WriteLine("===== RARC Extractor =====");
@@ -230,7 +214,25 @@ namespace ArchiveTools
                 argList[i] = argList[i].Replace("\\", "/");
             }
 
-            return FindCommonPath("/", argList);
+            string commonPath = FindCommonPath("/", argList);
+
+            // If it's the same path as any of our actual arguments, we need to back up one folder
+            // since it's trying to extract them to inside of one of the specified folders.
+            bool isArgument = false;
+            for (int i = 0; i < argList.Count; i++)
+            {
+                if(string.Compare(commonPath, argList[i], StringComparison.InvariantCultureIgnoreCase) == 0)
+                {
+                    isArgument = true;
+                    break;
+                }
+            }
+
+            // Alternatively, if argList only has one entry and its a file, commonPath points to that file and not to the folder its in.
+            if (isArgument || File.Exists(commonPath))
+                commonPath = commonPath.Substring(0, commonPath.LastIndexOf("/"));
+
+            return commonPath;
         }
 
         private static bool ProcessArguments(string[] args, out bool verboseOutput, out bool printFileSystem)
