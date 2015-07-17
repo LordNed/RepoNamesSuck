@@ -33,7 +33,7 @@ namespace WEditor.WindWaker
 
         public string Name { get; set; }
 
-        public Scene()
+        protected Scene()
         {
             LGHT = new BindingList<PointLight>();
             LGTV = new BindingList<PointLight>();

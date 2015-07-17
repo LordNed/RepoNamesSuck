@@ -40,7 +40,7 @@ namespace WEditor.FileSystem
         private string m_name;
         private ZArchive m_parentArchive;
 
-        public VirtualFilesystemNode(ZArchive parentArc)
+        protected VirtualFilesystemNode(ZArchive parentArc)
         {
             Type = NodeType.None;
             Name = "Unnamed";
