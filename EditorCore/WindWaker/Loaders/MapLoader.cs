@@ -65,6 +65,28 @@ namespace WEditor.WindWaker.Loaders
                 archiveFolderMap[folderName.ToLower()] = archive;
             }
 
+            // We're also going to try and process the files inside the folder to see if they're archives.
+            foreach (var fileInfo in rootFolderInfo.GetFiles())
+            {
+                VirtualFilesystemDirectory archive = WArchiveTools.ArcUtilities.LoadArchive(fileInfo.FullName);
+
+                // File wasn't a valid RARC archive.
+                if (archive == null)
+                    continue;
+
+                if (archive.Name.ToLower().StartsWith("stage"))
+                {
+                    if (archiveFolderMap.ContainsKey("stage"))
+                    {
+                        WLog.Warning(LogCategory.EditorCore, null, "{0} contains more than one stage archive, ignoring second...", folderPath);
+                        continue;
+                    }
+                }
+
+                string arcName = Path.GetFileNameWithoutExtension(fileInfo.FullName).ToLower();
+                archiveFolderMap[arcName] = archive;
+            }
+
             Map newMap = new Map();
             newMap.Name = mapName;
             newMap.ProjectFilePath = Path.GetDirectoryName(folderPath);
