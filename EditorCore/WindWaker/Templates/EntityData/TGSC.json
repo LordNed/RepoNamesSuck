@@ -7,8 +7,6 @@
 		{"Name" : "Position", "Type" : "vector3"},
 		{"Name" : "RoomLoadingParams", "Type" : "short"},
 		{"Name" : "Rotation", "Type" : "xyzRotation"},
-		{"Name" : "Params 2", "Type" : "int32BitField"},
-		{"Name" : "Unknown 1", "Type" : "byte"},
-		{"Name" : "Unknown 2", "Type" : "byte"}
+		{"Name" : "Params 2", "Type" : "int32BitField"}
 	]
 }
