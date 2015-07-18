@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using WEditor.Common.Maps;
 using WEditor.FileSystem;
 using WEditor.Maps;
@@ -19,18 +18,18 @@ namespace WEditor.WindWaker.Loaders
             if (string.IsNullOrEmpty(folderPath))
                 throw new ArgumentException("folderPath is null or empty!");
 
-            if (!Directory.Exists(folderPath))
-                throw new DirectoryNotFoundException("folderPath not found, ensure the directory exists first!");
+            if (!System.IO.Directory.Exists(folderPath))
+                throw new System.IO.DirectoryNotFoundException("folderPath not found, ensure the directory exists first!");
 
             // Calculate the Map Name from the folderPath - it should be the last segment of the folder path.s
-            DirectoryInfo rootFolderInfo = new DirectoryInfo(folderPath);
+            System.IO.DirectoryInfo rootFolderInfo = new System.IO.DirectoryInfo(folderPath);
             string mapName = rootFolderInfo.Name;
 
 
             // Sort the directories in rootFolderInfo into natural order, instead of alphabetical order which solves issues
             // where room indexes were getting remapped to the wrong one.
-            IEnumerable<DirectoryInfo> subFolders = rootFolderInfo.GetDirectories().OrderByNatural(x => x.Name);
-            IEnumerable<FileInfo> subFiles = rootFolderInfo.GetFiles().OrderByNatural(x => x.Name);
+            IEnumerable<System.IO.DirectoryInfo> subFolders = rootFolderInfo.GetDirectories().OrderByNatural(x => x.Name);
+            IEnumerable<System.IO.FileInfo> subFiles = rootFolderInfo.GetFiles().OrderByNatural(x => x.Name);
 
             // Maps are stored in two distinct parts. A Stage which encompasses global data for all rooms, and then
             // one or more rooms. We're going to load both the room and stage into ZArchives and then load the data
@@ -84,13 +83,13 @@ namespace WEditor.WindWaker.Loaders
                     }
                 }
 
-                string arcName = Path.GetFileNameWithoutExtension(fileInfo.FullName).ToLower();
+                string arcName = System.IO.Path.GetFileNameWithoutExtension(fileInfo.FullName).ToLower();
                 archiveFolderMap[arcName] = archive;
             }
 
             Map newMap = new Map();
             newMap.Name = mapName;
-            newMap.ProjectFilePath = Path.GetDirectoryName(folderPath);
+            newMap.ProjectFilePath = System.IO.Path.GetDirectoryName(folderPath);
 
             SceneLoader sceneLoader = new SceneLoader();
 
@@ -171,7 +170,7 @@ namespace WEditor.WindWaker.Loaders
             PostProcessScene(stage, world);
         }
 
-        private static BindingList<MapPath> PostProcessPaths(string pathFourCC, string pointFourCC, Scene scene)
+        private static BindingList<Path> PostProcessPaths(string pathFourCC, string pointFourCC, Scene scene)
         {
             var pathList = FindAllByType(pathFourCC, scene.Entities);
             var pointList = FindAllByType(pointFourCC, scene.Entities);
@@ -191,7 +190,7 @@ namespace WEditor.WindWaker.Loaders
             }
 
             // Now create a list of MapPaths and assign the loaded PathPoints to it.
-            BindingList<MapPath> mapPathList = new BindingList<MapPath>();
+            BindingList<Path> mapPathList = new BindingList<Path>();
             foreach(var path in pathList)
             {
                 short numPoints = path.GetProperty<short>("Number of Points");
@@ -201,7 +200,7 @@ namespace WEditor.WindWaker.Loaders
                 // We divide by the length of a PPNT/RPPN to turn the offset into an index.
                 int pointStartIndex = firstPointOffset / 0x10;
 
-                MapPath newPath = new MapPath
+                Path newPath = new Path
                 {
                     Unknown1 =  path.GetProperty<short>("Unknown 1"),
                     Unknown2 = path.GetProperty<byte>("Unknown 2"),

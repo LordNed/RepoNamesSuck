@@ -128,7 +128,7 @@ namespace WEditor.WindWaker.Loaders
 
         private static List<ItemJsonTemplate> LoadItemTemplates()
         {
-            string executionPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             executionPath += "/WindWaker/Templates/EntityData/";
 
             DirectoryInfo dI = new DirectoryInfo(executionPath);

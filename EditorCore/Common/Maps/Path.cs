@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace WEditor.Maps
 {
-    public class MapPath
+    public class Path
     {
         public BindingList<PathPoint> Points { get; private set; }
         public short Unknown1;
@@ -11,7 +11,7 @@ namespace WEditor.Maps
         public byte LoopType;
         public short Unknown3;
 
-        public MapPath()
+        public Path()
         {
             Points = new BindingList<PathPoint>();
         }
