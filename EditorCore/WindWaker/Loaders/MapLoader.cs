@@ -30,6 +30,7 @@ namespace WEditor.WindWaker.Loaders
             // Sort the directories in rootFolderInfo into natural order, instead of alphabetical order which solves issues
             // where room indexes were getting remapped to the wrong one.
             IEnumerable<DirectoryInfo> subFolders = rootFolderInfo.GetDirectories().OrderByNatural(x => x.Name);
+            IEnumerable<FileInfo> subFiles = rootFolderInfo.GetFiles().OrderByNatural(x => x.Name);
 
             // Maps are stored in two distinct parts. A Stage which encompasses global data for all rooms, and then
             // one or more rooms. We're going to load both the room and stage into ZArchives and then load the data
@@ -66,7 +67,7 @@ namespace WEditor.WindWaker.Loaders
             }
 
             // We're also going to try and process the files inside the folder to see if they're archives.
-            foreach (var fileInfo in rootFolderInfo.GetFiles())
+            foreach (var fileInfo in subFiles)
             {
                 VirtualFilesystemDirectory archive = WArchiveTools.ArcUtilities.LoadArchive(fileInfo.FullName);
 
