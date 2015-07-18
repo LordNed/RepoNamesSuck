@@ -137,6 +137,9 @@ namespace WEditor.WindWaker.Loaders
             PostProcessArrows(scene, world);
             PostProcessSoundSources(scene, world);
             PostProcessShipSpawns(scene, world);
+
+            scene.PATH = PostProcessPaths("PATH", "PPNT", scene);
+            scene.RPAT = PostProcessPaths("RPAT", "RPPN", scene);
         }
 
         private static void PostProcessRoom(Room room, WWorld world)
@@ -166,6 +169,55 @@ namespace WEditor.WindWaker.Loaders
             }
 
             PostProcessScene(stage, world);
+        }
+
+        private static BindingList<MapPath> PostProcessPaths(string pathFourCC, string pointFourCC, Scene scene)
+        {
+            var pathList = FindAllByType(pathFourCC, scene.Entities);
+            var pointList = FindAllByType(pointFourCC, scene.Entities);
+
+
+            // Build a list of PathPoints out of the point list.
+            List<PathPoint> pathPointsList = new List<PathPoint>();
+            foreach(var point in pointList)
+            {
+                PathPoint newPoint = new PathPoint
+                {
+                    Unknown1 = point.GetProperty<int>("Unknown 1"),
+                    Postion = point.GetProperty<Vector3>("Position")
+                };
+
+                pathPointsList.Add(newPoint);
+            }
+
+            // Now create a list of MapPaths and assign the loaded PathPoints to it.
+            BindingList<MapPath> mapPathList = new BindingList<MapPath>();
+            foreach(var path in pathList)
+            {
+                short numPoints = path.GetProperty<short>("Number of Points");
+                int firstPointOffset = path.GetProperty<int>("int");
+
+                // Paths store their number of points, and the offset (in bytes) to the index of the first path in the list.
+                // We divide by the length of a PPNT/RPPN to turn the offset into an index.
+                int pointStartIndex = firstPointOffset / 0x10;
+
+                MapPath newPath = new MapPath
+                {
+                    Unknown1 =  path.GetProperty<short>("Unknown 1"),
+                    Unknown2 = path.GetProperty<byte>("Unknown 2"),
+                    LoopType = path.GetProperty<byte>("Unknown 3"),
+                    Unknown3 = path.GetProperty<short>("Unknown 4")
+                };
+
+                for(int i = pointStartIndex; i < pointStartIndex+numPoints; i++)
+                {
+                    newPath.Points.Add(pathPointsList[i]);
+                }
+
+                mapPathList.Add(newPath);
+            }
+
+            return mapPathList;
         }
 
         private static void PostProcessShipSpawns(Scene scene, WWorld world)
