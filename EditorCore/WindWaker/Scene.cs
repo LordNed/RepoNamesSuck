@@ -60,7 +60,9 @@ namespace WEditor.WindWaker
 
 
         private string m_name = string.Empty;
-        private bool m_visible = false;
+        private bool m_visible = true;
+        public BindingList<MapPath> PATH { get; set; }
+        public BindingList<MapPath> RPAT { get; set; }
 
         protected Scene()
         {

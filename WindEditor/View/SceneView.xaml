@@ -12,21 +12,21 @@
     </UserControl.Resources>
     <Grid>
         <GroupBox Header="Scene View" Margin="2,0">
-            <ListView ItemsSource="{Binding ArchiveList}" HorizontalContentAlignment="Stretch">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="16"/>
-                        </Grid.ColumnDefinitions>
+            <ListBox SelectionChanged="ListBox_SelectionChanged" ItemsSource="{Binding ArchiveList}" HorizontalContentAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="16"/>
+                            </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="{Binding Name}"/>
-                        <ToggleButton Grid.Column="1"  IsChecked="{Binding Visible}" />
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-            </ListView>
+                            <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                            <ToggleButton Grid.Column="1"  IsChecked="{Binding Visible}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </GroupBox>
     </Grid>
 </UserControl>

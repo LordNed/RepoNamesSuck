@@ -26,9 +26,9 @@ namespace WEditor.UI.View
             InitializeComponent();
         }
 
-        private void SceneView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ((SceneViewViewModel)DataContext).OnSceneViewSelectObject(e.NewValue);
+            ((SceneViewViewModel)DataContext).OnSceneViewSelectObject(((ListBox)sender).SelectedItem);
         }
     }
 }

@@ -51,6 +51,8 @@
     <Compile Include="Common\Maps\Layers.cs" />
     <Compile Include="Common\Maps\MapEntity.cs" />
     <Compile Include="Common\Maps\MeshSceneComponent.cs" />
+    <Compile Include="Common\Maps\MapPath.cs" />
+    <Compile Include="Common\Maps\PathPoint.cs" />
     <Compile Include="Common\Maps\PointLight.cs" />
     <Compile Include="Common\Maps\SceneComponent.cs" />
     <Compile Include="Common\Maps\ShipSpawn.cs" />
