@@ -5,8 +5,36 @@ using WEditor.Rendering;
 
 namespace WEditor.WindWaker
 {
-    public abstract class Scene
+    public abstract class Scene : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Is this scene currently visible? If so it will render in the editor, otherwise it (plus its contents) will not.
+        /// </summary>
+        public bool Visible
+        {
+            get { return m_visible; }
+            set
+            {
+                m_visible = value;
+                OnPropertyChanged("IsVisible");
+            }
+        }
+
+        /// <summary>
+        /// What is the name of this? ie: Stage, Room0, etc.
+        /// </summary>
+        public string Name
+        {
+            get { return m_name; }
+            set
+            {
+                m_name = value;
+                OnPropertyChanged("Name");
+            }
+        }
+
         /// <summary> List of LGHT entries in map. How is this different than LGTV? </summary>
         public BindingList<PointLight> LGHT { get; set; }
 

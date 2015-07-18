@@ -128,6 +128,9 @@ namespace WEditor.Rendering
 
             foreach (Room room in map.Rooms)
             {
+                if (!room.Visible)
+                    continue;
+
                 Matrix4 roomOffset = Matrix4.CreateTranslation(room.Translation) * Matrix4.CreateRotationY(room.YRotation);
 
                 foreach (var obj in room.Objects)
@@ -147,7 +150,7 @@ namespace WEditor.Rendering
 
         private void DrawStageForMap(Map map, Camera camera)
         {
-            if (map == null || map.Stage == null)
+            if (map == null || map.Stage == null || !map.Stage.Visible)
                 return;
 
             Matrix4 viewMatrix = camera.ViewMatrix;

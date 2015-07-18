@@ -9,19 +9,24 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <HierarchicalDataTemplate ItemsSource="{Binding Children}" DataType="{x:Type filesystem:VirtualFilesystemDirectory}">
-            <TextBlock Text="{Binding Name}"/>
-        </HierarchicalDataTemplate>
-
-        <DataTemplate DataType="{x:Type filesystem:VirtualFilesystemFile}">
-            <TextBlock Text="{Binding Name}"/>
-        </DataTemplate>
-
-
     </UserControl.Resources>
     <Grid>
         <GroupBox Header="Scene View" Margin="2,0">
-            <TreeView ItemsSource="{Binding ArchiveList}" SelectedItemChanged="SceneView_SelectedItemChanged"/>
+            <ListView ItemsSource="{Binding ArchiveList}" HorizontalContentAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                        <ToggleButton Grid.Column="1"  IsChecked="{Binding Visible}" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            </ListView>
         </GroupBox>
     </Grid>
 </UserControl>
