@@ -46,7 +46,7 @@ namespace WEditor.WindWaker
 
         /// <summary> I'm pretty sure these are Room Arrows - only used in Rooms. </summary>
         public BindingList<Arrow> RARO { get; set; }
-        
+
         /// <summary> Sources of ambient sound in the map. </summary>
         public BindingList<SoundSource> Sounds { get; set; }
 
@@ -59,7 +59,8 @@ namespace WEditor.WindWaker
         public BindingList<SceneComponent> Objects { get; set; }
 
 
-        public string Name { get; set; }
+        private string m_name = string.Empty;
+        private bool m_visible = false;
 
         protected Scene()
         {
@@ -73,6 +74,17 @@ namespace WEditor.WindWaker
             Entities = new BindingList<MapEntity>();
             Meshes = new BindingList<Mesh>();
             Objects = new BindingList<SceneComponent>();
+        }
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }
