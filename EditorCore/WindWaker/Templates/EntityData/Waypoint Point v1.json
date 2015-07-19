@@ -3,6 +3,6 @@
 	"Properties" :
 	[
 		{"Name" : "Unknown 1", "Type" : "int"},
-		{"Name" : "Scale", "Type" : "vector3"},
+		{"Name" : "Position", "Type" : "vector3"},
 	]
 }

@@ -69,7 +69,6 @@
     <Compile Include="Common\Nintendo\J3D\Materials.cs" />
     <Compile Include="Common\Ray.cs" />
     <Compile Include="Common\Rectangle.cs" />
-    <Compile Include="Common\Rotations.cs" />
     <Compile Include="Common\StandardOutLogger.cs" />
     <Compile Include="Common\Transform.cs" />
     <Compile Include="Common\WComponent.cs" />
@@ -118,7 +117,7 @@
     <None Include="RenderSystem\Shaders\vert.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\2D Minimap - Alt.json">
+    <None Include="WindWaker\Templates\EntityData\2D Minimap - Unused Tag.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\EntityData\TGSC.json">
@@ -133,16 +132,16 @@
     <None Include="WindWaker\Templates\EntityData\LBNK.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Camera Type - Room.json">
+    <None Include="WindWaker\Templates\EntityData\Camera Type v2.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Camera Point - Room.json">
+    <None Include="WindWaker\Templates\EntityData\Camera Point v2.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Camera Point.json">
+    <None Include="WindWaker\Templates\EntityData\Camera Point v1.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Camera Type.json">
+    <None Include="WindWaker\Templates\EntityData\Camera Type v1.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\EntityData\Dungeon Map Floor.json">
@@ -217,16 +216,16 @@
     <None Include="WindWaker\Templates\EntityData\Treasure Chest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Waypoint RPPN.json">
+    <None Include="WindWaker\Templates\EntityData\Waypoint Point v2.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Waypoint Path - Room.json">
+    <None Include="WindWaker\Templates\EntityData\Waypoint Path v2.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Waypoint Path.json">
+    <None Include="WindWaker\Templates\EntityData\Waypoint Path v1.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Waypoint.json">
+    <None Include="WindWaker\Templates\EntityData\Waypoint Point v1.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

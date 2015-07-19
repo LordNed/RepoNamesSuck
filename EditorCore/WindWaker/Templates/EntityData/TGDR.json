@@ -6,7 +6,7 @@
 		{"Name" : "Params", "Type" : "int32BitField"},
 		{"Name" : "Position", "Type" : "vector3"},
 		{"Name" : "RoomLoadingParams", "Type" : "short"},
-		{"Name" : "Rotation", "Type" : "short"},
+		{"Name" : "Rotation", "Type" : "yRotation"},
 		{"Name" : "Arg 1", "Type" : "byte"},
 		{"Name" : "ShipId", "Type" : "byte"},
 		{"Name" : "Unknown 2", "Type" : "byte"},

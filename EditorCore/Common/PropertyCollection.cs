@@ -21,7 +21,8 @@ namespace WEditor.Maps
         Color24,
         Color32,
         Vector3Byte,
-        Int32BitField
+        Int32BitField,
+        Quaternion
     }
 
     public class Property

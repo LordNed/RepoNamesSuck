@@ -6,7 +6,7 @@
 		{"Name" : "Params", "Type" : "int32BitField"},
 		{"Name" : "Position", "Type" : "vector3"},
 		{"Name" : "Room", "Type" : "objectReferenceShort", "ReferenceType" : "Room"},
-		{"Name" : "Rotation", "Type" : "short"},
+		{"Name" : "Rotation", "Type" : "yRotation"},
 		{"Name" : "Params 2", "Type" : "int32BitField"},
 	]
 }

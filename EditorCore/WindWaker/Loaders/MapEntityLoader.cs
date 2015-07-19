@@ -218,25 +218,45 @@ namespace WEditor.WindWaker.Loaders
                         break;
 
                     case "xyRotation":
-                        type = PropertyType.XYRotation;
-                        var xyRot = new XYRotation(reader.ReadUInt16(), reader.ReadUInt16());
+                        {
+                            type = PropertyType.XYRotation;
+                            Vector3 eulerAngles = new Vector3();
+                            for (int f = 0; f < 2; f++)
+                                eulerAngles[f] = (reader.ReadInt16() * (180 / 32786f));
 
-                        // Convert from -32768,32768 to -180,180
-                        xyRot.X = xyRot.X / 32768f * 180;
-                        xyRot.Y = xyRot.Y / 32768f * 180;
-                        value = xyRot;
+                            Quaternion xAxis = Quaternion.FromAxisAngle(new Vector3(1, 0, 0), eulerAngles.X * MathE.Deg2Rad);
+                            Quaternion yAxis = Quaternion.FromAxisAngle(new Vector3(0, 1, 0), eulerAngles.Y * MathE.Deg2Rad);
 
+                            // Swizzling to the ZYX order seems to be the right one.
+                            Quaternion finalRot = yAxis * xAxis;
+                            value = finalRot;
+                        }
                         break;
 
                     case "xyzRotation":
-                        type = PropertyType.XYZRotation;
-                        var xyzRot = new XYZRotation(reader.ReadUInt16(), reader.ReadUInt16(), reader.ReadUInt16());
+                        {
+                            type = PropertyType.XYZRotation;
+                            Vector3 eulerAngles = new Vector3();
+                            for (int f = 0; f < 3; f++)
+                                eulerAngles[f] = (reader.ReadInt16() * (180 / 32786f));
 
-                        // Convert from -32768,32768 to -180,180
-                        xyzRot.X = xyzRot.X / 32768f * 180;
-                        xyzRot.Y = xyzRot.Y / 32768f * 180;
-                        xyzRot.Z = xyzRot.Z / 32768f * 180;
-                        value = xyzRot;
+                            Quaternion xAxis = Quaternion.FromAxisAngle(new Vector3(1, 0, 0), eulerAngles.X * MathE.Deg2Rad);
+                            Quaternion yAxis = Quaternion.FromAxisAngle(new Vector3(0, 1, 0), eulerAngles.Y * MathE.Deg2Rad);
+                            Quaternion zAxis = Quaternion.FromAxisAngle(new Vector3(0, 0, 1), eulerAngles.Z * MathE.Deg2Rad);
+
+                            // Swizzling to the ZYX order seems to be the right one.
+                            Quaternion finalRot = zAxis * yAxis * xAxis;
+                            value = finalRot;
+                        }
+                        break;
+                    case "yRotation":
+                        {
+                            type = PropertyType.XYZRotation;
+                            float yRotation = reader.ReadInt16() * (180 / 32786f);
+
+                            Quaternion yAxis = Quaternion.FromAxisAngle(new Vector3(0, 1, 0), yRotation * MathE.Deg2Rad);
+                            value = yAxis;
+                        }
                         break;
 
                     case "color32":
@@ -345,9 +365,9 @@ namespace WEditor.WindWaker.Loaders
                 case "FourCC":
                     // Get an (ordered) list of all chunks of that type.
                     List<RawMapEntity> potentialRefs = new List<RawMapEntity>();
-                    foreach(var entity in m_entityData[scene])
+                    foreach (var entity in m_entityData[scene])
                     {
-                        if(entity.FourCC == templateProperty.ReferenceFourCCType)
+                        if (entity.FourCC == templateProperty.ReferenceFourCCType)
                             potentialRefs.Add(entity);
                     }
 

@@ -3,7 +3,7 @@
 	"Properties" :
 	[
 		{"Name" : "Translation", "Type" : "vector2"},
-		{"Name" : "Rotation", "Type" : "short"},
+		{"Name" : "Rotation", "Type" : "yRotation"},
 		{"Name" : "Room", "Type" : "objectReference", "ReferenceType" : "Room"},
 		{"Name" : "Unknown 1", "Type" : "byte"}
 	]

@@ -504,8 +504,8 @@ namespace WEditor.WindWaker.Loaders
             // Remove the Rotation field.
             if (forObject.Fields.HasProperty("Rotation"))
             {
-                XYRotation rotation = forObject.Fields.GetProperty<XYRotation>("Rotation");
-                //actor.Transform.Rotation =
+                Quaternion rotation = forObject.Fields.GetProperty<Quaternion>("Rotation");
+                forObject.Transform.Rotation = rotation;
                 forObject.Fields.RemoveProperty("Rotation");
             }
 

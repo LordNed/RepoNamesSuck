@@ -3,7 +3,7 @@
 	"Properties" :
 	[
 		{"Name" : "Position", "Type" : "vector3"},
-		{"Name" : "Rotation", "Type" : "short"},
+		{"Name" : "Rotation", "Type" : "yRotation"},
 		{"Name" : "Ship Id", "Type" : "byte"},
 		{"Name" : "Unknown 1", "Type" : "byte"}
 	]
