@@ -100,6 +100,9 @@ namespace WEditor.Rendering
 
             foreach (Room room in m_world.Map.Rooms)
             {
+                if (!room.Visible)
+                    continue;
+
                 DrawScene(room);
                 foreach (Mesh mesh in room.MeshList)
                 {
@@ -110,11 +113,14 @@ namespace WEditor.Rendering
 
             if (m_world.Map.Stage != null)
             {
-                DrawScene(m_world.Map.Stage);
-                foreach (Mesh mesh in m_world.Map.Stage.MeshList)
+                if (m_world.Map.Stage.Visible)
                 {
-                    if (mesh != null)
-                        DrawMesh(mesh, camera, Matrix4.Identity);
+                    DrawScene(m_world.Map.Stage);
+                    foreach (Mesh mesh in m_world.Map.Stage.MeshList)
+                    {
+                        if (mesh != null)
+                            DrawMesh(mesh, camera, Matrix4.Identity);
+                    }
                 }
             }
         }
@@ -124,7 +130,7 @@ namespace WEditor.Rendering
             foreach (var obj in scene.Entities)
             {
                 // Don't draw things if they've had their layer turned off.
-                if (!m_world.Map.LayerIsVisible(obj.Layer) || !scene.Visible)
+                if (!m_world.Map.LayerIsVisible(obj.Layer))
                     continue;
 
                 // Tell them to draw their gizmos
@@ -152,6 +158,10 @@ namespace WEditor.Rendering
             Matrix4 viewMatrix = camera.ViewMatrix;
             Matrix4 projMatrix = camera.ProjectionMatrix;
 
+            GL.Enable(EnableCap.DepthTest);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.CullFace);
+            GL.DepthMask(true);
             foreach (var instance in m_world.Gizmos.GetInstanceList())
             {
                 Matrix4 modelMatrix = Matrix4.CreateScale(instance.Scale) * Matrix4.CreateTranslation(instance.Position);
