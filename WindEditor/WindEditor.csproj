@@ -102,6 +102,7 @@
     <Compile Include="Common\Color24Converter.cs" />
     <Compile Include="Common\InspectorTemplateSelector.cs" />
     <Compile Include="Common\Int32BitFieldConverter.cs" />
+    <Compile Include="Common\MapEntityConverter.cs" />
     <Compile Include="ViewModel\EntityOutlinerViewModel.cs" />
     <Compile Include="ViewModel\InspectorViewModel.cs" />
     <Compile Include="ViewModel\OutputLogViewModel.cs" />

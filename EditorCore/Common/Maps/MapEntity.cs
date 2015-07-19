@@ -21,10 +21,20 @@ namespace WEditor.Maps
         }
 
         public bool LayerCanChange { get; internal set; }
-        public PropertyCollection Fields { get; set; }
+        public PropertyCollection Fields
+        {
+            get { return m_fields; }
+            set
+            {
+                m_fields = value;
+                OnPropertyChanged("Fields");
+            }
+        }
+
 
 
         private MapLayer m_mapLayer;
+        private PropertyCollection m_fields;
 
         public MapEntity()
         {

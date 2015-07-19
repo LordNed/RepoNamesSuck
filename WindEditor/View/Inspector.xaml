@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:wmaps="clr-namespace:WEditor.Maps;assembly=EditorCore"
+             xmlns:self="clr-namespace:WindEditor.UI"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -13,6 +14,7 @@
                 <x:Type TypeName="wmaps:MapLayer"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <self:MapEntityConverter x:Key="mapEntityConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid>
@@ -23,7 +25,13 @@
             <TextBlock Grid.Column="0" Text="Layer:" Margin="0,3,5,0"/>
             <ComboBox Grid.Column="1" DataContext="{Binding SelectedEntity}" ItemsSource="{Binding Source={StaticResource MapLayerValues}}" SelectedValue="{Binding Layer}" VerticalAlignment="Top" DropDownOpened="LayerCB_DropDownOpened"/>
         </Grid>
-        <ItemsControl Margin="0,22,0,0" ItemTemplateSelector="{StaticResource InspectorItemTemplateSelector}" DataContext="{Binding SelectedEntity}" ItemsSource="{Binding Properties}"/>
+        <ItemsControl Margin="0,22,0,0" ItemTemplateSelector="{StaticResource InspectorItemTemplateSelector}">
+            <ItemsControl.ItemsSource>
+                <MultiBinding Converter="{StaticResource mapEntityConverter}">
+                    <Binding Path="SelectedEntity"/>
+                </MultiBinding>
+            </ItemsControl.ItemsSource>
+        </ItemsControl>
 
     </Grid>
 </UserControl>

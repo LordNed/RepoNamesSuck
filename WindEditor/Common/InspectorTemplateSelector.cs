@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using OpenTK;
+using System;
+using System.Windows;
 using System.Windows.Controls;
 using WEditor.Maps;
 
@@ -23,46 +25,57 @@ namespace WindEditor.UI
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            Property property = (Property)item;
-            switch (property.Type)
+            if (item is Property)
             {
-                case PropertyType.Byte:
-                    return ByteTemplate;
-                case PropertyType.Short:
-                    return ShortTemplate;
-                case PropertyType.Int32:
-                    return IntTemplate;
-                case PropertyType.Float:
-                    return FloatTemplate;
-                case PropertyType.Bool:
-                    return BoolTemplate;
-                case PropertyType.String:
-                    return StringTemplate;
-                case PropertyType.Vector2:
-                    return Vector2Template;
-                case PropertyType.Vector3:
-                    return Vector3Template;
-                case PropertyType.Enum:
-                    return EnumTemplate;
-                case PropertyType.ObjectReference:
-                    return ObjectReferenceTemplate;
-                case PropertyType.XYRotation:
-                    return Vector2Template;
-                case PropertyType.XYZRotation:
-                    return Vector3Template;
-                case PropertyType.Color24:
-                    return Color24Template;
-                case PropertyType.Color32:
-                    return Color32Template;
-                case PropertyType.Vector3Byte:
-                    return Vector3ByteTemplate;
-                case PropertyType.Int32BitField:
-                    return Int32BitField;
 
-                case PropertyType.None:
-                default:
-                    return base.SelectTemplate(item, container);
+                Property property = (Property)item;
+                switch (property.Type)
+                {
+                    case PropertyType.Byte:
+                        return ByteTemplate;
+                    case PropertyType.Short:
+                        return ShortTemplate;
+                    case PropertyType.Int32:
+                        return IntTemplate;
+                    case PropertyType.Float:
+                        return FloatTemplate;
+                    case PropertyType.Bool:
+                        return BoolTemplate;
+                    case PropertyType.String:
+                        return StringTemplate;
+                    case PropertyType.Vector2:
+                        return Vector2Template;
+                    case PropertyType.Vector3:
+                        return Vector3Template;
+                    case PropertyType.Enum:
+                        return EnumTemplate;
+                    case PropertyType.ObjectReference:
+                        return ObjectReferenceTemplate;
+                    case PropertyType.XYRotation:
+                        return Vector2Template;
+                    case PropertyType.XYZRotation:
+                        return Vector3Template;
+                    case PropertyType.Color24:
+                        return Color24Template;
+                    case PropertyType.Color32:
+                        return Color32Template;
+                    case PropertyType.Vector3Byte:
+                        return Vector3ByteTemplate;
+                    case PropertyType.Int32BitField:
+                        return Int32BitField;
+
+                    case PropertyType.None:
+                    default:
+                        return base.SelectTemplate(item, container);
+                }
             }
+            else
+            {
+                if (item is Vector3)
+                    return Vector3Template;
+            }
+
+            return base.SelectTemplate(item, container);
         }
     }
 }
