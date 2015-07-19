@@ -48,7 +48,8 @@
     <Compile Include="Common\Components\EditorCameraMovement.cs" />
     <Compile Include="Common\Input.cs" />
     <Compile Include="Common\Maps\Actor.cs" />
-    <Compile Include="Common\Maps\ScaleableObject - Copy.cs" />
+    <Compile Include="Common\PropertyCollection.cs" />
+    <Compile Include="Common\Maps\ScaleableObject.cs" />
     <Compile Include="Common\Maps\TreasureChest.cs" />
     <Compile Include="Common\Maps\Door.cs" />
     <Compile Include="Common\Maps\Arrow.cs" />
@@ -103,7 +104,6 @@
     <Compile Include="WindWaker\Loaders\J3D\VTX1.cs" />
     <Compile Include="WindWaker\Loaders\MapEntityLoader.cs" />
     <Compile Include="WindWaker\Loaders\MapLoader.cs" />
-    <Compile Include="WindWaker\Loaders\SceneLoader.cs" />
     <Compile Include="WindWaker\Map.cs" />
     <Compile Include="WindWaker\ItemJsonTemplate.cs" />
     <Compile Include="WindWaker\Room.cs" />
@@ -151,7 +151,7 @@
     <None Include="WindWaker\Templates\EntityData\Dungeon Map.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Dynamic Shadow Source.json">
+    <None Include="WindWaker\Templates\EntityData\Light Vector.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\EntityData\Dynamic Light.json">

@@ -20,9 +20,12 @@ namespace WEditor.WindWaker.Loaders
             /// <summary> Offset from the start of the file to the chunk data. </summary>
             public int ChunkOffset;
 
+
+            /// <summary>
             // Used to fix up ACTR, TRES, and SCOB which can support up to 12 layers (+base)
             // this is resolved at chunk load time and then stored in the chunk and passed
             // to the entities being created.
+            /// </summary>
             public MapLayer Layer = MapLayer.Default;
 
             public override string ToString()
@@ -31,17 +34,27 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private List<ItemJsonTemplate> m_templates;
-
-        public MapEntityLoader()
+        public sealed class RawMapEntity
         {
-            m_templates = LoadItemTemplates();
+            public MapLayer Layer = MapLayer.Default;
+            public string FourCC;
+            public PropertyCollection Fields;
         }
 
-        public BindingList<MapEntity> LoadFromStream(EndianBinaryReader reader)
-        {
-            BindingList<MapEntity> entities = new BindingList<MapEntity>();
+        private List<ItemJsonTemplate> m_templates;
+        private Dictionary<Scene, List<RawMapEntity>> m_entityData;
+        private Map m_map;
 
+        public MapEntityLoader(Map parentMap)
+        {
+            LoadItemTemplates();
+            m_entityData = new Dictionary<Scene, List<RawMapEntity>>();
+            m_map = parentMap;
+        }
+
+        public void LoadFromStream(Scene parentScene, EndianBinaryReader reader)
+        {
+            var mapEntities = new List<RawMapEntity>();
             long fileOffsetStart = reader.BaseStream.Position;
 
             // File Header
@@ -80,91 +93,47 @@ namespace WEditor.WindWaker.Loaders
 
                 for (int k = 0; k < chunk.ElementCount; k++)
                 {
-                    MapEntity entityInstance = LoadMapEntityFromStream(chunk.FourCC, reader, template, entities);
+                    RawMapEntity entityInstance = LoadMapEntityFromStream(chunk.FourCC, reader, template);
                     entityInstance.Layer = chunk.Layer;
-                    entities.Add(entityInstance);
+                    mapEntities.Add(entityInstance);
                 }
             }
 
-            return entities;
+            m_entityData[parentScene] = mapEntities;
         }
 
-        private static MapLayer ResolveChunkFourCCToLayer(string fourCC)
-        {
-            // Only ACTR, SCOB, and TRES support multiple layers so if it's not one of them, early out.
-            if (!(fourCC.StartsWith("ACT") || fourCC.StartsWith("SCO") || fourCC.StartsWith("TRE")))
-                return MapLayer.Default;
-
-            // Examine the last character, 0-9, a-b. 
-            char lastChar = fourCC[3];
-            switch(lastChar)
-            {
-                case '0': return MapLayer.Layer0;
-                case '1': return MapLayer.Layer1;
-                case '2': return MapLayer.Layer2;
-                case '3': return MapLayer.Layer3;
-                case '4': return MapLayer.Layer4;
-                case '5': return MapLayer.Layer5;
-                case '6': return MapLayer.Layer6;
-                case '7': return MapLayer.Layer7;
-                case '8': return MapLayer.Layer8;
-                case '9': return MapLayer.Layer9;
-                case 'a': return MapLayer.LayerA;
-                case 'b': return MapLayer.LayerB;
-            }
-
-            // It's passed the above check, so it's ACTR, SCOB, or TRES (default layer)
-            return MapLayer.Default;
-        }
-
-        private static string ResolveFourCCWithLayerToName(string fourCC)
-        {
-            if (fourCC.StartsWith("ACT")) return "ACTR";
-            if (fourCC.StartsWith("TRE")) return "TRES";
-            if (fourCC.StartsWith("SCO")) return "SCOB";
-
-            return fourCC;
-        }
-
-        private static List<ItemJsonTemplate> LoadItemTemplates()
+        private void LoadItemTemplates()
         {
             string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             executionPath += "/WindWaker/Templates/EntityData/";
 
             DirectoryInfo dI = new DirectoryInfo(executionPath);
-            List<ItemJsonTemplate> itemTemplates = new List<ItemJsonTemplate>();
+            m_templates = new List<ItemJsonTemplate>();
 
-            foreach(var file in dI.GetFiles())
+            foreach (var file in dI.GetFiles())
             {
                 var template = JsonConvert.DeserializeObject<ItemJsonTemplate>(File.ReadAllText(file.FullName));
-                itemTemplates.Add(template);
+                m_templates.Add(template);
             }
 
             // Now that all templates have been loaded, resolve any templates that refer to other templates.
-            foreach(var template in itemTemplates)
+            foreach (var template in m_templates)
             {
                 if (!string.IsNullOrEmpty(template.Template))
                 {
                     // If the template isn't null, we're going to replace its properties with another entities properties
                     // so that we don't end up duplicating template code.
-                    var otherTemplate = itemTemplates.Find(x => string.Compare(x.FourCC, template.Template, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    var otherTemplate = m_templates.Find(x => string.Compare(x.FourCC, template.Template, StringComparison.InvariantCultureIgnoreCase) == 0);
                     template.Properties = new List<ItemJsonTemplate.Property>(otherTemplate.Properties);
                 }
             }
-
-            return itemTemplates;
         }
 
-        private static MapEntity LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template, BindingList<MapEntity> loadedEntities)
+        private RawMapEntity LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template)
         {
-            // Determine if this particular entity can have its layer changed after it is created.
-            // Only ACTR, SCOB, and TRES support multiple layers.
-            bool layerCanChange = (chunkFourCC == "TRES" || chunkFourCC == "ACTR" || chunkFourCC == "SCOB");
-
-
-            MapEntity obj = new MapEntity();
+            RawMapEntity obj = new RawMapEntity();
+            obj.Fields = new PropertyCollection();
             obj.FourCC = chunkFourCC;
-            obj.LayerCanChange = layerCanChange;
 
             // We're going to examine the Template's properties and load based on the current template type.
             for (int i = 0; i < template.Properties.Count; i++)
@@ -227,8 +196,6 @@ namespace WEditor.WindWaker.Loaders
                         // and then when they are post-processed they'll be turned into a proper type.
                         type = PropertyType.ObjectReference;
                         value = (int)reader.ReadByte();
-                        //byte refByte = reader.ReadByte();
-                        //value = ResolveEntityReferenceNew(chunkFourCC, templateProperty, refByte, loadedEntities);
                         break;
 
                     case "objectReferenceShort":
@@ -236,8 +203,6 @@ namespace WEditor.WindWaker.Loaders
                         // and then when they are post-processed they'll be turned into a proper type.
                         type = PropertyType.ObjectReference;
                         value = (int)reader.ReadUInt16();
-                        //ushort refShort = reader.ReadUInt16();
-                        //value = ResolveEntityReferenceNew(chunkFourCC, templateProperty, refShort, loadedEntities);
                         break;
 
                     case "objectReferenceArray":
@@ -248,8 +213,6 @@ namespace WEditor.WindWaker.Loaders
                         for (int refArray = 0; refArray < templateProperty.Length; refArray++)
                         {
                             refList.Add((int)reader.ReadByte());
-                            //byte refByteArray = reader.ReadByte();
-                            //refList.Add(ResolveEntityReferenceNew(chunkFourCC, templateProperty, refByteArray, loadedEntities));
                         }
                         value = refList;
                         break;
@@ -262,7 +225,7 @@ namespace WEditor.WindWaker.Loaders
                         xyRot.X = xyRot.X / 32768f * 180;
                         xyRot.Y = xyRot.Y / 32768f * 180;
                         value = xyRot;
-                        
+
                         break;
 
                     case "xyzRotation":
@@ -302,62 +265,65 @@ namespace WEditor.WindWaker.Loaders
                         break;
                 }
 
-                EntityProperty instanceProp = new EntityProperty(templateProperty.Name, type, value);
-                obj.Properties.Add(instanceProp);
+                Property instanceProp = new Property(templateProperty.Name, type, value);
+                obj.Fields.Properties.Add(instanceProp);
             }
 
             return obj;
         }
 
-        public void PostProcess(Scene scene, Map map)
+        public void PostProcessEntities()
         {
-            foreach(MapEntity entity in scene.Entities)
+            foreach (var kvp in m_entityData)
             {
-                ItemJsonTemplate origTemplate = m_templates.Find(x => string.Compare(x.FourCC, entity.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
-                if (origTemplate == null)
+                foreach (var entity in kvp.Value)
                 {
-                    WLog.Warning(LogCategory.EntityLoading, map, "Failed to find template for entity {0}, not attempting to post-process.", entity);
-                    continue;
-                }
-
-                foreach(EntityProperty property in entity.Properties)
-                {
-                    ItemJsonTemplate.Property origTemplateProperty = origTemplate.Properties.Find(x => string.Compare(x.Name, property.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
-                    if(origTemplateProperty == null)
+                    ItemJsonTemplate origTemplate = m_templates.Find(x => string.Compare(x.FourCC, entity.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    if (origTemplate == null)
                     {
-                        WLog.Warning(LogCategory.EntityLoading, map, "Failed to find property {0} on template {1} for entity {2}, not attempting to post-process.", property.Name, origTemplate.FourCC, entity);
+                        WLog.Warning(LogCategory.EntityLoading, null, "Failed to find template for entity {0}, not attempting to post-process.", entity);
                         continue;
                     }
 
-                    // We cheated earlier and stored the various reference-type ones as their index values. That means the type of the object doesn't actually
-                    // reflect the Type field. Thus, we now need to go back, patch up the references, and set them to be their proper type. Yeah!
-                    switch(origTemplateProperty.Type)
+                    foreach (Property property in entity.Fields.Properties)
                     {
-                        case "objectReference":
-                        case "objectReferenceShort":
-                            {
-                                int objIndex = (int)property.Value;
-                                property.Value = ResolveEntityReference(entity.FourCC, origTemplateProperty, objIndex, scene.Entities, map);
-                            }
-                            break;
-                        case "objectReferenceArray":
-                            {
-                                BindingList<object> indexes = (BindingList<object>)property.Value;
-                                BindingList<object> resolvedRefs = new BindingList<object>();
-                                for(int i = 0; i < indexes.Count; i++)
+                        ItemJsonTemplate.Property origTemplateProperty = origTemplate.Properties.Find(x => string.Compare(x.Name, property.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
+                        if (origTemplateProperty == null)
+                        {
+                            WLog.Warning(LogCategory.EntityLoading, null, "Failed to find property {0} on template {1} for entity {2}, not attempting to post-process.", property.Name, origTemplate.FourCC, entity);
+                            continue;
+                        }
+
+                        // We cheated earlier and stored the various reference-type ones as their index values. That means the type of the object doesn't actually
+                        // reflect the Type field. Thus, we now need to go back, patch up the references, and set them to be their proper type. Yeah!
+                        switch (origTemplateProperty.Type)
+                        {
+                            case "objectReference":
+                            case "objectReferenceShort":
                                 {
-                                    var obj = ResolveEntityReference(entity.FourCC, origTemplateProperty, (int)indexes[i], scene.Entities, map);
-                                    resolvedRefs.Add(obj);
+                                    int objIndex = (int)property.Value;
+                                    property.Value = ResolveEntityReference(entity.FourCC, origTemplateProperty, objIndex, kvp.Key);
                                 }
-                                property.Value = resolvedRefs;
-                            }
-                            break;
+                                break;
+                            case "objectReferenceArray":
+                                {
+                                    BindingList<object> indexes = (BindingList<object>)property.Value;
+                                    BindingList<object> resolvedRefs = new BindingList<object>();
+                                    for (int i = 0; i < indexes.Count; i++)
+                                    {
+                                        var obj = ResolveEntityReference(entity.FourCC, origTemplateProperty, (int)indexes[i], kvp.Key);
+                                        resolvedRefs.Add(obj);
+                                    }
+                                    property.Value = resolvedRefs;
+                                }
+                                break;
+                        }
                     }
                 }
             }
         }
 
-        private static object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, BindingList<MapEntity> loadedEntities, Map map)
+        private object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, Scene scene)
         {
             switch (templateProperty.ReferenceType)
             {
@@ -366,9 +332,9 @@ namespace WEditor.WindWaker.Loaders
                     if (index == 0xFF)
                         return null;
 
-                    if (index < map.Rooms.Count)
+                    if (index < m_map.Rooms.Count)
                     {
-                        return map.Rooms[index];
+                        return m_map.Rooms[index];
                     }
                     else
                     {
@@ -377,17 +343,12 @@ namespace WEditor.WindWaker.Loaders
                     return null;
 
                 case "FourCC":
-                    // We can (hopefully) know that the array it's about to index is already loaded
-                    // thanks to the TemplateOrder.json defining them that way. Thus, we can just
-                    // resolve the dependency by looking into the right array!
-
                     // Get an (ordered) list of all chunks of that type.
-                    List<MapEntity> potentialRefs = new List<MapEntity>();
-                    for (int i = 0; i < loadedEntities.Count; i++)
+                    List<RawMapEntity> potentialRefs = new List<RawMapEntity>();
+                    foreach(var entity in m_entityData[scene])
                     {
-                        // Check against all potential reference types.
-                        if (string.Compare(loadedEntities[i].FourCC, templateProperty.ReferenceFourCCType) == 0)
-                            potentialRefs.Add(loadedEntities[i]);
+                        if(entity.FourCC == templateProperty.ReferenceFourCCType)
+                            potentialRefs.Add(entity);
                     }
 
                     // There's an edge-case here where some maps omit an entity (such as Fairy01 not having a Virt chunk) but use index 0 (Fairy01's Pale chunk)
@@ -404,6 +365,49 @@ namespace WEditor.WindWaker.Loaders
             }
 
             return null;
+        }
+
+        private static MapLayer ResolveChunkFourCCToLayer(string fourCC)
+        {
+            // Only ACTR, SCOB, and TRES support multiple layers so if it's not one of them, early out.
+            if (!(fourCC.StartsWith("ACT") || fourCC.StartsWith("SCO") || fourCC.StartsWith("TRE")))
+                return MapLayer.Default;
+
+            // Examine the last character, 0-9, a-b. 
+            char lastChar = fourCC[3];
+            switch (lastChar)
+            {
+                case '0': return MapLayer.Layer0;
+                case '1': return MapLayer.Layer1;
+                case '2': return MapLayer.Layer2;
+                case '3': return MapLayer.Layer3;
+                case '4': return MapLayer.Layer4;
+                case '5': return MapLayer.Layer5;
+                case '6': return MapLayer.Layer6;
+                case '7': return MapLayer.Layer7;
+                case '8': return MapLayer.Layer8;
+                case '9': return MapLayer.Layer9;
+                case 'a': return MapLayer.LayerA;
+                case 'b': return MapLayer.LayerB;
+            }
+
+            // It's passed the above check, so it's ACTR, SCOB, or TRES (default layer)
+            return MapLayer.Default;
+        }
+
+        private static string ResolveFourCCWithLayerToName(string fourCC)
+        {
+            if (fourCC.StartsWith("ACT")) return "ACTR";
+            if (fourCC.StartsWith("TRE")) return "TRES";
+            if (fourCC.StartsWith("SCO")) return "SCOB";
+
+            return fourCC;
+        }
+
+
+        public Dictionary<Scene, List<RawMapEntity>> GetData()
+        {
+            return m_entityData;
         }
     }
 }

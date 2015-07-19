@@ -1,7 +1,9 @@
-﻿using OpenTK;
+﻿using GameFormatReader.Common;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using WEditor.Common.Maps;
 using WEditor.FileSystem;
 using WEditor.Maps;
@@ -91,7 +93,11 @@ namespace WEditor.WindWaker.Loaders
             newMap.Name = mapName;
             newMap.ProjectFilePath = System.IO.Path.GetDirectoryName(folderPath);
 
-            SceneLoader sceneLoader = new SceneLoader();
+            LoadEntities(newMap, archiveFolderMap);
+
+            return newMap;
+            /*SceneLoader sceneLoader = new SceneLoader();
+            
 
             // Oof. So Stages can have references to rooms (via MULT chunk) and rooms can have references to other rooms (via PLYR)
             // and it wouldn't surprise me if somewhere, a room references something in a stage. Because of this, we're going to load
@@ -127,202 +133,356 @@ namespace WEditor.WindWaker.Loaders
             }
 
 
-            return newMap;
+            return newMap;*/
         }
 
-        private static void PostProcessScene(Scene scene, WWorld world)
+        private void LoadEntities(Map newMap, Dictionary<string, VirtualFilesystemDirectory> archiveFolderMap)
         {
-            PostProcessPointLights(scene, world);
-            PostProcessArrows(scene, world);
-            PostProcessSoundSources(scene, world);
-            PostProcessShipSpawns(scene, world);
+            MapEntityLoader entityLoader = new MapEntityLoader(newMap);
 
-            scene.PATH = PostProcessPaths("PATH", "PPNT", scene);
-            scene.RPAT = PostProcessPaths("RPAT", "RPPN", scene);
-        }
-
-        private static void PostProcessRoom(Room room, WWorld world)
-        {
-            PostProcessScene(room, world);
-        }
-
-        private static void PostProcessStage(Stage stage, WWorld world)
-        {
-            // We're going to extract the information from the MULT chunk and
-            // apply it to the rooms so they have the correct offset.
-            var multList = FindAllByType("MULT", stage.Entities);
-            foreach (var entry in multList)
+            // For each room/scene, find the associated dzr/dzs file and load its
+            // contents into the entityLoader.
+            foreach (var kvp in archiveFolderMap)
             {
-                Vector2 translation = entry.GetProperty<Vector2>("Translation");
-                float yRotation = (float)(entry.GetProperty<short>("Rotation")) / 32768f * 180;
-                byte unknown1 = entry.GetProperty<byte>("Unknown 1");
+                Scene sceneData = null;
 
-                Room room = entry.GetProperty<Room>("Room");
-
-                if (room != null)
+                if (kvp.Key.StartsWith("room"))
                 {
-                    room.Translation = new Vector3(translation.X, 0, translation.Y);
-                    room.YRotation = yRotation;
-                    room.MULT_Unknown1 = unknown1;
+                    sceneData = new Room();
+                    newMap.Rooms.Add((Room)sceneData);
+                }
+                else if (kvp.Key.StartsWith("stage"))
+                {
+                    sceneData = new Stage();
+                    newMap.Stage = (Stage)sceneData;
+                }
+                else
+                {
+                    // Skip any errant thing in the folder that's not a room or a stage.
+                    continue;
+                }
+
+                sceneData.Name = kvp.Key;
+                // Check to see if this Archive has stage/room entity data.
+                var roomEntData = kvp.Value.FindByExtension(".dzr");
+                var stageEntData = kvp.Value.FindByExtension(".dzs");
+
+                VirtualFilesystemFile vfsFile = null;
+                if (roomEntData.Count > 0)
+                    vfsFile = roomEntData[0];
+                else if (stageEntData.Count > 0)
+                    vfsFile = stageEntData[0];
+                else
+                    continue;
+
+                using (EndianBinaryReader reader = new EndianBinaryReader(new System.IO.MemoryStream(vfsFile.File.GetData()), Endian.Big))
+                {
+                    entityLoader.LoadFromStream(sceneData, reader);
                 }
             }
 
-            PostProcessScene(stage, world);
+            // Once we've loaded all of the entities from the stream, we're going to
+            // post-process them to resolve object references.
+            entityLoader.PostProcessEntities();
+
+            // Finally, we can actually convert these into map objects
+            foreach (var roomOrStageData in entityLoader.GetData())
+            {
+                Stage stage = roomOrStageData.Key as Stage;
+                Room room = roomOrStageData.Key as Room;
+
+                if (stage != null)
+                    PostProcessStage(stage, roomOrStageData.Value);
+                if (room != null)
+                    PostProcessRoom(room, roomOrStageData.Value);
+            }
         }
 
-        private static BindingList<Path> PostProcessPaths(string pathFourCC, string pointFourCC, Scene scene)
+        private static void PostProcessStage(Stage stage, List<MapEntityLoader.RawMapEntity> rawEntityData)
         {
-            var pathList = FindAllByType(pathFourCC, scene.Entities);
-            var pointList = FindAllByType(pointFourCC, scene.Entities);
+            // Process objects which belong to both Stage and Rooms.
+            PostProcessSharedEntities(stage, rawEntityData);
 
+            // Create Arrows out of AROB tags
+            PostProcessArrows(stage, "AROB", rawEntityData);
 
+            // Create Paths out of RPAT tags
+            PostProcessPaths(stage, "PATH", "PPNT", rawEntityData);
+            // Non Physical Items
+            // CAMR
+            // DMAP
+            // EnvR
+            // Colo
+            // Pale
+            // Virt
+            // EVNT
+            // MECO
+            // MEMA
+            // MULT
+            // PATH
+            // RTBL
+            // STAG
+        }
+
+        private static void PostProcessRoom(Room room, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            // Process objects which belong to both Stage and Rooms.
+            PostProcessSharedEntities(room, rawEntityData);
+
+            // Create Doors out of DOOR tags
+            PostProcessDoors(room, rawEntityData);
+
+            // Create Light Vectors out of LGTV tags
+            PostProcessLightVectors(room, rawEntityData);
+
+            // Create TGOBs out of TGOB tags.
+            PostProcessTGOB(room, rawEntityData);
+
+            // Create TGSC out of TGSC tags.
+            PostProcessTGSC(room, rawEntityData);
+
+            // Non Physical Items
+            // FILI
+        }
+
+        private static void PostProcessSharedEntities(Scene scene, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            // Create Actors out of ACTR tags.
+            PostProcessActors(scene, rawEntityData);
+
+            // Create scaleable objects out of SCOB tags
+            PostProcessScaleableObjects(scene, rawEntityData);
+
+            // Create Player Spawns out of PLYR tags
+            PostProcessPlayerSpawns(scene, rawEntityData);
+
+            // Create Arrows out of RARO tags
+            PostProcessArrows(scene, "RARO", rawEntityData);
+
+            // Create Paths out of RPAT tags
+            PostProcessPaths(scene, "RPAT", "RPPN", rawEntityData);
+
+            // Create Sound Sources out of SOND tags.
+            PostProcessSoundSources(scene, rawEntityData);
+
+            // Create TGDR objects out of TGDR tags.
+            PostProcessTGDR(scene, rawEntityData);
+
+            // Create Treasure Chests out of TRES tags.
+            PostProcessTreasureChests(scene, rawEntityData);
+
+            // Non Physical Items
+            // 2DMA (Both)
+            // FLOR (Both)
+            // RCAM (Both)
+            // RPAT (Both)
+            // SCLS (Both)
+        }
+
+        private static void PostProcessActors(Scene scene, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            foreach (var actorEntity in FindAllByType("ACTR", rawEntityData))
+            {
+                Actor actor = new Actor();
+                actor.Name = actorEntity.Fields.GetProperty<string>("Name");
+                actor.Fields = actorEntity.Fields;
+
+                ProcessTransform(actor);
+                actor.Fields.RemoveProperty("Name");
+
+                scene.Entities.Add(actor);
+            }
+        }
+
+        private static void PostProcessScaleableObjects(Scene scene, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            foreach(var scobEntity in FindAllByType("SCOB", rawEntityData))
+            {
+                ScaleableObject scob = new ScaleableObject();
+                scob.Name = scobEntity.Fields.GetProperty<string>("Name");
+                scob.Fields = scobEntity.Fields;
+
+                ProcessTransform(scob);
+                scob.Fields.RemoveProperty("Name");
+
+                scene.Entities.Add(scob);
+            }
+        }
+
+        private static void PostProcessTreasureChests(Scene scene, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            foreach(var chestEntity in FindAllByType("TRES", rawEntityData))
+            {
+                TreasureChest tres = new TreasureChest();
+                tres.Name = chestEntity.Fields.GetProperty<string>("Name");
+                tres.Fields = chestEntity.Fields;
+
+                ProcessTransform(tres);
+                tres.Fields.RemoveProperty("Name");
+
+                scene.Entities.Add(tres);
+            }
+        }
+
+        private static void PostProcessTGDR(Scene scene, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            foreach(var tgdrEntity in FindAllByType("TGDR", rawEntityData))
+            {
+                Door door = new Door();
+                door.Name = tgdrEntity.Fields.GetProperty<string>("Name");
+                door.Fields = tgdrEntity.Fields;
+
+                ProcessTransform(door);
+                door.Fields.RemoveProperty("Name");
+
+                scene.Entities.Add(door);
+            }
+        }
+
+        private static void PostProcessSoundSources(Scene scene, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            foreach(var soundEntity in FindAllByType("SOND", rawEntityData))
+            {
+                SoundSource sndSource = new SoundSource();
+                sndSource.Name = soundEntity.Fields.GetProperty<string>("Name");
+                sndSource.Fields = soundEntity.Fields;
+
+                ProcessTransform(sndSource);
+                sndSource.Fields.RemoveProperty("Name");
+
+                scene.Entities.Add(sndSource);
+            }
+        }
+
+        private static void PostProcessPaths(Scene scene, string pathFourCC, string pointFourCC, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
             // Build a list of PathPoints out of the point list.
             List<PathPoint> pathPointsList = new List<PathPoint>();
-            foreach(var point in pointList)
+            foreach (var point in FindAllByType(pointFourCC, rawEntityData))
             {
                 PathPoint newPoint = new PathPoint
                 {
-                    Unknown1 = point.GetProperty<int>("Unknown 1"),
-                    Postion = point.GetProperty<Vector3>("Position")
+                    Unknown1 = point.Fields.GetProperty<int>("Unknown 1"),
+                    Postion = point.Fields.GetProperty<Vector3>("Position")
                 };
 
                 pathPointsList.Add(newPoint);
             }
 
             // Now create a list of MapPaths and assign the loaded PathPoints to it.
-            BindingList<Path> mapPathList = new BindingList<Path>();
-            foreach(var path in pathList)
+            foreach (var path in FindAllByType(pathFourCC, rawEntityData))
             {
-                short numPoints = path.GetProperty<short>("Number of Points");
-                int firstPointOffset = path.GetProperty<int>("int");
+                short numPoints = path.Fields.GetProperty<short>("Number of Points");
+                int firstPointOffset = path.Fields.GetProperty<int>("First Entry Offset");
 
                 // Paths store their number of points, and the offset (in bytes) to the index of the first path in the list.
                 // We divide by the length of a PPNT/RPPN to turn the offset into an index.
                 int pointStartIndex = firstPointOffset / 0x10;
 
-                Path newPath = new Path
-                {
-                    Unknown1 =  path.GetProperty<short>("Unknown 1"),
-                    Unknown2 = path.GetProperty<byte>("Unknown 2"),
-                    LoopType = path.GetProperty<byte>("Unknown 3"),
-                    Unknown3 = path.GetProperty<short>("Unknown 4")
-                };
-
-                for(int i = pointStartIndex; i < pointStartIndex+numPoints; i++)
+                Path newPath = new Path();
+                newPath.Fields = path.Fields;
+                newPath.Fields.RemoveProperty("Number of Points");
+                newPath.Fields.RemoveProperty("First Entry Offset");
+                
+                for (int i = pointStartIndex; i < pointStartIndex + numPoints; i++)
                 {
                     newPath.Points.Add(pathPointsList[i]);
                 }
 
-                mapPathList.Add(newPath);
-            }
-
-            return mapPathList;
-        }
-
-        private static void PostProcessShipSpawns(Scene scene, WWorld world)
-        {
-            var spawnList = FindAllByType("SHIP", scene.Entities);
-            for (int i = 0; i < spawnList.Count; i++)
-            {
-                ShipSpawn shipSpawn = new ShipSpawn();
-                shipSpawn.Transform.Position = spawnList[i].GetProperty<Vector3>("Position");
-
-                float yRotation = spawnList[i].GetProperty<short>("Rotation") / 32768f * 180;
-                shipSpawn.Transform.Rotation = new Quaternion(0f, yRotation, 0f, 0f);
-
-                shipSpawn.ShipId = spawnList[i].GetProperty<byte>("Ship Id");
-                shipSpawn.Unknown1 = spawnList[i].GetProperty<byte>("Unknown 1");
-
-                scene.ShipSpawns.Add(shipSpawn);
-                world.RegisterObject(shipSpawn);
+                scene.Entities.Add(newPath);
             }
         }
 
-        private static void PostProcessSoundSources(Scene scene, WWorld world)
+        private static void PostProcessArrows(Scene scene, string arrowFourCC, List<MapEntityLoader.RawMapEntity> rawEntityData)
         {
-            var sondList = FindAllByType("SOND", scene.Entities);
-            for (int i = 0; i < sondList.Count; i++)
-            {
-                SoundSource sndSrc = new SoundSource();
-
-                sndSrc.Name = sondList[i].GetProperty<string>("Name");
-                sndSrc.Transform.Position = sondList[i].GetProperty<Vector3>("Position");
-                sndSrc.Unknown1 = sondList[i].GetProperty<byte>("Unknown 1");
-                sndSrc.Unknown2 = sondList[i].GetProperty<byte>("Unknown 2");
-                sndSrc.Unknown3 = sondList[i].GetProperty<byte>("Unknown 3");
-                sndSrc.SoundId = sondList[i].GetProperty<byte>("Sound ID");
-                sndSrc.SoundRadius = sondList[i].GetProperty<byte>("Sound Radius");
-                sndSrc.Padding1 = sondList[i].GetProperty<byte>("Padding 1");
-                sndSrc.Padding2 = sondList[i].GetProperty<byte>("Padding 2");
-                sndSrc.Padding3 = sondList[i].GetProperty<byte>("Padding 3");
-
-                scene.Sounds.Add(sndSrc);
-                world.RegisterObject(sndSrc);
-            }
-        }
-
-        private static void PostProcessArrows(Scene scene, WWorld world)
-        {
-            var arobList = FindAllByType("AROB", scene.Entities);
-            for (int i = 0; i < arobList.Count; i++)
+            foreach (var arrowEntity in FindAllByType(arrowFourCC, rawEntityData))
             {
                 Arrow arrow = new Arrow();
 
-                arrow.Transform.Position = arobList[i].GetProperty<Vector3>("Position");
-                XYZRotation fullRot = arobList[i].GetProperty<XYZRotation>("Rotation");
-                arrow.Transform.Rotation = new Quaternion(fullRot.X, fullRot.Y, fullRot.Z, 0f);
-                arrow.Padding = arobList[i].GetProperty<short>("Padding");
+                ProcessTransform(arrow);
 
-                scene.AROB.Add(arrow);
-                world.RegisterObject(arrow);
-            }
+                scene.Entities.Add(arrow);
 
-            var raroList = FindAllByType("RARO", scene.Entities);
-            for (int i = 0; i < raroList.Count; i++)
-            {
-                Arrow arrow = new Arrow();
-
-                arrow.Transform.Position = raroList[i].GetProperty<Vector3>("Position");
-                XYZRotation fullRot = raroList[i].GetProperty<XYZRotation>("Rotation");
-                arrow.Transform.Rotation = new Quaternion(fullRot.X, fullRot.Y, fullRot.Z, 0f);
-                arrow.Padding = raroList[i].GetProperty<short>("Padding");
-
-
-                scene.RARO.Add(arrow);
-                world.RegisterObject(arrow);
+                Trace.Assert((ushort)arrowEntity.Fields.GetProperty<short>("Padding") == 0xFFFF);
             }
         }
 
-        private static void PostProcessPointLights(Scene scene, WWorld world)
+        private static void PostProcessPlayerSpawns(Scene scene, List<MapEntityLoader.RawMapEntity> rawEntityData)
         {
-            var lghtList = FindAllByType("LGHT", scene.Entities);
-            for (int i = 0; i < lghtList.Count; i++)
+            foreach(var spawnEntity in FindAllByType("PLYR", rawEntityData))
             {
-                PointLight pointLight = new PointLight();
-                pointLight.Transform.Position = lghtList[i].GetProperty<Vector3>("Position");
-                pointLight.Radius = lghtList[i].GetProperty<Vector3>("Radius");
-                pointLight.Color = lghtList[i].GetProperty<Color32>("Color");
+                PlayerSpawn spawn = new PlayerSpawn();
+                spawn.Name = spawnEntity.Fields.GetProperty<string>("Name");
+                spawn.Fields = spawnEntity.Fields;
+                spawn.Fields.RemoveProperty("Name");
 
-                scene.LGHT.Add(pointLight);
-                world.RegisterObject(pointLight);
-            }
+                ProcessTransform(spawn);
 
-            var lgtvList = FindAllByType("LGTV", scene.Entities);
-            for (int i = 0; i < lgtvList.Count; i++)
-            {
-                PointLight pointLight = new PointLight();
-                pointLight.Transform.Position = lgtvList[i].GetProperty<Vector3>("Position");
-                pointLight.Radius = lgtvList[i].GetProperty<Vector3>("Radius");
-                pointLight.Color = lgtvList[i].GetProperty<Color32>("Color");
-
-                scene.LGTV.Add(pointLight);
-                world.RegisterObject(pointLight);
+                scene.Entities.Add(spawn);
             }
         }
 
-        private static List<MapEntity> FindAllByType(string fourCC, BindingList<MapEntity> fromList)
+        private static void PostProcessTGSC(Room room, List<MapEntityLoader.RawMapEntity> rawEntityData)
         {
-            List<MapEntity> results = new List<MapEntity>();
+            foreach (var tgscEntity in FindAllByType("TGSC", rawEntityData))
+            {
+                ScaleableObject tgsc = new ScaleableObject();
+                tgsc.Name = tgscEntity.Fields.GetProperty<string>("Name");
+                tgsc.Fields = tgscEntity.Fields;
+
+                ProcessTransform(tgsc);
+                tgsc.Fields.RemoveProperty("Name");
+
+                room.Entities.Add(tgsc);
+            }
+        }
+
+        private static void PostProcessTGOB(Room room, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            foreach (var tgobEntity in FindAllByType("TGOB", rawEntityData))
+            {
+                Actor tgob = new Actor();
+                tgob.Name = tgobEntity.Fields.GetProperty<string>("Name");
+                tgob.Fields = tgobEntity.Fields;
+
+                ProcessTransform(tgob);
+                tgob.Fields.RemoveProperty("Name");
+
+                room.Entities.Add(tgob);
+            }
+        }
+
+        private static void PostProcessLightVectors(Room room, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            foreach (var lgtvEntity in FindAllByType("LGTV", rawEntityData))
+            {
+                LightVector tgob = new LightVector();
+                tgob.Fields = lgtvEntity.Fields;
+
+                ProcessTransform(tgob);
+
+                room.Entities.Add(tgob);
+            }
+        }
+
+        private static void PostProcessDoors(Room room, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            foreach (var doorEntity in FindAllByType("DOOR", rawEntityData))
+            {
+                Door door = new Door();
+                door.Name = doorEntity.Fields.GetProperty<string>("Name");
+                door.Fields = doorEntity.Fields;
+
+                ProcessTransform(door);
+                door.Fields.RemoveProperty("Name");
+
+                room.Entities.Add(door);
+            }
+        }
+
+        private static List<MapEntityLoader.RawMapEntity> FindAllByType(string fourCC, List<MapEntityLoader.RawMapEntity> fromList)
+        {
+            var results = new List<MapEntityLoader.RawMapEntity>();
             foreach (var item in fromList)
             {
                 if (string.Compare(item.FourCC, fourCC, StringComparison.InvariantCultureIgnoreCase) == 0)
@@ -330,6 +490,31 @@ namespace WEditor.WindWaker.Loaders
             }
 
             return results;
+        }
+
+        private static void ProcessTransform(SceneComponent forObject)
+        {
+            // Remove the Position field as the Actor has a Transform which gives it a position.
+            if (forObject.Fields.HasProperty("Position"))
+            {
+                forObject.Transform.Position = forObject.Fields.GetProperty<Vector3>("Position");
+                forObject.Fields.RemoveProperty("Position");
+            }
+
+            // Remove the Rotation field.
+            if (forObject.Fields.HasProperty("Rotation"))
+            {
+                XYRotation rotation = forObject.Fields.GetProperty<XYRotation>("Rotation");
+                //actor.Transform.Rotation =
+                forObject.Fields.RemoveProperty("Rotation");
+            }
+
+            // Remove the Scale field.
+            if (forObject.Fields.HasProperty("Scale"))
+            {
+                forObject.Transform.Scale = forObject.Fields.GetProperty<Vector3>("Scale");
+                forObject.Fields.RemoveProperty("Scale");
+            }
         }
     }
 }

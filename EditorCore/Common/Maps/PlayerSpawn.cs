@@ -4,7 +4,6 @@ namespace WEditor.Common.Maps
 {
     public class PlayerSpawn : SceneComponent
     {
-        public byte ShipId;
-        public byte Unknown1;
+        public string Name { get; set; }
     }
 }

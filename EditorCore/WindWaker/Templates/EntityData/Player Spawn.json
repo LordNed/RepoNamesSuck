@@ -2,7 +2,7 @@
 	"FourCC" : "PLYR",
 	"Properties" :
 	[
-		{"Name" : "Spawn Name", "Type" : "fixedLengthString", "Length" : 8},
+		{"Name" : "Name", "Type" : "fixedLengthString", "Length" : 8},
 		{"Name" : "Event Index", "Type" : "byte"},
 		{"Name" : "Unknown 1", "Type" : "byte"},
 		{"Name" : "Spawn Type", "Type" : "enum", "EnumType" : "SpawnRoomEntranceTypes"},

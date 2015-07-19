@@ -23,7 +23,7 @@ namespace WindEditor.UI
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            EntityProperty property = (EntityProperty)item;
+            Property property = (Property)item;
             switch (property.Type)
             {
                 case PropertyType.Byte:

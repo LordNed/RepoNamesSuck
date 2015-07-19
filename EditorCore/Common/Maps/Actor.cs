@@ -4,10 +4,7 @@ namespace WEditor.Maps
 {
     public class Actor : SceneComponent
     {
-        public string Name;
-        public int ParameterField;
-        public short SetFlag;
-        public short EnemyNumber;
+        public string Name { get; set; }
 
         public override void OnDrawGizmos()
         {

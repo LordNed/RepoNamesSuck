@@ -126,26 +126,26 @@ namespace WEditor.Rendering
             Matrix4 viewMatrix = camera.ViewMatrix;
             Matrix4 projMatrix = camera.ProjectionMatrix;
 
-            foreach (Room room in map.Rooms)
-            {
-                if (!room.Visible)
-                    continue;
+            //foreach (Room room in map.Rooms)
+            //{
+            //    if (!room.Visible)
+            //        continue;
 
-                Matrix4 roomOffset = Matrix4.CreateTranslation(room.Translation) * Matrix4.CreateRotationY(room.YRotation);
+            //    Matrix4 roomOffset = Matrix4.CreateTranslation(room.Translation) * Matrix4.CreateRotationY(room.YRotation);
 
-                foreach (var obj in room.Objects)
-                {
-                    // Check if this layer is visible
-                    if (!map.LayerIsVisible(obj.Layer))
-                        continue;
+            //    foreach (var obj in room.Objects)
+            //    {
+            //        // Check if this layer is visible
+            //        if (!map.LayerIsVisible(obj.Layer))
+            //            continue;
 
-                    var meshObj = obj as MeshSceneComponent;
-                    if (meshObj != null)
-                    {
-                        DrawMesh(meshObj.Mesh, camera, roomOffset);
-                    }
-                }
-            }
+            //        var meshObj = obj as MeshSceneComponent;
+            //        if (meshObj != null)
+            //        {
+            //            DrawMesh(meshObj.Mesh, camera, roomOffset);
+            //        }
+            //    }
+            //}
         }
 
         private void DrawStageForMap(Map map, Camera camera)
@@ -156,18 +156,18 @@ namespace WEditor.Rendering
             Matrix4 viewMatrix = camera.ViewMatrix;
             Matrix4 projMatrix = camera.ProjectionMatrix;
 
-            foreach (var obj in map.Stage.Objects)
-            {
-                // Check if this layer is visible
-                if (!map.LayerIsVisible(obj.Layer))
-                    continue;
+            //foreach (var obj in map.Stage.Entities)
+            //{
+            //    // Check if this layer is visible
+            //    if (!map.LayerIsVisible(obj.Layer))
+            //        continue;
 
-                var meshObj = obj as MeshSceneComponent;
-                if (meshObj != null)
-                {
-                    DrawMesh(meshObj.Mesh, camera, Matrix4.Identity);
-                }
-            }
+            //    var meshObj = obj as MeshSceneComponent;
+            //    if (meshObj != null)
+            //    {
+            //        DrawMesh(meshObj.Mesh, camera, Matrix4.Identity);
+            //    }
+            //}
         }
 
         private void DrawDebugShapes(Camera camera)
