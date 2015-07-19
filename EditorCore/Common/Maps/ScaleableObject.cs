@@ -10,5 +10,10 @@ namespace WEditor.Maps
         {
             World.Gizmos.DrawWireCube(Transform.Position, Vector3.One * 50f);
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

@@ -9,7 +9,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <HierarchicalDataTemplate  DataType="{x:Type WEditorMaps:MapEntity}">
-            <TextBlock Text="{Binding FourCC}"/>
+            <TextBlock Text="{Binding}"/>
         </HierarchicalDataTemplate>
     </UserControl.Resources>
     <Grid>
