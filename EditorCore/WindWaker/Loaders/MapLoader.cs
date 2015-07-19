@@ -296,6 +296,7 @@ namespace WEditor.WindWaker.Loaders
                 Actor actor = new Actor();
                 actor.Name = actorEntity.Fields.GetProperty<string>("Name");
                 actor.Fields = actorEntity.Fields;
+                actor.FourCC = "ACTR";
 
                 ProcessTransform(actor);
                 actor.Fields.RemoveProperty("Name");
@@ -311,7 +312,8 @@ namespace WEditor.WindWaker.Loaders
                 ScaleableObject scob = new ScaleableObject();
                 scob.Name = scobEntity.Fields.GetProperty<string>("Name");
                 scob.Fields = scobEntity.Fields;
-
+                scob.FourCC = "SCOB";
+                
                 ProcessTransform(scob);
                 scob.Fields.RemoveProperty("Name");
 
@@ -326,6 +328,7 @@ namespace WEditor.WindWaker.Loaders
                 TreasureChest tres = new TreasureChest();
                 tres.Name = chestEntity.Fields.GetProperty<string>("Name");
                 tres.Fields = chestEntity.Fields;
+                tres.FourCC = "TRES";
 
                 ProcessTransform(tres);
                 tres.Fields.RemoveProperty("Name");
@@ -341,6 +344,7 @@ namespace WEditor.WindWaker.Loaders
                 Door door = new Door();
                 door.Name = tgdrEntity.Fields.GetProperty<string>("Name");
                 door.Fields = tgdrEntity.Fields;
+                door.FourCC = "TGDR";
 
                 ProcessTransform(door);
                 door.Fields.RemoveProperty("Name");
@@ -356,6 +360,7 @@ namespace WEditor.WindWaker.Loaders
                 SoundSource sndSource = new SoundSource();
                 sndSource.Name = soundEntity.Fields.GetProperty<string>("Name");
                 sndSource.Fields = soundEntity.Fields;
+                sndSource.FourCC = "SOND";
 
                 ProcessTransform(sndSource);
                 sndSource.Fields.RemoveProperty("Name");
@@ -393,6 +398,7 @@ namespace WEditor.WindWaker.Loaders
                 newPath.Fields = path.Fields;
                 newPath.Fields.RemoveProperty("Number of Points");
                 newPath.Fields.RemoveProperty("First Entry Offset");
+                newPath.FourCC = pathFourCC;
                 
                 for (int i = pointStartIndex; i < pointStartIndex + numPoints; i++)
                 {
@@ -408,6 +414,7 @@ namespace WEditor.WindWaker.Loaders
             foreach (var arrowEntity in FindAllByType(arrowFourCC, rawEntityData))
             {
                 Arrow arrow = new Arrow();
+                arrow.FourCC = arrowFourCC;
 
                 ProcessTransform(arrow);
 
@@ -425,6 +432,7 @@ namespace WEditor.WindWaker.Loaders
                 spawn.Name = spawnEntity.Fields.GetProperty<string>("Name");
                 spawn.Fields = spawnEntity.Fields;
                 spawn.Fields.RemoveProperty("Name");
+                spawn.FourCC = "PLYR";
 
                 ProcessTransform(spawn);
 
@@ -439,6 +447,7 @@ namespace WEditor.WindWaker.Loaders
                 ScaleableObject tgsc = new ScaleableObject();
                 tgsc.Name = tgscEntity.Fields.GetProperty<string>("Name");
                 tgsc.Fields = tgscEntity.Fields;
+                tgsc.FourCC = "TGSC";
 
                 ProcessTransform(tgsc);
                 tgsc.Fields.RemoveProperty("Name");
@@ -454,6 +463,7 @@ namespace WEditor.WindWaker.Loaders
                 Actor tgob = new Actor();
                 tgob.Name = tgobEntity.Fields.GetProperty<string>("Name");
                 tgob.Fields = tgobEntity.Fields;
+                tgob.FourCC = "TGOB";
 
                 ProcessTransform(tgob);
                 tgob.Fields.RemoveProperty("Name");
@@ -466,12 +476,13 @@ namespace WEditor.WindWaker.Loaders
         {
             foreach (var lgtvEntity in FindAllByType("LGTV", rawEntityData))
             {
-                LightVector tgob = new LightVector();
-                tgob.Fields = lgtvEntity.Fields;
+                LightVector lightVec = new LightVector();
+                lightVec.Fields = lgtvEntity.Fields;
+                lightVec.FourCC = "LGTV";
 
-                ProcessTransform(tgob);
+                ProcessTransform(lightVec);
 
-                room.Entities.Add(tgob);
+                room.Entities.Add(lightVec);
             }
         }
 
@@ -482,6 +493,7 @@ namespace WEditor.WindWaker.Loaders
                 Door door = new Door();
                 door.Name = doorEntity.Fields.GetProperty<string>("Name");
                 door.Fields = doorEntity.Fields;
+                door.FourCC = "DOOR";
 
                 ProcessTransform(door);
                 door.Fields.RemoveProperty("Name");
