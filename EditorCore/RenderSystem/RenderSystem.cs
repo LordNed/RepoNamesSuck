@@ -118,16 +118,6 @@ namespace WEditor.Rendering
             }
         }
 
-        public void SetOutputSize(float width, float height)
-        {
-            // Re-Calculate perspective camera ratios here.
-            foreach (var camera in m_cameraList)
-            {
-                camera.PixelWidth = width;
-                camera.PixelHeight = height;
-            }
-        }
-
         public void UnloadAll()
         {
             // Reset Camera position
@@ -259,6 +249,16 @@ namespace WEditor.Rendering
 
                 // And finally restore our 'source' vertex positions
                 batch.Vertices = origVerts;
+            }
+        }
+
+        public void SetOutputSize(float width, float height)
+        {
+            // Re-Calculate perspective camera ratios here.
+            foreach (var camera in m_cameraList)
+            {
+                camera.PixelWidth = width;
+                camera.PixelHeight = height;
             }
         }
     }
