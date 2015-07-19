@@ -2,7 +2,6 @@
 using OpenTK;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using WEditor.Common.Maps;
 using WEditor.FileSystem;
@@ -93,50 +92,12 @@ namespace WEditor.WindWaker.Loaders
             newMap.Name = mapName;
             newMap.ProjectFilePath = System.IO.Path.GetDirectoryName(folderPath);
 
-            LoadEntities(newMap, archiveFolderMap);
+            LoadEntities(newMap, archiveFolderMap, world);
 
             return newMap;
-            /*SceneLoader sceneLoader = new SceneLoader();
-            
-
-            // Oof. So Stages can have references to rooms (via MULT chunk) and rooms can have references to other rooms (via PLYR)
-            // and it wouldn't surprise me if somewhere, a room references something in a stage. Because of this, we're going to load
-            // maps in two passes. The first pass does not resolve the reference (and instead leaves them as their indexes) and then
-            // once the stage and all rooms have been loaded, we can then do a second pass and turn the indexes into object references.
-            foreach (var kvp in archiveFolderMap)
-            {
-                if (kvp.Key.StartsWith("room"))
-                {
-                    Room room = sceneLoader.LoadFromArchive<Room>(world, kvp.Value);
-                    room.Name = kvp.Key;
-                    newMap.Rooms.Add(room);
-                }
-                else if (kvp.Key.StartsWith("stage"))
-                {
-                    newMap.Stage = sceneLoader.LoadFromArchive<Stage>(world, kvp.Value);
-                    newMap.Stage.Name = "Stage";
-                }
-            }
-
-            // Fix up object-references on map entity data.
-            sceneLoader.PostProcessEntityData(newMap);
-
-            // ToDo: Split off some of the data into things associated with each Room vs. Scene vs. in game.
-            if (newMap.Stage != null)
-            {
-                PostProcessStage(newMap.Stage, world);
-            }
-
-            foreach (var room in newMap.Rooms)
-            {
-                PostProcessRoom(room, world);
-            }
-
-
-            return newMap;*/
         }
 
-        private void LoadEntities(Map newMap, Dictionary<string, VirtualFilesystemDirectory> archiveFolderMap)
+        private void LoadEntities(Map newMap, Dictionary<string, VirtualFilesystemDirectory> archiveFolderMap, WWorld world)
         {
             MapEntityLoader entityLoader = new MapEntityLoader(newMap);
 
@@ -192,9 +153,17 @@ namespace WEditor.WindWaker.Loaders
                 Room room = roomOrStageData.Key as Room;
 
                 if (stage != null)
+                {
                     PostProcessStage(stage, roomOrStageData.Value);
+                    foreach (var entity in stage.Entities)
+                        entity.World = world;
+                }
                 if (room != null)
+                {
                     PostProcessRoom(room, roomOrStageData.Value);
+                    foreach (var entity in room.Entities)
+                        entity.World = world;
+                }                
             }
         }
 

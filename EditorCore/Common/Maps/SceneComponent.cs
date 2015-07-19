@@ -1,4 +1,5 @@
 ﻿
+using OpenTK;
 namespace WEditor.Maps
 {
     /// <summary>
@@ -21,6 +22,11 @@ namespace WEditor.Maps
         public SceneComponent()
         {
             Transform = new Transform();
+        }
+
+        public override void OnDrawGizmos()
+        {
+            World.Gizmos.DrawWireCube(Transform.Position, Vector3.One * 50f);
         }
     }
 }

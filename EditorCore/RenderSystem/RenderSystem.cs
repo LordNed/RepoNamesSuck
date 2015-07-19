@@ -74,13 +74,10 @@ namespace WEditor.Rendering
                 GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                // Draw each room in the map
-                DrawRoomsForMap(m_world.Map, camera);
+                // Draw the currently loaded map. This will also invoke OnDrawGizmos (since it checks the map layer)
+                DrawMap(camera);
 
-                // Then draw objects from the scene in the map.
-                DrawStageForMap(m_world.Map, camera);
-
-                // Draw Debug Shapes
+                // Then we can actually draw the gizmos for this camera.
                 DrawDebugShapes(camera);
             }
 
@@ -91,6 +88,34 @@ namespace WEditor.Rendering
 
             //  Flush OpenGL commands to make them draw.
             GL.Flush();
+        }
+
+        private void DrawMap(Camera camera)
+        {
+            if (m_world.Map == null)
+                return;
+
+            Matrix4 viewMatrix = camera.ViewMatrix;
+            Matrix4 projMatrix = camera.ProjectionMatrix;
+
+            foreach (Room room in m_world.Map.Rooms)
+                DrawScene(room);
+
+            if (m_world.Map.Stage != null)
+                DrawScene(m_world.Map.Stage);
+        }
+
+        private void DrawScene(Scene scene)
+        {
+            foreach (var obj in scene.Entities)
+            {
+                // Don't draw things if they've had their layer turned off.
+                if (!m_world.Map.LayerIsVisible(obj.Layer) || !scene.Visible)
+                    continue;
+
+                // Tell them to draw their gizmos
+                obj.OnDrawGizmos();
+            }
         }
 
         public void SetOutputSize(float width, float height)
@@ -116,58 +141,6 @@ namespace WEditor.Rendering
                 camMovement.Camera = camera;
                 m_world.RegisterComponent(camMovement);
             }
-        }
-
-        private void DrawRoomsForMap(Map map, Camera camera)
-        {
-            if (map == null)
-                return;
-
-            Matrix4 viewMatrix = camera.ViewMatrix;
-            Matrix4 projMatrix = camera.ProjectionMatrix;
-
-            //foreach (Room room in map.Rooms)
-            //{
-            //    if (!room.Visible)
-            //        continue;
-
-            //    Matrix4 roomOffset = Matrix4.CreateTranslation(room.Translation) * Matrix4.CreateRotationY(room.YRotation);
-
-            //    foreach (var obj in room.Objects)
-            //    {
-            //        // Check if this layer is visible
-            //        if (!map.LayerIsVisible(obj.Layer))
-            //            continue;
-
-            //        var meshObj = obj as MeshSceneComponent;
-            //        if (meshObj != null)
-            //        {
-            //            DrawMesh(meshObj.Mesh, camera, roomOffset);
-            //        }
-            //    }
-            //}
-        }
-
-        private void DrawStageForMap(Map map, Camera camera)
-        {
-            if (map == null || map.Stage == null || !map.Stage.Visible)
-                return;
-
-            Matrix4 viewMatrix = camera.ViewMatrix;
-            Matrix4 projMatrix = camera.ProjectionMatrix;
-
-            //foreach (var obj in map.Stage.Entities)
-            //{
-            //    // Check if this layer is visible
-            //    if (!map.LayerIsVisible(obj.Layer))
-            //        continue;
-
-            //    var meshObj = obj as MeshSceneComponent;
-            //    if (meshObj != null)
-            //    {
-            //        DrawMesh(meshObj.Mesh, camera, Matrix4.Identity);
-            //    }
-            //}
         }
 
         private void DrawDebugShapes(Camera camera)

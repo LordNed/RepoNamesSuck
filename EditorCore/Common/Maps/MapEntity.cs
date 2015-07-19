@@ -34,6 +34,8 @@ namespace WEditor.Maps
             Fields = new PropertyCollection();
         }
 
+        public virtual void OnDrawGizmos() { }
+
         public override string ToString()
         {
             return FourCC;

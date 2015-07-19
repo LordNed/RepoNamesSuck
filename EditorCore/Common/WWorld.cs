@@ -79,12 +79,6 @@ namespace WEditor
                 component.Tick(deltaTime);
             }
 
-            // Gizmo Drawing
-            foreach(WObject obj in m_objectList)
-            {
-                obj.OnDrawGizmos();
-            }
-
             // Update the render system this frame and draw everything.
             m_renderSystem.RenderFrame();
 
