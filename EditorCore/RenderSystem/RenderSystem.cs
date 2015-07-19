@@ -99,10 +99,24 @@ namespace WEditor.Rendering
             Matrix4 projMatrix = camera.ProjectionMatrix;
 
             foreach (Room room in m_world.Map.Rooms)
+            {
                 DrawScene(room);
+                foreach (Mesh mesh in room.MeshList)
+                {
+                    if (mesh != null)
+                        DrawMesh(mesh, camera, Matrix4.Identity);
+                }
+            }
 
             if (m_world.Map.Stage != null)
+            {
                 DrawScene(m_world.Map.Stage);
+                foreach (Mesh mesh in m_world.Map.Stage.MeshList)
+                {
+                    if (mesh != null)
+                        DrawMesh(mesh, camera, Matrix4.Identity);
+                }
+            }
         }
 
         private void DrawScene(Scene scene)
@@ -163,6 +177,9 @@ namespace WEditor.Rendering
 
         private void DrawMesh(Mesh mesh, Camera camera, Matrix4 additionalMatrix)
         {
+            if (mesh == null)
+                return;
+
             Matrix4 viewMatrix = camera.ViewMatrix;
             Matrix4 projMatrix = camera.ProjectionMatrix;
 

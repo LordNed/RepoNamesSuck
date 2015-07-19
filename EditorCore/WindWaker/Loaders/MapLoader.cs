@@ -6,6 +6,7 @@ using System.Diagnostics;
 using WEditor.Common.Maps;
 using WEditor.FileSystem;
 using WEditor.Maps;
+using WEditor.Rendering;
 
 namespace WEditor.WindWaker.Loaders
 {
@@ -92,17 +93,17 @@ namespace WEditor.WindWaker.Loaders
             newMap.Name = mapName;
             newMap.ProjectFilePath = System.IO.Path.GetDirectoryName(folderPath);
 
-            LoadEntities(newMap, archiveFolderMap, world);
+            var sceneMap = CreateScenesFromArchives(newMap, archiveFolderMap);
+            LoadEntities(newMap, sceneMap, world);
+            LoadModels(sceneMap);
 
             return newMap;
         }
 
-        private void LoadEntities(Map newMap, Dictionary<string, VirtualFilesystemDirectory> archiveFolderMap, WWorld world)
+        private Dictionary<Scene, VirtualFilesystemDirectory> CreateScenesFromArchives(Map newMap, Dictionary<string, VirtualFilesystemDirectory> archiveFolderMap)
         {
-            MapEntityLoader entityLoader = new MapEntityLoader(newMap);
+            var results = new Dictionary<Scene, VirtualFilesystemDirectory>();
 
-            // For each room/scene, find the associated dzr/dzs file and load its
-            // contents into the entityLoader.
             foreach (var kvp in archiveFolderMap)
             {
                 Scene sceneData = null;
@@ -124,6 +125,44 @@ namespace WEditor.WindWaker.Loaders
                 }
 
                 sceneData.Name = kvp.Key;
+                results[sceneData] = kvp.Value;
+            }
+
+            return results;
+        }
+
+        private void LoadModels(Dictionary<Scene, VirtualFilesystemDirectory> archiveMap)
+        {
+            // We're going to search the archives for a specific list of meshes that the game supports and load those.
+            List<string> supportedModelPaths = new List<string>(new string[] { "model", "model1", "model2", "model3"});
+            foreach (var kvp in archiveMap)
+            {
+                List<VirtualFilesystemFile> filesByExtension = kvp.Value.FindByExtension(".bmd", ".bdl");
+                foreach (var vfsFile in filesByExtension)
+                {
+                    if (!supportedModelPaths.Contains(vfsFile.Name))
+                        continue;
+
+                    using (EndianBinaryReader reader = new EndianBinaryReader(new System.IO.MemoryStream(vfsFile.File.GetData()), Endian.Big))
+                    {
+                        WLog.Info(LogCategory.EntityLoading, null, "Loading {1} (3D Model) for {0}{1}...", vfsFile.Name, vfsFile.Extension);
+                        J3DLoader j3dLoader = new J3DLoader();
+                        Mesh resultMesh = j3dLoader.LoadFromStream(reader);
+                        kvp.Key.MeshList.Add(resultMesh);
+                        WLog.Info(LogCategory.EntityLoading, null, "Finished loading {1} (3D Model) for {0}{1}.", vfsFile.Name, vfsFile.Extension);
+                    }
+                }
+            }
+        }
+
+        private void LoadEntities(Map newMap, Dictionary<Scene, VirtualFilesystemDirectory> archiveMap, WWorld world)
+        {
+            MapEntityLoader entityLoader = new MapEntityLoader(newMap);
+
+            // For each room/scene, find the associated dzr/dzs file and load its
+            // contents into the entityLoader.
+            foreach (var kvp in archiveMap)
+            {
                 // Check to see if this Archive has stage/room entity data.
                 var roomEntData = kvp.Value.FindByExtension(".dzr");
                 var stageEntData = kvp.Value.FindByExtension(".dzs");
@@ -138,7 +177,9 @@ namespace WEditor.WindWaker.Loaders
 
                 using (EndianBinaryReader reader = new EndianBinaryReader(new System.IO.MemoryStream(vfsFile.File.GetData()), Endian.Big))
                 {
-                    entityLoader.LoadFromStream(sceneData, reader);
+                    WLog.Info(LogCategory.EntityLoading, null, "Loading .dzr/.dzs (Room/Stage Entity Dat) for {0}{1}...", vfsFile.Name, vfsFile.Extension);
+                    entityLoader.LoadFromStream(kvp.Key, reader);
+                    WLog.Info(LogCategory.EntityLoading, null, "Finished loading .dzr/.dzs (Room/Stage Entity Dat) for {0}{1}.", vfsFile.Name, vfsFile.Extension);
                 }
             }
 

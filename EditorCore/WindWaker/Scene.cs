@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using WEditor.Common.Maps;
 using WEditor.Maps;
 using WEditor.Rendering;
@@ -36,13 +37,15 @@ namespace WEditor.WindWaker
         }
 
         public BindingList<MapEntity> Entities { get; private set; }
-       
+        public List<Mesh> MeshList { get; private set; }
+
         private string m_name = string.Empty;
         private bool m_visible = true;
 
         protected Scene()
         {
             Entities = new BindingList<MapEntity>();
+            MeshList = new List<Mesh>();
         }
 
         protected void OnPropertyChanged(string propertyName)
