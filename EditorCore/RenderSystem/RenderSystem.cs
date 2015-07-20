@@ -215,7 +215,7 @@ namespace WEditor.Rendering
                     while (bone != null)
                     {
                         // Also tried adding a Matrix4.CreateScale which should scale the whole thing?
-                        cumulativeTransform = Matrix4.CreateScale(bone.Scale) * Matrix4.CreateFromQuaternion(bone.Rotation) * Matrix4.CreateTranslation(bone.Translation) * cumulativeTransform;
+                        cumulativeTransform = cumulativeTransform * Matrix4.CreateScale(bone.Scale) * Matrix4.CreateFromQuaternion(bone.Rotation) * Matrix4.CreateTranslation(bone.Translation);
                         bone = bone.Parent;
                     }
 
