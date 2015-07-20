@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using OpenTK.Graphics.OpenGL;
+using System.IO;
 using System.Text;
 using WEditor.Common.Nintendo.J3D;
 
@@ -29,6 +30,10 @@ namespace WEditor.Rendering
                 shader.Dispose();
 
                 // ToDo: Generate stub-shader here that expects Pos/UV and single texture.
+                shader = new Shader(fromMat.Name);
+                shader.CompileSource(File.ReadAllText("RenderSystem/Shaders/frag.glsl"), ShaderType.FragmentShader);
+                shader.CompileSource(File.ReadAllText("RenderSystem/Shaders/vert.glsl"), ShaderType.VertexShader);
+                shader.LinkShader();
                 return shader;
             }
 
@@ -161,9 +166,9 @@ namespace WEditor.Rendering
 
                 string[] alphaInputs = new string[4];
                 alphaInputs[0] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
-                alphaInputs[1] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
-                alphaInputs[2] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
-                alphaInputs[3] = GetAlphaInString(stage.AlphaIn[0], mat.KonstAlphaSels[i], order);
+                alphaInputs[1] = GetAlphaInString(stage.AlphaIn[1], mat.KonstAlphaSels[i], order);
+                alphaInputs[2] = GetAlphaInString(stage.AlphaIn[2], mat.KonstAlphaSels[i], order);
+                alphaInputs[3] = GetAlphaInString(stage.AlphaIn[3], mat.KonstAlphaSels[i], order);
 
                 stream.AppendLine(string.Format("    {0}", GetAlphaOpString(stage.AlphaOp, stage.AlphaBias, stage.AlphaScale, stage.AlphaClamp, stage.AlphaRegId, alphaInputs)));
                 stream.AppendLine();
@@ -193,12 +198,12 @@ namespace WEditor.Rendering
                 GetCompareString(alphaCompare.Comp1, m_tevOutputRegs[0] + ".a", alphaCompare.Reference1));
 
             // clip equivelent
-            //stream.AppendLine("    // Clip");
-            //stream.AppendLine(string.Format("    if{0}\n\t\tdiscard;", ifContents));
+            stream.AppendLine("    // Alpha Compare (Clip)");
+            stream.AppendLine(string.Format("    if{0}\n\t\tdiscard;", ifContents));
 
-            string output = "PixelColor = texCol0" + (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0) ? " * Color0;" : ";");
-            stream.AppendLine(output);
-            //stream.AppendLine(string.Format("    PixelColor = {0};", m_tevOutputRegs[0]));
+            //string output = "PixelColor = texCol0" + (mat.VtxDesc.AttributeIsEnabled(ShaderAttributeIds.Color0) ? " * Color0;" : ";");
+            //stream.AppendLine(output);
+            stream.AppendLine(string.Format("    PixelColor = {0};", m_tevOutputRegs[0]));
 
             stream.AppendLine("}");
             stream.AppendLine();
@@ -621,7 +626,7 @@ namespace WEditor.Rendering
                 case GXCombineAlphaInput.A2: return m_tevOutputRegs[3] + ".a";
                 case GXCombineAlphaInput.TexAlpha: return GetTexTapString(texMapping) + ".a";
                 case GXCombineAlphaInput.RasAlpha: return GetVertColorString(texMapping) + ".a";
-                case GXCombineAlphaInput.Konst: return GetKonstAlphaString(konst) + ".a";
+                case GXCombineAlphaInput.Konst: return GetKonstAlphaString(konst);
                 case GXCombineAlphaInput.Zero: return "0.0f";
                 default:
                     WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unknown Alpha Input type: {0}", inputType);
@@ -715,7 +720,7 @@ namespace WEditor.Rendering
                         // out_color = (d + lerp(a, b, c)); - Add
                         // out_color = (d - lerp(a, b, c)); - Sub
                         string compareOp = (op == GXTevOp.Add) ? "+" : "-";
-                        sb.AppendLine(string.Format("{0} = ({1} {5} mix({2}, {3}, {4}));", dest, colorInputs[3], colorInputs[0], colorInputs[1], colorInputs[2], compareOp));
+                        sb.AppendLine(string.Format("{0} = ({1} {5} mix({2}, {3}, {4}));", dest, colorInputs[3], colorInputs[0], colorInputs[2], colorInputs[1], compareOp));
                         sb.AppendLine(GetModString(outputRegIndex, bias, scale, clamp, false));
                     }
                     break;
@@ -799,7 +804,7 @@ namespace WEditor.Rendering
                     {
                         // out_color = (d + ((a.a > b.a) ? c : 0))
                         string compareOp = (op == GXTevOp.Comp_R8_GT) ? ">" : "==";
-                        sb.AppendLine(string.Format("{0} = ({1} + (({2}.a {5} {3}.a) ? {4} : 0))", dest, alphaInputs[3], alphaInputs[0], alphaInputs[1], alphaInputs[2], compareOp));
+                        sb.AppendLine(string.Format("{0} = ({1} + (({2} {5} {3}) ? {4} : 0))", dest, alphaInputs[3], alphaInputs[0], alphaInputs[1], alphaInputs[2], compareOp));
                     }
                     break;
 
@@ -855,7 +860,7 @@ namespace WEditor.Rendering
             else
             {
                 // result = saturate(result * scale + bias * scale)
-                sb.AppendLine(string.Format("{0} = clamp({0} * {1} + {2} * {1});", dest, scaleVal, biasVal));
+                sb.AppendLine(string.Format("{0} = clamp({0} * {1} + {2} * {1},0.0, 1.0);", dest, scaleVal, biasVal));
             }
 
             return sb.ToString();
