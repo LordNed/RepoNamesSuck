@@ -218,7 +218,10 @@ namespace WEditor.WindWaker.Loaders
 
             // Create Paths out of RPAT tags
             PostProcessPaths(stage, "PATH", "PPNT", rawEntityData);
+
             // Non Physical Items
+            PostProcessMult(rawEntityData);
+
             // CAMR
             // DMAP
             // EnvR
@@ -228,8 +231,6 @@ namespace WEditor.WindWaker.Loaders
             // EVNT
             // MECO
             // MEMA
-            // MULT
-            // PATH
             // RTBL
             // STAG
         }
@@ -499,6 +500,19 @@ namespace WEditor.WindWaker.Loaders
                 door.Fields.RemoveProperty("Name");
 
                 room.Entities.Add(door);
+            }
+        }
+
+        private static void PostProcessMult(List<MapEntityLoader.RawMapEntity> rawEntityData)
+        {
+            foreach(var multEntry in FindAllByType("MULT", rawEntityData))
+            {
+                Vector2 roomTranslation = multEntry.Fields.GetProperty<Vector2>("Translation");
+                Quaternion roomRot = multEntry.Fields.GetProperty<Quaternion>("Rotation");
+                Room room = multEntry.Fields.GetProperty<Room>("Room");
+
+                room.Translation = new Vector3(roomTranslation.X, 0f, roomTranslation.Y);
+                room.Rotation = roomRot;
             }
         }
 

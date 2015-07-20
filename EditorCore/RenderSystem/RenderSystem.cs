@@ -106,8 +106,12 @@ namespace WEditor.Rendering
                 DrawScene(room);
                 foreach (Mesh mesh in room.MeshList)
                 {
-                    if (mesh != null)
-                        DrawMesh(mesh, camera, Matrix4.Identity);
+                    if (mesh == null)
+                        continue;
+
+                    // Build a model matrix to draw this mesh at that takes the Room's MULT into account.
+                    Matrix4 finalMatrix = Matrix4.CreateFromQuaternion(room.Rotation) * Matrix4.CreateTranslation(room.Translation);
+                    DrawMesh(mesh, camera, finalMatrix);
                 }
             }
 
