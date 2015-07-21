@@ -251,6 +251,7 @@ namespace WEditor.Rendering
             m_texCoord5 = new Vector2[0];
             m_texCoord6 = new Vector2[0];
             m_texCoord7 = new Vector2[0];
+            Indexes = new int[0];
 
             // Generate our element array buffer
             m_elementArrayBuffer = GL.GenBuffer();
