@@ -74,7 +74,7 @@ namespace WEditor.Rendering
                 GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                // Draw the currently loaded map. This will also invoke OnDrawGizmos (since it checks the map layer)
+                // Draw the currently loaded map (if any)
                 DrawMap(camera);
 
                 // Then we can actually draw the gizmos for this camera.
@@ -136,9 +136,6 @@ namespace WEditor.Rendering
                 // Don't draw things if they've had their layer turned off.
                 if (!m_world.Map.LayerIsVisible(obj.Layer))
                     continue;
-
-                // Tell them to draw their gizmos
-                obj.OnDrawGizmos();
             }
         }
 

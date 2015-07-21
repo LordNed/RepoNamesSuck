@@ -79,6 +79,25 @@ namespace WEditor
                 component.Tick(deltaTime);
             }
 
+            // Poll for new debug primitives.
+            if(Map != null)
+            {
+                foreach(var room in Map.Rooms)
+                {
+                    foreach (var ent in room.Entities)
+                        ent.OnDrawGizmos();
+                }
+
+                if(Map.Stage != null)
+                {
+                    foreach (var ent in Map.Stage.Entities)
+                        ent.OnDrawGizmos();
+                }
+            }
+
+            // Finalize the debug primitive list.
+            m_gizmos.FinalizePrimitiveBatch();
+
             // Update the render system this frame and draw everything.
             m_renderSystem.RenderFrame();
 
