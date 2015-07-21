@@ -393,10 +393,11 @@ namespace WEditor.WindWaker.Loaders
 
                         ushort vertexCount = reader.ReadUInt16();
 
-                        if (type != GXPrimitiveType.TriangleStrip)
-                        {
-                            WLog.Warning(LogCategory.ModelLoading, null, "Unsupported GXPrimitiveType {0}", type);
-                        }
+                        meshBatch.PrimitveType = type == GXPrimitiveType.TriangleStrip ? OpenTK.Graphics.OpenGL.PrimitiveType.TriangleStrip : OpenTK.Graphics.OpenGL.PrimitiveType.TriangleFan;
+                        //if (type != GXPrimitiveType.TriangleStrip)
+                        //{
+                        //    WLog.Warning(LogCategory.ModelLoading, null, "Unsupported GXPrimitiveType {0}", type);
+                        //}
 
                         numPrimitiveBytesRead += 0x3; // Advance us by 3 for the Primitive header.
 
