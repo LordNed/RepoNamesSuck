@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OpenTK;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace WEditor.Maps
@@ -14,9 +15,13 @@ namespace WEditor.Maps
 
         public override void OnDrawGizmos()
         {
-            for(int i = 0; i < Points.Count-1; i++)
+            for (int i = 0; i < Points.Count; i++)
             {
-                World.Gizmos.DrawLine(Points[i].Postion, Points[i + 1].Postion, new Color(1f, 0f, 0f, 1f));
+                World.Gizmos.DrawCube(Points[i].Postion, new Vector3(10, 10, 10), new Color(1f, 0.5f, 0.25f, 1f));
+            }
+            for (int i = 0; i < Points.Count - 1; i++)
+            {
+                World.Gizmos.DrawLine(Points[i].Postion, Points[i + 1].Postion, new Color(1f, 0.5f, 0.25f, 1f));
             }
         }
     }
