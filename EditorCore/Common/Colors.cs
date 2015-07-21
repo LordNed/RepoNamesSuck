@@ -7,6 +7,8 @@ namespace WEditor
     /// </summary>
     public struct Color
     {
+        
+
         public float R, G, B, A;
 
         public Color(float r, float g, float b, float a)
@@ -89,6 +91,73 @@ namespace WEditor
                 }
             }
         }
+
+        #region Static Preset Colors
+        public static Color White
+        {
+            get { return new Color(1f, 1f, 1f, 1f); }
+        }
+
+        public static Color Black
+        {
+            get { return new Color(0f, 0f, 0f, 1f); }
+        }
+
+        public static Color Red
+        {
+            get { return new Color(1f, 0f, 0f, 1f); }
+        }
+
+        public static Color Green
+        {
+            get { return new Color(0f, 1f, 0f, 1f); }
+        }
+
+        public static Color Blue
+        {
+            get { return new Color(0f, 0f, 1f, 1f); }
+        }
+
+        public static Color Orange
+        {
+            get { return new Color(1f, 0.647f, 0f, 1f); }
+        }
+
+        public static Color Coral
+        {
+            get { return new Color(1f, 0.5f, 0.314f, 1f); }
+        }
+
+        public static Color Yellow
+        {
+            get { return new Color(1f, 1f, 0f, 1f); }
+        }
+
+        public static Color Purple
+        {
+            get { return new Color(0.542f, 0.169f, 0.886f, 1f); }
+        }
+
+        public static Color Seagreen
+        {
+            get { return new Color(0.18f, 0.545f, 341f, 1f); }
+        }
+
+        public static Color Pink
+        {
+            get { return new Color(1f, 0.412f, 0.71f, 1f); }
+        }
+
+        public static Color DarkGrey
+        {
+            get { return new Color(0.4f, 0.4f, 0.4f, 1f); }
+        }
+
+        public static Color Grey
+        {
+            get { return new Color(0.7f, 0.7f, 0.7f, 1f); }
+        }
+        #endregion
     }
 
     /// <summary>
