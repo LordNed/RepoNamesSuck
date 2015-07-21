@@ -8,7 +8,7 @@ namespace WEditor.Maps
 
         public override void OnDrawGizmos()
         {
-            World.Gizmos.DrawWireCube(Transform.Position, Vector3.One * 50f);
+            World.Gizmos.DrawCube(Transform.Position, Vector3.One * 50f, new Color(0, 1, 0, 1));
         }
 
         public override string ToString()

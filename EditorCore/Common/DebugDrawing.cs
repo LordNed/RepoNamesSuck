@@ -12,9 +12,12 @@ namespace WEditor
             public Mesh Mesh;
             public Vector3 Position;
             public Vector3 Scale;
+            public Color Color;
+            public bool DepthTest;
         }
 
-        private Mesh m_cubeMesh;
+        private Mesh m_wireCubeMesh;
+        private Mesh m_solidCubeMesh;
         private List<DrawInstance> m_instanceList;
 
         public DebugDrawing()
@@ -24,21 +27,39 @@ namespace WEditor
 
         public void InitializeSystem()
         {
-            m_cubeMesh = WireCube.GetMesh();
+            m_wireCubeMesh = WireCube.GenerateMesh();
+            m_solidCubeMesh = SolidCube.GenerateMesh();
         }
 
         public void ShutdownSystem()
         {
-            m_cubeMesh.Dispose();
-            m_cubeMesh = null;
+            m_wireCubeMesh.Dispose();
+            m_wireCubeMesh = null;
+            m_solidCubeMesh.Dispose();
+            m_solidCubeMesh = null;
 
             m_instanceList.Clear();
             m_instanceList = null;
         }
 
-        public void DrawWireCube(Vector3 position, Vector3 scale)
+        public void DrawWireCube(Vector3 position, Vector3 scale, bool depthTest = true)
         {
-            m_instanceList.Add(new DrawInstance { Mesh = m_cubeMesh, Position = position, Scale = scale });
+            DrawWireCube(position, scale, new Color(1f, 1f, 1f, 1f), depthTest);
+        }
+
+        public void DrawWireCube(Vector3 position, Vector3 scale, Color color, bool depthTest = true)
+        {
+            m_instanceList.Add(new DrawInstance { Mesh = m_wireCubeMesh, Position = position, Scale = scale, Color = color, DepthTest = depthTest });
+        }
+
+        public void DrawCube(Vector3 position, Vector3 scale, bool depthTest = true)
+        {
+            DrawCube(position, scale, new Color(1f, 1f, 1f, 1f), depthTest);
+        }
+
+        public void DrawCube(Vector3 position, Vector3 scale, Color color, bool depthTest = true)
+        {
+            m_instanceList.Add(new DrawInstance { Mesh = m_solidCubeMesh, Position = position, Scale = scale, Color = color, DepthTest = depthTest });
         }
 
         public void ResetList()

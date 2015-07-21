@@ -35,8 +35,8 @@ namespace WEditor.Rendering
 
             // Create a shader for drawing debug primitives/instances.
             m_debugShader = new Shader("DebugPrimitives");
-            m_debugShader.CompileSource(File.ReadAllText("RenderSystem/Shaders/frag.glsl"), ShaderType.FragmentShader);
-            m_debugShader.CompileSource(File.ReadAllText("RenderSystem/Shaders/vert.glsl"), ShaderType.VertexShader);
+            m_debugShader.CompileSource(File.ReadAllText("RenderSystem/Shaders/DebugPrimitive.frag"), ShaderType.FragmentShader);
+            m_debugShader.CompileSource(File.ReadAllText("RenderSystem/Shaders/DebugPrimitive.vert"), ShaderType.VertexShader);
             m_debugShader.LinkShader();
         }
 

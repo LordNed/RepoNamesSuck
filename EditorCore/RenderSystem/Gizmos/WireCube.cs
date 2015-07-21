@@ -4,7 +4,7 @@ namespace WEditor.Rendering.Gizmos
 {
     public static class WireCube
     {
-        public static Mesh GetMesh()
+        public static Mesh GenerateMesh()
         {
             Vector3[] meshVerts = 
             { 
