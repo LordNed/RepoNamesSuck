@@ -8,36 +8,35 @@ namespace WEditor.Rendering.Gizmos
         {
             Vector3[] meshVerts = 
             { 
-                new Vector3(-.5f, -.5f,  -.5f),
-                new Vector3(.5f, -.5f,  -.5f),
-                new Vector3(.5f, .5f,  -.5f),
-                new Vector3(-.5f, .5f,  -.5f),
-                new Vector3(-.5f, -.5f,  .5f),
-                new Vector3(.5f, -.5f,  .5f),
-                new Vector3(.5f, .5f,  .5f),
-                new Vector3(-.5f, .5f,  .5f),
+                new Vector3(-.5f, -.5f,  -.5f), // Bot - Back Left
+                new Vector3(.5f, -.5f,  -.5f), // Bot - Back Right
+                new Vector3(.5f, .5f,  -.5f),  // Top - Back Right
+                new Vector3(-.5f, .5f,  -.5f), // Top - Back Left
+                new Vector3(-.5f, -.5f,  .5f), // Bot - Front Left
+                new Vector3(.5f, -.5f,  .5f), // Bot - Front Right
+                new Vector3(.5f, .5f,  .5f), // Top - Front Right
+                new Vector3(-.5f, .5f,  .5f), // Top - Front left
             };
 
             int[] meshIndexes =
             {
-                //front
-                0, 3, 7,
-                0, 7, 4,
-                //back
-                1, 6, 2,
-                6, 1, 5,
-                //left
-                0, 1, 2,
-                0, 2, 3,
-                //right
-                4, 6, 5,
-                6, 4, 7,
-                //top
-                2, 6, 3,
-                6, 7, 3,
-                //bottom
-                0, 5, 1,
-                0, 4, 5
+                // Top
+                3, 2,
+                2, 6,
+                6, 7,
+                7, 3,
+
+                // Bottom
+                0, 1,
+                1, 5,
+                5, 4,
+                4, 0,
+
+                // Supports
+                0, 3,
+                1, 2,
+                5, 6,
+                4, 7
             };
 
 
@@ -45,6 +44,7 @@ namespace WEditor.Rendering.Gizmos
             MeshBatch meshBach = new MeshBatch();
             meshBach.Vertices = meshVerts;
             meshBach.Indexes = meshIndexes;
+            meshBach.PrimitveType = OpenTK.Graphics.OpenGL.PrimitiveType.Lines;
             newMesh.SubMeshes.Add(meshBach);
 
             return newMesh;
