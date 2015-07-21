@@ -17,6 +17,14 @@ namespace WEditor
             A = a;
         }
 
+        public Color(float r, float g, float b)
+        {
+            R = r;
+            G = g;
+            B = b;
+            A = 1f;
+        }
+
         public override string ToString()
         {
             return string.Format("[Color] (r: {0} g: {1} b: {2} a: {3})", R, G, B, A);
