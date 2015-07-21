@@ -2,6 +2,7 @@
 
 // Vertex Data Input
 in vec3 RawPosition;
+in vec4 RawColor0;
 
 // Output
 out vec4 Color0;
@@ -16,5 +17,5 @@ void main()
 {
 	mat4 MVP = ProjMtx * ViewMtx * ModelMtx;
 	gl_Position = MVP * vec4(RawPosition, 1);
-	Color0 = COLOR0_Amb;
+	Color0 = COLOR0_Amb * RawColor0;
 }
