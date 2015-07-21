@@ -18,6 +18,18 @@ namespace WEditor.Rendering.Gizmos
                 new Vector3(-.5f, .5f,  .5f), // Top - Front left
             };
 
+            Color[] meshColors = 
+            {
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f)
+            };
+
             int[] meshIndexes =
             {
                 // Top
@@ -41,11 +53,12 @@ namespace WEditor.Rendering.Gizmos
 
 
             Mesh newMesh = new Mesh();
-            MeshBatch meshBach = new MeshBatch();
-            meshBach.Vertices = meshVerts;
-            meshBach.Indexes = meshIndexes;
-            meshBach.PrimitveType = OpenTK.Graphics.OpenGL.PrimitiveType.Lines;
-            newMesh.SubMeshes.Add(meshBach);
+            MeshBatch meshBatch = new MeshBatch();
+            meshBatch.Vertices = meshVerts;
+            meshBatch.Indexes = meshIndexes;
+            meshBatch.PrimitveType = OpenTK.Graphics.OpenGL.PrimitiveType.Lines;
+            meshBatch.Color0 = meshColors;
+            newMesh.SubMeshes.Add(meshBatch);
 
             return newMesh;
         }

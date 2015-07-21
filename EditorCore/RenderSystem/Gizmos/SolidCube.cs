@@ -18,6 +18,18 @@ namespace WEditor.Rendering.Gizmos
                 new Vector3(-.5f, .5f,  .5f),
             };
 
+            Color[] meshColors = 
+            {
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f),
+                new Color(1f, 1f, 1f, 1f)
+            };
+
             int[] meshIndexes =
             {
                 //front
@@ -42,10 +54,11 @@ namespace WEditor.Rendering.Gizmos
 
 
             Mesh newMesh = new Mesh();
-            MeshBatch meshBach = new MeshBatch();
-            meshBach.Vertices = meshVerts;
-            meshBach.Indexes = meshIndexes;
-            newMesh.SubMeshes.Add(meshBach);
+            MeshBatch meshBatch = new MeshBatch();
+            meshBatch.Vertices = meshVerts;
+            meshBatch.Indexes = meshIndexes;
+            meshBatch.Color0 = meshColors;
+            newMesh.SubMeshes.Add(meshBatch);
 
             return newMesh;
         }
