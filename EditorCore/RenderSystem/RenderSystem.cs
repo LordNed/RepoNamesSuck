@@ -168,6 +168,11 @@ namespace WEditor.Rendering
             GL.DepthMask(true);
             foreach (var instance in m_world.Gizmos.GetInstanceList())
             {
+                if (instance.DepthTest)
+                    GL.Enable(EnableCap.DepthTest);
+                else
+                    GL.Disable(EnableCap.DepthTest);
+
                 Matrix4 modelMatrix = Matrix4.CreateScale(instance.Scale) * Matrix4.CreateTranslation(instance.Position);
 
                 // Bind the Debug Shader
@@ -177,6 +182,9 @@ namespace WEditor.Rendering
                 GL.UniformMatrix4(m_debugShader.UniformModelMtx, false, ref modelMatrix);
                 GL.UniformMatrix4(m_debugShader.UniformViewMtx, false, ref viewMatrix);
                 GL.UniformMatrix4(m_debugShader.UniformProjMtx, false, ref projMatrix);
+
+                // Set the Color uniform on the GPU
+                GL.Uniform4(m_debugShader.UniformColor0Amb, instance.Color.R, instance.Color.G, instance.Color.B, instance.Color.A);
 
                 // Bind our Mesh
                 instance.Mesh.SubMeshes[0].Bind();
