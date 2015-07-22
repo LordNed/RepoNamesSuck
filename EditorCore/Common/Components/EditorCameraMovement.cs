@@ -5,7 +5,7 @@ namespace WEditor
 {
     public class EditorCameraMovement : WComponent
     {
-        public float MoveSpeed = 750f;
+        public float MoveSpeed = 1000f;
         public float MouseSensitivity = 20f;
         public Camera Camera;
 
@@ -60,7 +60,7 @@ namespace WEditor
             Vector3 up = Vector3.Cross(Camera.Transform.Forward, Camera.Transform.Right);
             if (Vector3.Dot(up, Vector3.UnitY) < 0.01f)
             {
-                Camera.Transform.Rotate(Camera.Transform.Right, -y * deltaTime);
+                Camera.Transform.Rotate(Camera.Transform.Right, -y * deltaTime * MouseSensitivity);
             }
         }
     }
