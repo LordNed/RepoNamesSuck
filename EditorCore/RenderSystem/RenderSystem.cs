@@ -53,6 +53,7 @@ namespace WEditor.Rendering
             // windows and partial camera viewport rects.
             GL.ClearColor(0f, 0f, 0f, 1f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.LineWidth(4);
 
             GL.Enable(EnableCap.ScissorTest);
             GL.Enable(EnableCap.DepthTest);

@@ -63,7 +63,7 @@ namespace WEditor
             DrawWireCube(position, scale, Color.White, depthTest);
         }
 
-        public void DrawWireCube(Vector3 position, Vector3 scale, Color color, bool depthTest)
+        public void DrawWireCube(Vector3 position, Vector3 scale, Color color, bool depthTest = true)
         {
             m_instanceList.Add(new DrawInstance { Mesh = m_wireCubeMesh, Position = position, Scale = scale, Color = color, DepthTest = depthTest });
         }

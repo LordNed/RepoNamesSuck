@@ -55,7 +55,6 @@
     <Compile Include="Common\Maps\Arrow.cs" />
     <Compile Include="Common\Maps\Layers.cs" />
     <Compile Include="Common\Maps\MapEntity.cs" />
-    <Compile Include="Common\Maps\MeshSceneComponent.cs" />
     <Compile Include="Common\Maps\Path.cs" />
     <Compile Include="Common\Maps\PathPoint.cs" />
     <Compile Include="Common\Maps\LightVector.cs" />

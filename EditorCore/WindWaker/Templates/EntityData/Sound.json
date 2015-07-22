@@ -2,13 +2,13 @@
 	"FourCC" : "SOND",
 	"Properties" :
 	[
-		{ "Name" : "Name", "Type" : "fixedLengthString", "Length" : 8 },
+		{ "Name" : "Name", "Type" : "fixedLengthString", "Length" : 8, "Description" : "Known Values: sndpath" },
 		{ "Name" : "Position", "Type" : "vector3" },
 		{ "Name" : "Unknown 1", "Type" : "byte" },
 		{ "Name" : "Unknown 2", "Type" : "byte" },
 		{ "Name" : "Unknown 3", "Type" : "byte" },
 		{ "Name" : "Sound ID", "Type" : "byte" },
-		{ "Name" : "Sound Radius", "Type" : "byte" },
+		{ "Name" : "Path Index", "Type" : "byte" },
 		{ "Name" : "Padding 1", "Type" : "byte" },
 		{ "Name" : "Padding 2", "Type" : "byte" },
 		{ "Name" : "Padding 3", "Type" : "byte" }
