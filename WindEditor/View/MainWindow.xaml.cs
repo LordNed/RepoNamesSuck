@@ -80,10 +80,16 @@ namespace WindEditor
             m_glControl.Paint += m_glControl_Paint;
             m_glControl.MouseDown += m_glControl_MouseDown;
             m_glControl.MouseUp += m_glControl_MouseUp;
+            m_glControl.MouseWheel += m_glControl_MouseWheel;
             m_glControl.Dock = System.Windows.Forms.DockStyle.Fill;
             m_viewModel.OnGraphicsContextInitialized(m_glControl);
 
             winFormsHost.Child = m_glControl;
+        }
+
+        void m_glControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            m_viewModel.SetMouseScrollDelta(e.Delta);
         }
 
         private void m_glControl_Paint(object sender, System.Windows.Forms.PaintEventArgs e)

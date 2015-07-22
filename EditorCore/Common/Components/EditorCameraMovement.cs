@@ -31,6 +31,9 @@ namespace WEditor
                 moveDir -= Vector3.UnitX;
             }
 
+            MoveSpeed += Input.MouseScrollDelta * 100 * deltaTime;
+            MoveSpeed = MathE.Clamp(MoveSpeed, 10, 5000);
+
             if (Input.GetMouseButton(1))
             {
                 Rotate(deltaTime, Input.MouseDelta.X, Input.MouseDelta.Y);

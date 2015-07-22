@@ -9,6 +9,8 @@ namespace WEditor
         public Vector3 MousePosition { get; private set; }
         /// <summary> Delta position in pixel coordinates between frames. Read only. </summary>
         public Vector3 MouseDelta { get; private set; }
+        /// <summary> Delta of the scroll wheel, one int per notch on wheel. </summary>
+        public int MouseScrollDelta { get; private set; }
 
         /// <summary> Keys currently down this frame. </summary>
         private readonly bool[] m_keysDown = new bool[256];
@@ -59,6 +61,7 @@ namespace WEditor
 
             MouseDelta = MousePosition - _prevMousePos;
             _prevMousePos = MousePosition;
+            MouseScrollDelta = 0;
         }
 
         public void SetKeyboardState(Key keyCode, bool bPressed)
@@ -74,6 +77,11 @@ namespace WEditor
         public void SetMousePosition(Vector2 mousePos)
         {
             MousePosition = new Vector3(mousePos.X, mousePos.Y, 0);
+        }
+
+        public void SetMouseScrollDelta(int delta)
+        {
+            MouseScrollDelta = delta;
         }
 
         private static int MouseButtonEnumToInt(MouseButton button)

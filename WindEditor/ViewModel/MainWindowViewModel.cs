@@ -128,6 +128,11 @@ namespace WindEditor.UI
             m_editorCore.GetWorldByName("main").Input.SetKeyboardState(key, down);
         }
 
+        internal void SetMouseScrollDelta(int delta)
+        {
+            m_editorCore.GetWorldByName("main").Input.SetMouseScrollDelta(delta);
+        }
+
         internal void Exit()
         {
             if (m_editorCore.LoadedScene != null)
