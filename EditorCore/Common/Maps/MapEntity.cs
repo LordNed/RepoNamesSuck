@@ -45,6 +45,7 @@ namespace WEditor.Maps
         }
 
         public virtual void OnDrawGizmos() { }
+        public virtual void OnDrawGizmosSelected() { }
 
         public override string ToString()
         {

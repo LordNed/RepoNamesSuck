@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using WEditor;
 using WEditor.Maps;
 
 namespace WindEditor.UI
@@ -17,8 +18,19 @@ namespace WindEditor.UI
             }
         }
 
+        public BindingList<MapEntity> SelectedEntities
+        {
+            get { return m_world.SelectedEntities; }
+            //set
+            //{
+            //    m_world.SelectedEntities = value;
+            //    OnPropertyChanged("SelectedEntities");
+            //}
+        }
+
         private MainWindowViewModel m_mainView;
         private BindingList<MapEntity> m_entityList;
+        public WWorld m_world;
 
         public EntityOutlinerViewModel(MainWindowViewModel mainView)
         {

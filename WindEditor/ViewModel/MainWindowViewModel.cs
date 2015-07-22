@@ -107,6 +107,7 @@ namespace WindEditor.UI
             };
 
             m_editorCore.PropertyChanged += OnEditorPropertyChanged;
+            EntityOutliner.m_world = m_editorCore.GetWorldByName("main");
 
             // Debug for fast-loading.
             m_editorCore.LoadMapFromDirectory(@"C:\Users\Matt\Documents\Wind Editor\ma2room_slim");

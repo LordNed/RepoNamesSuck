@@ -28,7 +28,15 @@ namespace WEditor.UI.View
 
         private void SelectedEntityChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            ((EntityOutlinerViewModel)DataContext).OnSelectedEntityChanged(e.NewValue);
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var viewModel = (EntityOutlinerViewModel)DataContext;
+            if (e.AddedItems.Count > 0)
+                viewModel.OnSelectedEntityChanged(e.AddedItems[0]);
+            else
+                viewModel.OnSelectedEntityChanged(null);
         }
     }
 }
