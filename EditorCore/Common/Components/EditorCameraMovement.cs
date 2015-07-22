@@ -5,7 +5,7 @@ namespace WEditor
 {
     public class EditorCameraMovement : WComponent
     {
-        public float MoveSpeed = 1000f;
+        public float MoveSpeed = 1500f;
         public float MouseSensitivity = 20f;
         public Camera Camera;
 
@@ -30,9 +30,26 @@ namespace WEditor
             {
                 moveDir -= Vector3.UnitX;
             }
+            if(Input.GetKey(System.Windows.Input.Key.Q))
+            {
+                moveDir -= Vector3.UnitY;
+            }
+            if(Input.GetKey(System.Windows.Input.Key.E))
+            {
+                moveDir += Vector3.UnitY;
+            }
 
-            MoveSpeed += Input.MouseScrollDelta * 100 * deltaTime;
-            MoveSpeed = MathE.Clamp(MoveSpeed, 10, 5000);
+            // If they're holding down the shift key adjust their FOV when they scroll, otherwise adjust move speed.
+            if (Input.GetKey(System.Windows.Input.Key.LeftShift) || Input.GetKey(System.Windows.Input.Key.RightShift))
+            {
+                Camera.NearClipPlane = MathE.Clamp(Camera.NearClipPlane + Input.MouseScrollDelta * 50 * deltaTime * 1.0f, 100, 10000);
+                Camera.FarClipPlane = MathE.Clamp(Camera.FarClipPlane + Input.MouseScrollDelta * 10 * deltaTime * 1.2f, 5000, 100000);
+            }
+            else
+            {
+                MoveSpeed += Input.MouseScrollDelta * 100 * deltaTime;
+                MoveSpeed = MathE.Clamp(MoveSpeed, 100, 8000);
+            }
 
             if (Input.GetMouseButton(1))
             {
