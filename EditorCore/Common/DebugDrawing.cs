@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using System.Collections.Generic;
+using System.ComponentModel;
 using WEditor.Rendering;
 using WEditor.Rendering.Gizmos;
 
@@ -59,22 +60,27 @@ namespace WEditor
 
         public void DrawWireCube(Vector3 position, Vector3 scale, bool depthTest = true)
         {
-            DrawWireCube(position, scale, new Color(1f, 1f, 1f, 1f), depthTest);
+            DrawWireCube(position, scale, Color.White, depthTest);
         }
 
-        public void DrawWireCube(Vector3 position, Vector3 scale, Color color, bool depthTest = true)
+        public void DrawWireCube(Vector3 position, Vector3 scale, Color color, bool depthTest)
         {
             m_instanceList.Add(new DrawInstance { Mesh = m_wireCubeMesh, Position = position, Scale = scale, Color = color, DepthTest = depthTest });
         }
 
         public void DrawCube(Vector3 position, Vector3 scale, bool depthTest = true)
         {
-            DrawCube(position, scale, new Color(1f, 1f, 1f, 1f), depthTest);
+            DrawCube(position, scale, Color.White, depthTest);
         }
 
         public void DrawCube(Vector3 position, Vector3 scale, Color color, bool depthTest = true)
         {
             m_instanceList.Add(new DrawInstance { Mesh = m_solidCubeMesh, Position = position, Scale = scale, Color = color, DepthTest = depthTest });
+        }
+
+        public void DrawLine(Vector3 posA, Vector3 posB)
+        {
+            DrawLine(posA, posB, Color.White);
         }
 
         public void DrawLine(Vector3 posA, Vector3 posB, Color color)
