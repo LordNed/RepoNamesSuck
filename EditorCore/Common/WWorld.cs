@@ -88,14 +88,36 @@ namespace WEditor
             {
                 foreach(var room in Map.Rooms)
                 {
+                    if (!room.Visible)
+                        continue;
+
                     foreach (var ent in room.Entities)
-                        ent.OnDrawGizmos();
+                    {
+                        if (!Map.LayerIsVisible(ent.Layer))
+                            continue;
+
+                        if (SelectedEntities.Contains(ent))
+                            ent.OnDrawGizmosSelected();
+                        else
+                            ent.OnDrawGizmos();
+                    }
                 }
 
                 if(Map.Stage != null)
                 {
-                    foreach (var ent in Map.Stage.Entities)
-                        ent.OnDrawGizmos();
+                    if (Map.Stage.Visible)
+                    {
+                        foreach (var ent in Map.Stage.Entities)
+                        {
+                            if (!Map.LayerIsVisible(ent.Layer))
+                                continue;
+
+                            if (SelectedEntities.Contains(ent))
+                                ent.OnDrawGizmosSelected();
+                            else
+                                ent.OnDrawGizmos();
+                        }
+                    }
                 }
             }
 
@@ -139,5 +161,6 @@ namespace WEditor
             m_gizmos.ResetList();
             RenderSystem.UnloadAll();
         }
+
     }
 }
