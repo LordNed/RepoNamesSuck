@@ -25,7 +25,7 @@ namespace WindEditor
 
         private void OnExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            m_viewModel.Exit();
+            Close();
         }
 
         private void OnOpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)

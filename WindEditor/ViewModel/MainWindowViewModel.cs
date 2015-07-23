@@ -108,9 +108,6 @@ namespace WindEditor.UI
 
             m_editorCore.PropertyChanged += OnEditorPropertyChanged;
             EntityOutliner.m_world = m_editorCore.GetWorldByName("main");
-
-            // Debug for fast-loading.
-            m_editorCore.LoadMapFromDirectory(@"C:\Users\Matt\Documents\Wind Editor\ma2room_slim");
         }
 
         internal void OnOutputResized(float width, float height)
@@ -131,21 +128,6 @@ namespace WindEditor.UI
         internal void SetMouseScrollDelta(int delta)
         {
             m_editorCore.GetWorldByName("main").Input.SetMouseScrollDelta(delta);
-        }
-
-        internal void Exit()
-        {
-            if (m_editorCore.LoadedScene != null)
-            {
-                if (System.Windows.MessageBox.Show("Are you sure you want to exit?", "Exit", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    Application.Current.Shutdown();
-                }
-            }
-            else
-            {
-                Application.Current.Shutdown();
-            }
         }
 
         internal void Open()
