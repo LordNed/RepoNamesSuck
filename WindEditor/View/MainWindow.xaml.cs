@@ -173,5 +173,15 @@ namespace WindEditor
             AboutWindow aboutWindow = new AboutWindow();
             aboutWindow.ShowDialog();
         }
+
+        private void OnDeleteCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = m_viewModel.CanDelete;
+        }
+
+        private void OnDeleteCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            m_viewModel.Delete();
+        }
     }
 }

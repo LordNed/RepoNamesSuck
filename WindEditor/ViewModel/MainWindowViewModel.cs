@@ -11,6 +11,7 @@ using OpenTK;
 using System.ComponentModel;
 using WEditor.WindWaker;
 using WEditor.Maps;
+using SelectedItemsBindingDemo;
 
 namespace WindEditor.UI
 {
@@ -25,6 +26,12 @@ namespace WindEditor.UI
         public bool CanClose { get { return m_editorCore.LoadedScene != null; } }
         public bool CanUndo { get { return false; } }
         public bool CanRedo { get { return false; } }
+        public bool CanDelete
+        {
+            get { return m_editorCore.GetWorldByName("main").SelectedEntities.Count > 0; }
+        }
+
+
         public string WindowTitle
         {
             get { return m_windowTitle; }
@@ -39,6 +46,11 @@ namespace WindEditor.UI
         public EntityOutlinerViewModel EntityOutliner { get; private set; }
         public OutputLogViewModel OutputLog { get; private set; }
         public InspectorViewModel InspectorView { get; private set; }
+
+        public ICommand OnDelete
+        {
+            get { return new RelayCommand(x => Console.WriteLine("Deleted."), x =>false); }
+        }
 
         public Map LoadedScene
         {
@@ -211,5 +223,11 @@ namespace WindEditor.UI
 
             m_editorCore.Shutdown();
         }
+
+
+        internal void Delete()
+        {
+        }
+
     }
 }

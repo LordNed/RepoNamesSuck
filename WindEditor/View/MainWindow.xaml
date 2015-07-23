@@ -10,6 +10,7 @@
         <CommandBinding Command="ApplicationCommands.Close" CanExecute="OnCloseCommand_CanExecute" Executed="OnCloseCommand_Executed"/>
         <CommandBinding Command="ApplicationCommands.Undo" CanExecute="OnUndoCommand_CanExecute" Executed="OnUndoCommand_Executed"/>
         <CommandBinding Command="ApplicationCommands.Redo" CanExecute="OnRedoCommand_CanExecute" Executed="OnRedoCommand_Executed"/>
+        <CommandBinding Command="ApplicationCommands.Delete" CanExecute="OnDeleteCommand_CanExecute" Executed="OnDeleteCommand_Executed"/>
         <CommandBinding Command="self:Commands.Exit" Executed="OnExitCommand_Executed"/>
     </Window.CommandBindings>
     <Grid>
@@ -21,6 +22,9 @@
                     <MenuItem Header="_Save" Command="ApplicationCommands.Save"/>
                     <Separator/>
                     <MenuItem Header="E_xit" Command="self:Commands.Exit"/>
+                </MenuItem>
+                <MenuItem Header="_Edit">
+                    <MenuItem Header="_Delete" Command="{Binding OnDelete}"/>   
                 </MenuItem>
                 <MenuItem Header="_Help">
                     <MenuItem Header="_About" Click="OnAboutWindowClicked"/>

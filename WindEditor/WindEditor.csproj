@@ -105,6 +105,7 @@
     <Compile Include="Common\Int32BitFieldConverter.cs" />
     <Compile Include="Common\MapEntityConverter.cs" />
     <Compile Include="Common\MultiSelectorBehaviours.cs" />
+    <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\TwoListSynchronizer.cs" />
     <Compile Include="ViewModel\EntityOutlinerViewModel.cs" />
     <Compile Include="ViewModel\InspectorViewModel.cs" />
