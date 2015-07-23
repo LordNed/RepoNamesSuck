@@ -4,27 +4,28 @@
         xmlns:self="clr-namespace:WindEditor.UI"
         Closing="Window_Closing"
         Title="{Binding WindowTitle}" Height="720" Width="1280" ResizeMode="CanResizeWithGrip" Icon="/WindEditor;component/Resources/ApplicationIcon.ico">
-    <Window.CommandBindings>
-        <CommandBinding Command="ApplicationCommands.Open" Executed="OnOpenCommand_Executed"/>
-        <CommandBinding Command="ApplicationCommands.Save" CanExecute="OnSaveCommand_CanExecute" Executed="OnSaveCommand_Executed"/>
-        <CommandBinding Command="ApplicationCommands.Close" CanExecute="OnCloseCommand_CanExecute" Executed="OnCloseCommand_Executed"/>
-        <CommandBinding Command="ApplicationCommands.Undo" CanExecute="OnUndoCommand_CanExecute" Executed="OnUndoCommand_Executed"/>
-        <CommandBinding Command="ApplicationCommands.Redo" CanExecute="OnRedoCommand_CanExecute" Executed="OnRedoCommand_Executed"/>
-        <CommandBinding Command="ApplicationCommands.Delete" CanExecute="OnDeleteCommand_CanExecute" Executed="OnDeleteCommand_Executed"/>
-        <CommandBinding Command="self:Commands.Exit" Executed="OnExitCommand_Executed"/>
-    </Window.CommandBindings>
+    <Window.InputBindings>
+        <!-- Catch Input and redirect them to the RelayCommand which hhandles that event. -->
+        <KeyBinding Key="O" Modifiers="Control" Command="{Binding OnRequestMapOpen}"/>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding OnRequestMapSave}"/>
+        <KeyBinding Key="C" Modifiers="Alt" Command="{Binding OnRequestMapClose}"/>
+        <KeyBinding Key="Z" Modifiers="Control" Command="{Binding OnRequestUndo}"/>
+        <KeyBinding Key="Y" Modifiers="Control" Command="{Binding OnRequestRedo}"/>
+        <KeyBinding Key="Delete" Command="{Binding OnRequestDelete}"/>
+        <!-- <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding OnRequestApplicationClose}"/> -->
+    </Window.InputBindings>
     <Grid>
         <DockPanel VerticalAlignment="Top" Height="20">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Open" Command="ApplicationCommands.Open"/>
-                    <MenuItem Header="_Close" Command="ApplicationCommands.Close"/>
-                    <MenuItem Header="_Save" Command="ApplicationCommands.Save"/>
+                    <MenuItem Header="_Open" Command="{Binding OnRequestMapOpen}"/>
+                    <MenuItem Header="_Close" Command="{Binding OnRequestMapClose}"/>
+                    <MenuItem Header="_Save" Command="{Binding OnRequestMapSave}"/>
                     <Separator/>
-                    <MenuItem Header="E_xit" Command="self:Commands.Exit"/>
+                    <MenuItem Header="E_xit" Command="{Binding OnRequestApplicationClose}"/>
                 </MenuItem>
                 <MenuItem Header="_Edit">
-                    <MenuItem Header="_Delete" Command="{Binding OnDelete}"/>   
+                    <MenuItem Header="_Delete" Command="{Binding OnRequestDelete}"/>   
                 </MenuItem>
                 <MenuItem Header="_Help">
                     <MenuItem Header="_About" Click="OnAboutWindowClicked"/>

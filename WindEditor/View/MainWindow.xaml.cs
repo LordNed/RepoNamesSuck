@@ -23,56 +23,6 @@ namespace WindEditor
             DataContext = m_viewModel;
         }
 
-        private void OnExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void OnOpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            m_viewModel.Open();
-        }
-
-        private void OnSaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = m_viewModel.CanSave;
-        }
-
-        private void OnSaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            m_viewModel.Save();
-        }
-
-        private void OnCloseCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = m_viewModel.CanClose;
-        }
-
-        private void OnCloseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            m_viewModel.Close();
-        }
-
-        private void OnUndoCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = m_viewModel.CanUndo;
-        }
-
-        private void OnUndoCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            m_viewModel.Undo();
-        }
-
-        private void OnRedoCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = m_viewModel.CanRedo;
-        }
-
-        private void OnRedoCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            m_viewModel.Redo();
-        }
-
         private void winFormsHost_Initialized(object sender, EventArgs e)
         {
             m_glControl = new GLControl(new GraphicsMode(32, 24), 3, 0, GraphicsContextFlags.Default);
@@ -172,16 +122,6 @@ namespace WindEditor
         {
             AboutWindow aboutWindow = new AboutWindow();
             aboutWindow.ShowDialog();
-        }
-
-        private void OnDeleteCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = m_viewModel.CanDelete;
-        }
-
-        private void OnDeleteCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            m_viewModel.Delete();
         }
     }
 }

@@ -162,5 +162,9 @@ namespace WEditor
             RenderSystem.UnloadAll();
         }
 
+        public void DeleteSelectedObjects()
+        {
+            System.Console.WriteLine("Deleting Selected Objects.");
+        }
     }
 }

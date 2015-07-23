@@ -22,41 +22,69 @@ namespace WindEditor.UI
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public bool CanSave { get { return false; /* return m_editorCore.LoadedScene != null;*/ } }
-        public bool CanClose { get { return m_editorCore.LoadedScene != null; } }
-        public bool CanUndo { get { return false; } }
-        public bool CanRedo { get { return false; } }
-        public bool CanDelete
+        #region Command Callbacks
+        /// <summary> The user has requested to open a new map, ask which map and then unload current if needed. </summary>
+        public ICommand OnRequestMapOpen
         {
-            get { return m_editorCore.GetWorldByName("main").SelectedEntities.Count > 0; }
+            get { return new RelayCommand(x => Open()); }
         }
 
-
-        public string WindowTitle
+        /// <summary> The user has requested to save the currently open map. Only available if a map is currently opened. </summary>
+        public ICommand OnRequestMapSave
         {
-            get { return m_windowTitle; }
-            set
-            {
-                m_windowTitle = value;
-                OnPropertyChanged("WindowTitle");
-            }
+            get { return new RelayCommand(x => Save(), x => m_editorCore.LoadedScene != null); }
         }
+
+        /// <summary> The user has requested to unload the currently open map. Only available if a map is currently opened. Ask user if they'd like to save. </summary>
+        public ICommand OnRequestMapClose
+        {
+            get { return new RelayCommand(x => Close(), x => m_editorCore.LoadedScene != null); }
+        }
+
+        /// <summary> The user has requested to undo the last action. Only available if they've made an undoable action. </summary>
+        public ICommand OnRequestUndo
+        {
+            get { return new RelayCommand(x => { return; }, x => false); }
+        }
+
+        /// <summary> The user has requested to redo the last undo action. Only available if they've undone an action. </summary>
+        public ICommand OnRequestRedo
+        {
+            get { return new RelayCommand(x => { return; }, x => false); }
+        }
+
+        /// <summary> Delete the currently selected objects in the world. Only available if there is a one or more currently selected objects. </summary>
+        public ICommand OnRequestDelete
+        {
+            get { return new RelayCommand(x => m_editorCore.GetWorldByName("main").DeleteSelectedObjects(), x => m_editorCore.GetWorldByName("main").SelectedEntities.Count > 0); }
+        }
+
+        public ICommand OnRequestApplicationClose
+        {
+            get { return new RelayCommand(x => Application.Current.MainWindow.Close()); }
+        }
+        #endregion
 
         public SceneViewViewModel SceneView { get; private set; }
         public EntityOutlinerViewModel EntityOutliner { get; private set; }
         public OutputLogViewModel OutputLog { get; private set; }
         public InspectorViewModel InspectorView { get; private set; }
 
-        public ICommand OnDelete
+        public string WindowTitle
         {
-            get { return new RelayCommand(x => Console.WriteLine("Deleted."), x =>false); }
+            get { return m_windowTitle; }
+            private set
+            {
+                m_windowTitle = value;
+                OnPropertyChanged("WindowTitle");
+            }
         }
 
         public Map LoadedScene
         {
             get
             {
-                if(m_editorCore != null)
+                if (m_editorCore != null)
                     return m_editorCore.LoadedScene;
 
                 return null;
@@ -85,18 +113,6 @@ namespace WindEditor.UI
                 UpdateWindowTitle();
 
                 OnPropertyChanged("LoadedScene");
-            }
-        }
-
-        private void UpdateWindowTitle()
-        {
-            if (m_editorCore == null || m_editorCore.LoadedScene == null)
-            {
-                WindowTitle = "Wind Editor";
-            }
-            else
-            {
-                WindowTitle = string.Format("{0} - Wind Editor", m_editorCore.LoadedScene.Name);
             }
         }
 
@@ -176,16 +192,6 @@ namespace WindEditor.UI
             m_editorCore.UnloadMap();
         }
 
-        internal void Undo()
-        {
-            WLog.Info(LogCategory.UI, null, "Undo (Not Implemented)");
-        }
-
-        internal void Redo()
-        {
-            WLog.Info(LogCategory.UI, null, "Redo (Not Implemented)");
-        }
-
         internal void SetSelectedSceneFile(Scene sceneFile)
         {
             if (sceneFile != null)
@@ -224,10 +230,16 @@ namespace WindEditor.UI
             m_editorCore.Shutdown();
         }
 
-
-        internal void Delete()
+        private void UpdateWindowTitle()
         {
+            if (m_editorCore == null || m_editorCore.LoadedScene == null)
+            {
+                WindowTitle = "Wind Editor";
+            }
+            else
+            {
+                WindowTitle = string.Format("{0} - Wind Editor", m_editorCore.LoadedScene.Name);
+            }
         }
-
     }
 }
