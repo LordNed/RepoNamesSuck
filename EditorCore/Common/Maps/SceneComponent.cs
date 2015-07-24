@@ -31,8 +31,8 @@ namespace WEditor.Maps
 
         public virtual void GetAABB(out Vector3 aabbMin, out Vector3 aabbMax)
         {
-            aabbMin = new Vector3(-0.5f, -0.5f, -0.5f);
-            aabbMax = new Vector3(0.5f, 0.5f, 0.5f);
+            aabbMin = new Vector3(-25f, -25f, -25f);
+            aabbMax = new Vector3(25f, 25f, 25f);
 
             aabbMin += Transform.Position;
             aabbMax += Transform.Position;
