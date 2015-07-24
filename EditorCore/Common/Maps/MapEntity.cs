@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.ComponentModel;
 
 namespace WEditor.Maps
@@ -30,8 +31,6 @@ namespace WEditor.Maps
                 OnPropertyChanged("Fields");
             }
         }
-
-
 
         private MapLayer m_mapLayer;
         private PropertyCollection m_fields;
