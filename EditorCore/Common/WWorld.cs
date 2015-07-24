@@ -124,6 +124,17 @@ namespace WEditor
                 }
             }
 
+            // Badly placed hack to test stuff.
+            if(Input.GetMouseButtonDown(0))
+            {
+                Console.WriteLine("Testing a raycast.");
+                Ray mouseRay = m_renderSystem.m_editorCamera.ViewportPointToRay(Input.MousePosition);
+                var hitResults = RaycastAll(mouseRay);
+                Console.WriteLine("Hit {0} Objects.", hitResults.Count);
+                for (int i = 0; i < hitResults.Count; i++)
+                    Console.WriteLine("\t{0}", hitResults[i]);
+            }
+
             // Finalize the debug primitive list.
             m_gizmos.FinalizePrimitiveBatch();
 

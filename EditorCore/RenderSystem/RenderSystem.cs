@@ -14,6 +14,7 @@ namespace WEditor.Rendering
         private WWorld m_world;
 
         private Shader m_debugShader;
+        public Camera m_editorCamera;
 
         public RenderSystem(WWorld world)
         {
@@ -24,14 +25,14 @@ namespace WEditor.Rendering
         public void InitializeSystem()
         {
             // Create a Default camera
-            Camera editorCamera = new Camera();
-            editorCamera.ClearColor = new Color(0.4f, 0.1f, 1f, 1f);
+            m_editorCamera = new Camera();
+            m_editorCamera.ClearColor = new Color(0.4f, 0.1f, 1f, 1f);
 
             EditorCameraMovement camMovement = new EditorCameraMovement();
-            camMovement.Camera = editorCamera;
+            camMovement.Camera = m_editorCamera;
             m_world.RegisterComponent(camMovement);
 
-            m_cameraList.Add(editorCamera);
+            m_cameraList.Add(m_editorCamera);
 
             // Create a shader for drawing debug primitives/instances.
             m_debugShader = new Shader("DebugPrimitives");
