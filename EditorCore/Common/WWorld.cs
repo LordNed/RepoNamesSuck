@@ -10,8 +10,10 @@ using System.Linq;
 
 namespace WEditor
 {
-    public class WWorld
+    public class WWorld : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         /// <summary> Handles rendering for objects associated with this WWorld. </summary>
         public RenderSystem RenderSystem
         {
@@ -81,15 +83,15 @@ namespace WEditor
             m_gizmos.ResetList();
 
             // Update all of the entities in this world so they can move around, etc.
-            foreach(WComponent component in m_componentList)
+            foreach (WComponent component in m_componentList)
             {
                 component.Tick(deltaTime);
             }
 
             // Poll for new debug primitives.
-            if(Map != null)
+            if (Map != null)
             {
-                foreach(var room in Map.Rooms)
+                foreach (var room in Map.Rooms)
                 {
                     if (!room.Visible)
                         continue;
@@ -106,7 +108,7 @@ namespace WEditor
                     }
                 }
 
-                if(Map.Stage != null)
+                if (Map.Stage != null)
                 {
                     if (Map.Stage.Visible)
                     {
@@ -125,14 +127,32 @@ namespace WEditor
             }
 
             // Badly placed hack to test stuff.
-            if(Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0))
             {
-                Console.WriteLine("Testing a raycast.");
                 Ray mouseRay = m_renderSystem.m_editorCamera.ViewportPointToRay(Input.MousePosition);
                 var hitResults = RaycastAll(mouseRay);
                 Console.WriteLine("Hit {0} Objects.", hitResults.Count);
                 for (int i = 0; i < hitResults.Count; i++)
                     Console.WriteLine("\t{0}", hitResults[i]);
+
+                // If they're holding control, toggle the status of whether or not it is selected.
+                if (Input.GetKey(System.Windows.Input.Key.LeftCtrl))
+                {
+                    foreach (var result in hitResults)
+                    {
+
+                        if (SelectedEntities.Contains(result))
+                            SelectedEntities.Remove(result);
+                        else
+                            SelectedEntities.Add(result);
+                    }
+                }
+                else
+                {
+                    SelectedEntities.Clear();
+                    if (hitResults.Count > 0)
+                        SelectedEntities.Add(hitResults[0]);
+                }
             }
 
             // Finalize the debug primitive list.
@@ -179,8 +199,8 @@ namespace WEditor
         public void DeleteSelectedObjects()
         {
             System.Console.WriteLine("Deleting {0} Selected Objects.", SelectedEntities.Count);
-            
-            if(Map == null)
+
+            if (Map == null)
                 return;
 
             foreach (var room in Map.Rooms)
@@ -234,13 +254,13 @@ namespace WEditor
 
         private List<RaycastHitResult> RaycastAllInternal(Ray ray)
         {
-            if(Map == null)
+            if (Map == null)
                 throw new InvalidOperationException("Cannot raycast against an unloaded map!");
 
             List<RaycastHitResult> returnResults = new List<RaycastHitResult>();
-            foreach(Room room in Map.Rooms)
+            foreach (Room room in Map.Rooms)
             {
-                foreach(var entity in room.Entities)
+                foreach (var entity in room.Entities)
                 {
                     if (!Map.LayerIsVisible(entity.Layer))
                         continue;
@@ -254,11 +274,12 @@ namespace WEditor
                     sceneEntity.GetAABB(out aabbMin, out aabbMax);
 
                     float intersectionDist;
-                    if(RayIntersectsAABB(ray, aabbMin, aabbMax, out intersectionDist))
+                    if (RayIntersectsAABB(ray, aabbMin, aabbMax, out intersectionDist))
                     {
                         RaycastHitResult result = new RaycastHitResult();
                         result.Distance = intersectionDist;
                         result.Entity = entity;
+                        returnResults.Add(result);
                     }
                 }
             }
@@ -271,35 +292,60 @@ namespace WEditor
 
         private static bool RayIntersectsAABB(Ray ray, Vector3 aabbMin, Vector3 aabbMax, out float intersectionDistance)
         {
-            Vector3 dirFrac = new Vector3(1f / ray.Direction.X, 1f / ray.Direction.Y, 1f / ray.Direction.Z);
+            Vector3 t_1 = new Vector3(), t_2 = new Vector3();
 
-            float t1 = (aabbMin.X - ray.Origin.X) * dirFrac.X;
-            float t2 = (aabbMax.X - ray.Origin.X) * dirFrac.X;
-            float t3 = (aabbMin.Y - ray.Origin.Y) * dirFrac.Y;
-            float t4 = (aabbMax.Y - ray.Origin.Y) * dirFrac.Y;
-            float t5 = (aabbMin.Z - ray.Origin.Z) * dirFrac.Z;
-            float t6 = (aabbMin.Z - ray.Origin.Z) * dirFrac.Z;
+            float tNear = float.MinValue;
+            float tFar = float.MaxValue;
 
-            float tMin = Math.Max(Math.Max(Math.Min(t1, t2), Math.Min(t3, t4)), Math.Min(t5, t6));
-            float tMax = Math.Min(Math.Min(Math.Max(t1, t2), Math.Max(t3, t4)), Math.Max(t5, t6));
-
-            // If tMax < 0f, then ray intersects AABB but AABB is behind origin.
-            if(tMax < 0f)
+            // Test infinite planes in each directin.
+            for (int i = 0; i < 3; i++)
             {
-                intersectionDistance = tMax;
-                return false;
+                // Ray is parallel to planes in this direction.
+                if (ray.Direction[i] == 0)
+                {
+                    if ((ray.Origin[i] < aabbMin[i]) || (ray.Origin[i] > aabbMax[i]))
+                    {
+                        // Parallel and outside of the box, thus no intersection is possible.
+                        intersectionDistance = float.MinValue;
+                        return false;
+                    }
+                }
+                else
+                {
+                    t_1[i] = (aabbMin[i] - ray.Origin[i]) / ray.Direction[i];
+                    t_2[i] = (aabbMax[i] - ray.Origin[i]) / ray.Direction[i];
+
+                    // Ensure T_1 holds values for intersection with near plane.
+                    if (t_1[i] > t_2[i])
+                    {
+                        Vector3 temp = t_2;
+                        t_2 = t_1;
+                        t_1 = temp;
+                    }
+
+                    if (t_1[i] > tNear)
+                        tNear = t_1[i];
+
+                    if (t_2[i] < tFar)
+                        tFar = t_2[i];
+
+                    if ((tNear > tFar) || (tFar < 0))
+                    {
+                        intersectionDistance = float.MinValue;
+                        return false;
+                    }
+                }
             }
 
-            // If tMin > tMax, then ray doesn't intersect AABB.
-            if(tMin > tMax)
-            {
-                intersectionDistance = tMax;
-                return false;
-            }
-
-            // Finally we have an intersection.
-            intersectionDistance = tMin;
+            intersectionDistance = tNear;
             return true;
         }
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
 }
