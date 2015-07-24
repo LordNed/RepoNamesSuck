@@ -34,8 +34,8 @@ namespace WEditor.Rendering
             // Finalize can be called from any thread (ie: it's undefined) so we can't rely on finalize to dispose
             // of OpenGL resources - they're created from the main ui thread, and trying to dispose of them from
             // the finalize thread often results in a crash.
-            if (!m_disposed)
-                throw new Exception("This asset failed to manually be disposed!");
+            //if (!m_disposed)
+            //    throw new Exception("This asset failed to manually be disposed!");
             //Dispose(false);
         }
 

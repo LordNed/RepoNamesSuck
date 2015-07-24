@@ -13,7 +13,7 @@ namespace WEditor
         /// <summary> Used to print all log messages to the Console for now. </summary>
         private StandardOutLogger m_stdOutLogger;
 
-        private List<WWorld> m_editorWorlds;
+        private BindingList<WWorld> m_editorWorlds;
         private WWorld m_mainWorld;
 
         public Map LoadedScene
@@ -31,7 +31,7 @@ namespace WEditor
         public EditorCore()
         {
             m_stdOutLogger = new StandardOutLogger();
-            m_editorWorlds = new List<WWorld>();
+            m_editorWorlds = new BindingList<WWorld>();
             m_mainWorld = new WWorld("main");
             m_editorWorlds.Add(m_mainWorld);
 

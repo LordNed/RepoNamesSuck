@@ -105,7 +105,7 @@ namespace WEditor.Rendering
         }
 
         private float m_nearClipPlane = 100f;
-        private float m_farClipPlane = 10000f;
+        private float m_farClipPlane = 100000f;
         private float m_fieldOfView = 45f;
         private float m_pixelWidth;
         private float m_pixelHeight;
