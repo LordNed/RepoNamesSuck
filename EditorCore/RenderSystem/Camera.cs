@@ -134,7 +134,7 @@ namespace WEditor.Rendering
 
         public Ray ViewportPointToRay(Vector3 mousePos)
         {
-            Vector3 mousePosA = new Vector3(mousePos.X, mousePos.Y, -1f);
+            Vector3 mousePosA = new Vector3(mousePos.X, mousePos.Y, 0f);
             Vector3 mousePosB = new Vector3(mousePos.X, mousePos.Y, 1f);
 
 

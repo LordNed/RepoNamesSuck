@@ -32,7 +32,7 @@ namespace WindEditor
             m_glControl.MouseUp += m_glControl_MouseUp;
             m_glControl.MouseWheel += m_glControl_MouseWheel;
             m_glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            m_viewModel.OnGraphicsContextInitialized(m_glControl);
+            m_viewModel.OnGraphicsContextInitialized(m_glControl, winFormsHost);
 
             winFormsHost.Child = m_glControl;
         }

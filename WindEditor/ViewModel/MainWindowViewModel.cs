@@ -12,6 +12,7 @@ using System.ComponentModel;
 using WEditor.WindWaker;
 using WEditor.Maps;
 using SelectedItemsBindingDemo;
+using System.Windows.Forms.Integration;
 
 namespace WindEditor.UI
 {
@@ -116,7 +117,7 @@ namespace WindEditor.UI
             }
         }
 
-        internal void OnGraphicsContextInitialized(GLControl context)
+        internal void OnGraphicsContextInitialized(GLControl context, WindowsFormsHost host)
         {
             m_control = context;
 
@@ -126,8 +127,15 @@ namespace WindEditor.UI
             m_intervalTimer.Enabled = true;
             m_intervalTimer.Tick += (args, o) =>
             {
-                var newMousePosition = System.Windows.Forms.Control.MousePosition;
-                m_editorCore.GetWorldByName("main").Input.SetMousePosition(new OpenTK.Vector2((float)newMousePosition.X, (float)newMousePosition.Y));
+                Vector2 mousePosGlobal = new Vector2(System.Windows.Forms.Control.MousePosition.X, System.Windows.Forms.Control.MousePosition.Y);
+                Vector2 glControlPosGlobal = new Vector2((float)host.PointToScreen(new Point(0, 0)).X, (float)host.PointToScreen(new Point(0, 0)).Y);
+
+                var delta = mousePosGlobal - glControlPosGlobal;
+
+                delta.X = MathE.Clamp(delta.X, 0, m_control.Width);
+                delta.Y = MathE.Clamp(delta.Y, 0, m_control.Height);
+
+                m_editorCore.GetWorldByName("main").Input.SetMousePosition(delta);
                 m_editorCore.Tick();
 
                 if (m_control != null)
