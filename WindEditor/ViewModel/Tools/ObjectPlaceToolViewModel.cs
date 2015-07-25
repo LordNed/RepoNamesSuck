@@ -114,12 +114,13 @@ namespace WindEditor.UI
             }
 
             var fullEntryList = new List<ObjectCategoryEntry>();
+            var tabList = new List<TabItem>();
 
             // Create tabs for each unique category
             foreach(var kvp in objByCategory)
             {
                 TabItem tab = new TabItem();
-                tab.Header = kvp.Key.ToUpper(CultureInfo.CurrentCulture);
+                tab.Header = kvp.Key;
 
                 foreach(var entry in kvp.Value)
                 {
@@ -139,11 +140,25 @@ namespace WindEditor.UI
                     }
                 }
 
-                Tabs.Add(tab);
+                tabList.Add(tab);
             }
 
             // Use the flat-list of our entries and assign it as the source of the CollectionViewSource so we can filter it.
             FullList.Source = fullEntryList;
+
+            // Sort the Tabs by header, A-Z (but put "Uncategorized" last)
+            tabList.Sort(delegate(TabItem a, TabItem b) { return a.Header.CompareTo(b.Header); });
+            TabItem uncatTab = tabList.Find(x => x.Header == "Uncategorized");
+            if (uncatTab != null)
+            {
+                tabList.Remove(uncatTab);
+                tabList.Add(uncatTab);
+            }
+
+            for(int i = 0; i < tabList.Count; i++)
+            {
+                Tabs.Add(tabList[i]);
+            }
         }
 
         private void AddFilter()
