@@ -28,5 +28,11 @@ namespace WEditor.UI.View
                 tabs.Visibility = System.Windows.Visibility.Hidden;
             }
         }
+
+        private void tabs_Initialized(object sender, System.EventArgs e)
+        {
+            var control = (TabControl)sender;
+            control.SelectedIndex = 0;
+        }
     }
 }
