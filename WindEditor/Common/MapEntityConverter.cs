@@ -17,7 +17,7 @@ namespace WindEditor.UI
                 {
                     allFields.Add(((SceneComponent)values[0]).Transform.Position);
                     allFields.Add(((SceneComponent)values[0]).Transform.Rotation);
-                    allFields.Add(((SceneComponent)values[0]).Transform.Scale);
+                    allFields.Add(((SceneComponent)values[0]).Transform.LocalScale);
                 }
 
                 foreach (var field in mapEnt.Fields.Properties)

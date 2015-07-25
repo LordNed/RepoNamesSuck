@@ -548,7 +548,7 @@ namespace WEditor.WindWaker.Loaders
             // Remove the Scale field.
             if (forObject.Fields.HasProperty("Scale"))
             {
-                forObject.Transform.Scale = forObject.Fields.GetProperty<Vector3>("Scale");
+                forObject.Transform.LocalScale = forObject.Fields.GetProperty<Vector3>("Scale");
                 forObject.Fields.RemoveProperty("Scale");
             }
         }
