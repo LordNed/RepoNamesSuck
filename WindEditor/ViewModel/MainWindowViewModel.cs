@@ -70,6 +70,7 @@ namespace WindEditor.UI
         public EntityOutlinerViewModel EntityOutliner { get; private set; }
         public OutputLogViewModel OutputLog { get; private set; }
         public InspectorViewModel InspectorView { get; private set; }
+        public ToolModeViewModel ToolModeView { get; private set; }
 
         public string WindowTitle
         {
@@ -103,6 +104,7 @@ namespace WindEditor.UI
             EntityOutliner = new EntityOutlinerViewModel(this);
             OutputLog = new OutputLogViewModel();
             InspectorView = new InspectorViewModel();
+            ToolModeView = new ToolModeViewModel(this);
             UpdateWindowTitle();
         }
 

@@ -25,7 +25,7 @@
                     <MenuItem Header="E_xit" Command="{Binding OnRequestApplicationClose}"/>
                 </MenuItem>
                 <MenuItem Header="_Edit">
-                    <MenuItem Header="_Delete" Command="{Binding OnRequestDelete}"/>   
+                    <MenuItem Header="_Delete" Command="{Binding OnRequestDelete}"/>
                 </MenuItem>
                 <MenuItem Header="_Help">
                     <MenuItem Header="_About" Click="OnAboutWindowClicked"/>
@@ -53,7 +53,7 @@
                         </Grid.RowDefinitions>
 
                         <!-- Top Pane -->
-                        <View:EntityOutliner Grid.Row="0" DataContext="{Binding EntityOutliner}"/>
+                        <View:ToolModeView Grid.Row="0" DataContext="{Binding ToolModeView}"/>
 
                         <!-- First Splitter -->
                         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
@@ -74,7 +74,7 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="16"/>
                                             </Grid.ColumnDefinitions>
-                                            
+
                                             <TextBlock Grid.Column="0" Text="{Binding Layer}"/>
                                             <ToggleButton Grid.Column="1"  IsChecked="{Binding Visible}" />
                                         </Grid>
@@ -111,8 +111,16 @@
                 <!-- Right Side Splitter Handle-->
                 <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch"/>
                 <!-- Right Pane-->
-                <Grid Grid.Column="4">
-                    <View:Inspector Width="Auto" Height="Auto" DataContext="{Binding InspectorView}"/>
+                <Grid Grid.Column="4" Margin="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                        
+                    <View:EntityOutliner Grid.Row="0" DataContext="{Binding EntityOutliner}" Margin="0"/>
+                    <GridSplitter Grid.Row="1"/>
+                    <View:Inspector Grid.Row="2" Width="Auto" Height="Auto" DataContext="{Binding InspectorView}" Margin="0"/>
                 </Grid>
 
             </Grid>

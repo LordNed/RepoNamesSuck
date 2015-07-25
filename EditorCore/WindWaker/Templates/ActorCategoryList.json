@@ -1,0 +1,8 @@
+﻿{
+	{"FourCC" : "ACTR", "Category" : "Carryable", "TechnicalName" : "ootubo1", "Display Name" : "Clay Pot", "Keywords" : ["breakable", "pot"]},
+	{"FourCC" : "ACTR", "Category" : "Carryable", "TechnicalName" : "kotubo", "Display Name" : "Small Clay Pot", "Keywords" : ["breakable", "pot"]},
+	{"FourCC" : "TRES", "Category" : "Treasure Chests", "TechnicalName" : "takara", "Display Name" : "Treasure", "Keywords" : ["treasure", "chest"]},
+	{"FourCC" : "TRES", "Category" : "Treasure Chests", "TechnicalName" : "takara2", "Display Name" : "Treasure 2", "Keywords" : ["treasure", "chest"]},
+	{"FourCC" : "TRES", "Category" : "Treasure Chests", "TechnicalName" : "takara3", "Display Name" : "Treasure 3", "Keywords" : ["treasure", "chest"]},
+	{"FourCC" : "TRES", "Category" : "Treasure Chests", "TechnicalName" : "takara4", "Display Name" : "Treasure 4", "Keywords" : ["treasure", "chest"]}
+}

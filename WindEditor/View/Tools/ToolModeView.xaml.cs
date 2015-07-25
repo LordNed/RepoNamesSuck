@@ -18,9 +18,9 @@ namespace WEditor.UI.View
     /// <summary>
     /// Interaction logic for ModesView.xaml
     /// </summary>
-    public partial class ModesView : UserControl
+    public partial class ToolModeView : UserControl
     {
-        public ModesView()
+        public ToolModeView()
         {
             InitializeComponent();
         }

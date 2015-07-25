@@ -55,6 +55,10 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\OpenTK.dll</HintPath>
@@ -111,17 +115,19 @@
     <Compile Include="ViewModel\InspectorViewModel.cs" />
     <Compile Include="ViewModel\OutputLogViewModel.cs" />
     <Compile Include="ViewModel\SceneViewViewModel.cs" />
+    <Compile Include="ViewModel\Tools\ObjectPlaceToolViewModel.cs" />
+    <Compile Include="ViewModel\Tools\ToolModeViewModel.cs" />
     <Compile Include="View\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Inspector.xaml.cs">
       <DependentUpon>Inspector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ModesPlaceView.xaml.cs">
-      <DependentUpon>ModesPlaceView.xaml</DependentUpon>
+    <Compile Include="View\Tools\ObjectPlaceToolView.xaml.cs">
+      <DependentUpon>ObjectPlaceToolView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ModesView.xaml.cs">
-      <DependentUpon>ModesView.xaml</DependentUpon>
+    <Compile Include="View\Tools\ToolModeView.xaml.cs">
+      <DependentUpon>ToolModeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\OutputLog.xaml.cs">
       <DependentUpon>OutputLog.xaml</DependentUpon>
@@ -162,11 +168,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\ModesPlaceView.xaml">
+    <Page Include="View\Tools\ObjectPlaceToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\ModesView.xaml">
+    <Page Include="View\Tools\ToolModeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -197,6 +203,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="WindWaker\Templates\ActorCategoryList.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
