@@ -8,13 +8,14 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <wpfToolkit:WatermarkTextBox Watermark="Search Objects" Margin="0" AutoSelectBehavior="OnFocus" VerticalAlignment="Top" TextChanged="WatermarkTextBox_TextChanged"/>
+        <wpfToolkit:WatermarkTextBox Watermark="Search Objects" Margin="0" AutoSelectBehavior="OnFocus" VerticalAlignment="Top" TextChanged="WatermarkTextBox_TextChanged" Text="{Binding SearchFilterText, UpdateSourceTrigger=PropertyChanged}"/>
         <Grid Margin="0,24,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            
-            <TabControl x:Name="tabs" Grid.Column="0" TabStripPlacement="Left" ItemsSource="{Binding Tabs}">
+
+            <!-- Tabbed Browsing View -->
+            <TabControl x:Name="tabs" Grid.Column="0" TabStripPlacement="Left" ItemsSource="{Binding Tabs}" SourceUpdated="tabs_SourceUpdated" Initialized="tabs_Initialized">
                 <TabControl.ItemTemplate>
                     <!-- Header Template -->
                     <DataTemplate>
@@ -34,20 +35,14 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
-            
-            <ListBox x:Name="searchResults" Grid.Column="0" ItemsSource="{Binding Tabs}">
-                <ListBox.Template>
-                    <!-- Content Template -->
-                    <ControlTemplate>
-                        <ListBox ItemsSource="{Binding Content}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <self:ObjectPlaceEntryView/>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </ControlTemplate>
-                </ListBox.Template>
+
+            <!-- Search Results View -->
+            <ListBox x:Name="searchResults" Grid.Column="0" ItemsSource="{Binding FullList.View}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <self:ObjectPlaceEntryView/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
     </Grid>
