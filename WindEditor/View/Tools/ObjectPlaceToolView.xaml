@@ -22,7 +22,7 @@
                 <TabControl.ItemTemplate>
                     <!-- Header Template -->
                     <DataTemplate>
-                        <TextBlock Text="{Binding Header}"/>
+                        <TextBlock Text="{Binding Header}" MinWidth="60" MaxWidth="90" TextWrapping="Wrap" TextAlignment="Center"/>
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
