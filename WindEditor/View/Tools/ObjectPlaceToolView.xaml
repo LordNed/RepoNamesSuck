@@ -7,15 +7,18 @@
              xmlns:self="clr-namespace:WEditor.UI.View.Tools"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
-        <wpfToolkit:WatermarkTextBox Watermark="Search Objects" Margin="0" AutoSelectBehavior="OnFocus" VerticalAlignment="Top" TextChanged="WatermarkTextBox_TextChanged" Text="{Binding SearchFilterText, UpdateSourceTrigger=PropertyChanged}"/>
+        <wpfToolkit:WatermarkTextBox Watermark="Search Objects" Margin="0" AutoSelectBehavior="OnFocus" VerticalAlignment="Top" Text="{Binding SearchFilterText, UpdateSourceTrigger=PropertyChanged}"/>
         <Grid Margin="0,24,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Tabbed Browsing View -->
-            <TabControl x:Name="tabs" Grid.Column="0" TabStripPlacement="Left" ItemsSource="{Binding Tabs}" SourceUpdated="tabs_SourceUpdated" Initialized="tabs_Initialized">
+            <TabControl Visibility="{Binding CanPlaceObject, Converter={StaticResource boolToVisibilityConverter}}" Grid.Column="0" TabStripPlacement="Left" ItemsSource="{Binding Tabs}" Initialized="tabs_Initialized">
                 <TabControl.ItemTemplate>
                     <!-- Header Template -->
                     <DataTemplate>
@@ -37,7 +40,7 @@
             </TabControl>
 
             <!-- Search Results View -->
-            <ListBox x:Name="searchResults" Grid.Column="0" ItemsSource="{Binding FullList.View}">
+            <ListBox Visibility="{Binding IsSearching, Converter={StaticResource boolToVisibilityConverter}}" Grid.Column="0" ItemsSource="{Binding FullList.View}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <self:ObjectPlaceEntryView/>

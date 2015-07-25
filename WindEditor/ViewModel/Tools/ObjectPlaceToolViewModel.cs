@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -44,10 +45,20 @@ namespace WindEditor.UI
         }
     }
 
-    public class ObjectPlaceToolViewModel
+    public class ObjectPlaceToolViewModel : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public ObservableCollection<TabItem> Tabs { get; private set; }
         public CollectionViewSource FullList { get; private set; }
+        public bool IsSearching
+        {
+            get { return SearchFilterText.Length > 0;}
+        }
+        public bool CanPlaceObject
+        {
+            get { return !IsSearching;}
+        }
 
         public string SearchFilterText
         {
@@ -60,6 +71,10 @@ namespace WindEditor.UI
                     AddFilter();
 
                 FullList.View.Refresh();
+
+                OnPropertyChanged("SearchFilterText");
+                OnPropertyChanged("IsSearching");
+                OnPropertyChanged("CanPlaceObject");
             }
         }
 
@@ -73,6 +88,10 @@ namespace WindEditor.UI
             FullList = new CollectionViewSource();
 
             LoadTemplatesFromDisk();
+
+            // Set the search filter text to an empty string so it triggers the IsSearching/CanPlaceObject OnPropertyChanged
+            // events so that the view sets the visibility of both controls correctly.
+            SearchFilterText = string.Empty;
         }
 
         private void LoadTemplatesFromDisk()
@@ -165,6 +184,12 @@ namespace WindEditor.UI
                 e.Accepted = true;
                 return;
             }
+        }
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
