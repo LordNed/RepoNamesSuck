@@ -1,21 +1,31 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace WindEditor.UI
 {
+    public class ObjectPlaceEntryViewModel
+    {
+        public ImageSource DisplayImage { get; set; }
+        public string DisplayName { get; set; }
+    }
+
     public class ObjectPlaceToolViewModel
     {
         public sealed class TabItem
         {
             public string Header { get; set; }
-            public List<ObjectCategoryEntry> Content { get; set; }
+            public List<ObjectPlaceEntryViewModel> Content { get; set; }
 
             public TabItem()
             {
-                Content = new List<ObjectCategoryEntry>();
+                Content = new List<ObjectPlaceEntryViewModel>();
             }
         }
 
@@ -26,6 +36,7 @@ namespace WindEditor.UI
             public string TechnicalName;
             public string DisplayName;
             public string[] Keywords;
+            public string IconPath;
 
             public override string ToString()
             {
@@ -47,8 +58,8 @@ namespace WindEditor.UI
 
         private void LoadTemplatesFromDisk()
         {
-            string filePath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            filePath += "/WindWaker/Templates/ActorCategoryList.json";
+            string executionPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string filePath = executionPath + "/WindWaker/Templates/ActorCategoryList.json";
 
             string fileContents = File.ReadAllText(filePath);
 
@@ -69,7 +80,26 @@ namespace WindEditor.UI
             {
                 TabItem tab = new TabItem();
                 tab.Header = kvp.Key.ToUpper(CultureInfo.CurrentCulture);
-                tab.Content = kvp.Value;
+
+                foreach(var entry in kvp.Value)
+                {
+                    // Create a new BitmapImage to represent the icon - caching the icon on load so that it doesn't
+                    // have atomic focus on the file and lock others from using the same icon.
+                    using(FileStream fs = new FileStream(entry.IconPath, FileMode.Open))
+                    {
+                        BitmapImage entryIcon = new BitmapImage();
+                        entryIcon.BeginInit();
+                        entryIcon.CacheOption = BitmapCacheOption.OnLoad;
+                        entryIcon.StreamSource = fs;
+                        entryIcon.EndInit();
+
+                        ObjectPlaceEntryViewModel newVM = new ObjectPlaceEntryViewModel();
+                        newVM.DisplayName = entry.DisplayName;
+                        newVM.DisplayImage = entryIcon;
+
+                        tab.Content.Add(newVM);
+                    }
+                }
 
                 Tabs.Add(tab);
             }

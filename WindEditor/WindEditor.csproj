@@ -123,6 +123,9 @@
     <Compile Include="View\Inspector.xaml.cs">
       <DependentUpon>Inspector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Tools\ObjectPlaceEntryView.xaml.cs">
+      <DependentUpon>ObjectPlaceEntryView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Tools\ObjectPlaceToolView.xaml.cs">
       <DependentUpon>ObjectPlaceToolView.xaml</DependentUpon>
     </Compile>
@@ -168,6 +171,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\Tools\ObjectPlaceEntryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Tools\ObjectPlaceToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -252,6 +259,11 @@
       <Project>{b715685d-1603-4ce3-8ea1-552b01c2ba4b}</Project>
       <Name>WArchiveTools</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\default_icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

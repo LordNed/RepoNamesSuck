@@ -1,8 +1,7 @@
-﻿
-[
-	{"FourCC" : "ACTR", "Category" : "Carryable", "TechnicalName" : "ootubo1", "DisplayName" : "Clay Pot", "Keywords" : ["breakable", "pot"]},
-	{"FourCC" : "ACTR", "Category" : "Carryable", "TechnicalName" : "kotubo", "DisplayName" : "Small Clay Pot", "Keywords" : ["breakable", "pot"]},
-	{"FourCC" : "TRES", "Category" : "Treasure Chest", "TechnicalName" : "takara", "DisplayName" : "Treasure", "Keywords" : ["treasure", "chest"]},
-	{"FourCC" : "TRES", "Category" : "Treasure Chest", "TechnicalName" : "takara1", "DisplayName" : "Treasure 1", "Keywords" : ["treasure", "chest"]},
-	{"FourCC" : "TRES", "Category" : "Treasure Chest", "TechnicalName" : "takara2", "DisplayName" : "Treasure 2", "Keywords" : ["treasure", "chest"]},
-	]
+﻿[
+	{"FourCC" : "ACTR", "Category" : "Carryable", "TechnicalName" : "ootubo1", "DisplayName" : "Clay Pot", "Keywords" : ["breakable", "pot"], "IconPath" : "Resources/default_icon.png"},
+	{"FourCC" : "ACTR", "Category" : "Carryable", "TechnicalName" : "kotubo", "DisplayName" : "Small Clay Pot", "Keywords" : ["breakable", "pot"], "IconPath" : "Resources/default_icon.png"},
+	{"FourCC" : "TRES", "Category" : "Treasure Chest", "TechnicalName" : "takara", "DisplayName" : "Treasure", "Keywords" : ["treasure", "chest"], "IconPath" : "Resources/default_icon.png"},
+	{"FourCC" : "TRES", "Category" : "Treasure Chest", "TechnicalName" : "takara1", "DisplayName" : "Treasure 1", "Keywords" : ["treasure", "chest"], "IconPath" : "Resources/default_icon.png"},
+	{"FourCC" : "TRES", "Category" : "Treasure Chest", "TechnicalName" : "takara2", "DisplayName" : "Treasure 2", "Keywords" : ["treasure", "chest"], "IconPath" : "Resources/default_icon.png"},
+]	

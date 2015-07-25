@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:self="clr-namespace:WEditor.UI.View.Tools"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -20,7 +21,11 @@
                     <!-- Content Template -->
                     <DataTemplate>
                         <ListBox ItemsSource="{Binding Content}">
-                            
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <self:ObjectPlaceEntryView/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
                         </ListBox>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
