@@ -163,7 +163,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Compile Include="View\Commands.cs" />
     <Compile Include="View\EntityOutliner.xaml.cs">
       <DependentUpon>EntityOutliner.xaml</DependentUpon>
     </Compile>
