@@ -237,9 +237,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="WindWaker\Templates\ActorCategoryList.json" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\EndianBinaryStreams\EndianBinaryStreams.csproj">
       <Project>{b83beb2f-ff4e-4d1f-be32-50ad4ca1b16d}</Project>
       <Name>EndianBinaryStreams</Name>
