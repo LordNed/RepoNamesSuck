@@ -8,9 +8,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <wpfToolkit:WatermarkTextBox Watermark="Search Objects" Margin="0" AutoSelectBehavior="OnFocus" VerticalAlignment="Top"/>
+        <wpfToolkit:WatermarkTextBox Watermark="Search Objects" Margin="0" AutoSelectBehavior="OnFocus" VerticalAlignment="Top" TextChanged="WatermarkTextBox_TextChanged"/>
         <Grid Margin="0,24,0,0">
-            <TabControl TabStripPlacement="Left" ItemsSource="{Binding Tabs}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <TabControl x:Name="tabs" Grid.Column="0" TabStripPlacement="Left" ItemsSource="{Binding Tabs}">
                 <TabControl.ItemTemplate>
                     <!-- Header Template -->
                     <DataTemplate>
@@ -30,6 +34,21 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
+            
+            <ListBox x:Name="searchResults" Grid.Column="0" ItemsSource="{Binding Tabs}">
+                <ListBox.Template>
+                    <!-- Content Template -->
+                    <ControlTemplate>
+                        <ListBox ItemsSource="{Binding Content}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <self:ObjectPlaceEntryView/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ControlTemplate>
+                </ListBox.Template>
+            </ListBox>
         </Grid>
     </Grid>
 </UserControl>
