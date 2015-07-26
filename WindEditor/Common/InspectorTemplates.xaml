@@ -7,6 +7,8 @@
     <local:Color32Converter x:Key="ItemColor32Converter"/>
     <!-- Convert integers to 4-digit separated strings and back. -->
     <local:Int32BitFieldConverter x:Key="ItemInt32BitFieldConverter"/>
+    <!-- Convert Quaternions to Euler Angles for display and then back. -->
+    <local:QuaternionConverter x:Key="ItemQuaternionConverter"/>
 
     <!-- BYTE TEMPLATE -->
     <DataTemplate x:Key="byteTemplate">
@@ -221,6 +223,27 @@
         </Grid>
     </DataTemplate>
 
+    <!-- TRANSFORM TEMPLATE -->
+    <DataTemplate x:Key="transformTemplate">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Vertical">
+                <TextBlock Grid.Column="0" Text="Position"/>
+                <wpfToolkit:SingleUpDown Grid.Column="1" Text="{Binding LocalPosition, Mode=TwoWay}"/>
+                
+                <TextBlock Grid.Column="0" Text="Rotation"/>
+                <wpfToolkit:SingleUpDown Grid.Column="1" Text="{Binding LocalRotation, Mode=TwoWay, Converter={StaticResource ItemQuaternionConverter}}"/>
+
+                <TextBlock Grid.Column="0" Text="Scale"/>
+                <wpfToolkit:SingleUpDown Grid.Column="1" Text="{Binding LocalScale, Mode=TwoWay}"/>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+
     <local:InspectorTemplateSelector
             ByteTemplate="{StaticResource byteTemplate}"
             ShortTemplate="{StaticResource shortTemplate}"
@@ -236,5 +259,6 @@
             Color32Template="{StaticResource color32Template}"
             Vector3ByteTemplate="{StaticResource vector3ByteTemplate}"
             Int32BitField="{StaticResource int32BitField}"
+            TransformTemplate="{StaticResource transformTemplate}"
             x:Key="InspectorItemTemplateSelector"/>
 </ResourceDictionary>

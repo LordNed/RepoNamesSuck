@@ -104,8 +104,12 @@
     </ApplicationDefinition>
     <Compile Include="Common\Color32Converter.cs" />
     <Compile Include="Common\Color24Converter.cs" />
+    <Compile Include="Common\Controls\QuatAsVector.xaml.cs">
+      <DependentUpon>QuatAsVector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\IListItemConverter.cs" />
     <Compile Include="Common\InspectorTemplateSelector.cs" />
+    <Compile Include="Common\QuaternionConverter.cs" />
     <Compile Include="Common\Int32BitFieldConverter.cs" />
     <Compile Include="Common\MapEntityConverter.cs" />
     <Compile Include="Common\MultiSelectorBehaviours.cs" />
@@ -138,6 +142,10 @@
     <Compile Include="View\SceneView.xaml.cs">
       <DependentUpon>SceneView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Common\Controls\QuatAsVector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Common\InspectorTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

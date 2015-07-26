@@ -7,8 +7,14 @@
              xmlns:wmaps="clr-namespace:WEditor.Maps;assembly=EditorCore"
              xmlns:self="clr-namespace:WindEditor.UI"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:local="clr-namespace:WindEditor.UI">
     <UserControl.Resources>
+        <local:QuaternionConverter x:Key="ItemQuaternionConverter"/>
+
+
+        <!-- Pre-populate the Layer Combobox with Enum Values -->
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type system:Enum}" x:Key="MapLayerValues">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="wmaps:MapLayer"/>
@@ -17,21 +23,104 @@
         <self:MapEntityConverter x:Key="mapEntityConverter"/>
     </UserControl.Resources>
     <Grid>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="Layer:" Margin="0,3,5,0"/>
-            <ComboBox Grid.Column="1" DataContext="{Binding SelectedEntity}" ItemsSource="{Binding Source={StaticResource MapLayerValues}}" SelectedValue="{Binding Layer}" VerticalAlignment="Top" DropDownOpened="LayerCB_DropDownOpened"/>
-        </Grid>
-        <ItemsControl Margin="0,22,0,0" ItemTemplateSelector="{StaticResource InspectorItemTemplateSelector}">
+        <!-- Scrollview to hold all contents (who should have fixed sizes so no nestled scrollviews) -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Orientation="Vertical">
+                <GroupBox Header="Transform">
+                    <Grid DataContext="{Binding SelectedEntity.Transform}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="4*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Position" Grid.Column="0" Grid.Row="0"/>
+                        <!-- Position Vector3  Control-->
+                        <Grid Grid.Column="1" Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="X:" Margin="5,0,3,0"/>
+                            <wpfToolkit:SingleUpDown Grid.Column="1" Value="{Binding Path=LocalPosition[0], Mode=TwoWay}"/>
+                            <TextBlock Grid.Column="2" Text="Y:" Margin="5,0,3,0"/>
+                            <wpfToolkit:SingleUpDown Grid.Column="3" Value="{Binding Path=LocalPosition[1], Mode=TwoWay}"/>
+                            <TextBlock Grid.Column="4" Text="Z:" Margin="5,0,3,0"/>
+                            <wpfToolkit:SingleUpDown Grid.Column="5" Value="{Binding Path=LocalPosition[2], Mode=TwoWay}"/>
+                        </Grid>
+
+                        <!-- Rotation Vector3 Control -->
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="Rotation"/>
+                        <Grid Grid.Column="1" Grid.Row="1" DataContext="{Binding LocalRotation, Converter={StaticResource ItemQuaternionConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="X:" Margin="5,0,3,0"/>
+                            <wpfToolkit:SingleUpDown Grid.Column="1" Value="{Binding [0], Mode=TwoWay}"/>
+                            <TextBlock Grid.Column="2" Text="Y:" Margin="5,0,3,0"/>
+                            <wpfToolkit:SingleUpDown Grid.Column="3" Value="{Binding [1], Mode=TwoWay}"/>
+                            <TextBlock Grid.Column="4" Text="Z:" Margin="5,0,3,0"/>
+                            <wpfToolkit:SingleUpDown Grid.Column="5" Value="{Binding [2], Mode=TwoWay}"/>
+                        </Grid>
+                        
+                        <!-- Scale Vector3 Control -->
+                        <TextBlock Grid.Column="0" Grid.Row="2" Text="Scale"/>
+                        <Grid Grid.Column="1" Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="X:" Margin="5,0,3,0"/>
+                            <wpfToolkit:SingleUpDown Grid.Column="1" Value="{Binding Path=LocalScale[0], Mode=TwoWay}"/>
+                            <TextBlock Grid.Column="2" Text="Y:" Margin="5,0,3,0"/>
+                            <wpfToolkit:SingleUpDown Grid.Column="3" Value="{Binding Path=LocalScale[1], Mode=TwoWay}"/>
+                            <TextBlock Grid.Column="4" Text="Z:" Margin="5,0,3,0"/>
+                            <wpfToolkit:SingleUpDown Grid.Column="5" Value="{Binding Path=LocalScale[2], Mode=TwoWay}"/>
+                        </Grid>
+                    </Grid>
+                </GroupBox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Layer:" Margin="0,3,5,0"/>
+                    <ComboBox Grid.Column="1" DataContext="{Binding SelectedEntity}" ItemsSource="{Binding Source={StaticResource MapLayerValues}}" SelectedValue="{Binding Layer}" VerticalAlignment="Top" DropDownOpened="LayerCB_DropDownOpened"/>
+
+                </Grid>
+                <GroupBox Header="Fields">
+                    <ItemsControl ItemsSource="{Binding Path=SelectedEntity, Converter={StaticResource mapEntityConverter}}" ItemTemplateSelector="{StaticResource InspectorItemTemplateSelector}"/>
+                </GroupBox>
+            </StackPanel>
+            <!-- Each entry in the ItemsControl is going to be a different field (type)
+                so we'll use a template selector to get the right template at a type level. -->
+        </ScrollViewer>
+        <!-- <ItemsControl Margin="0,22,0,0" ItemTemplateSelector="{StaticResource InspectorItemTemplateSelector}">
             <ItemsControl.ItemsSource>
                 <MultiBinding Converter="{StaticResource mapEntityConverter}">
                     <Binding Path="SelectedEntity"/>
                 </MultiBinding>
             </ItemsControl.ItemsSource>
         </ItemsControl>
-
+-->
     </Grid>
 </UserControl>
