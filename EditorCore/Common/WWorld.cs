@@ -43,7 +43,6 @@ namespace WEditor
 
         /// <summary> List of components in the WWorld which need to recieve update ticks. </summary>
         private List<WComponent> m_componentList;
-        private List<WObject> m_objectList;
 
         private RenderSystem m_renderSystem;
         private DebugDrawing m_gizmos;
@@ -55,7 +54,6 @@ namespace WEditor
         {
             m_worldName = worldName;
             m_componentList = new List<WComponent>();
-            m_objectList = new List<WObject>();
             m_dtStopwatch = new Stopwatch();
             m_input = new Input();
 
@@ -177,28 +175,16 @@ namespace WEditor
             m_componentList.Remove(component);
         }
 
-        public void RegisterObject(WObject obj)
-        {
-            obj.World = this;
-            m_objectList.Add(obj);
-        }
-
-        public void UnregisterObject(WObject obj)
-        {
-            m_objectList.Remove(obj);
-        }
-
         public void UnloadWorld()
         {
             m_componentList.Clear();
-            m_objectList.Clear();
             m_gizmos.ResetList();
             RenderSystem.UnloadAll();
         }
 
         public void DeleteSelectedObjects()
         {
-            System.Console.WriteLine("Deleting {0} Selected Objects.", SelectedEntities.Count);
+            Console.WriteLine("Deleting {0} Selected Objects.", SelectedEntities.Count);
 
             if (Map == null)
                 return;
