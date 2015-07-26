@@ -35,11 +35,11 @@
         <Grid HorizontalAlignment="Stretch" Margin="0,20" VerticalAlignment="Stretch" Width="Auto">
             <Grid Margin="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="215" MinWidth="215"/>
+                    <ColumnDefinition Width="250" MinWidth="250"/>
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="5"/>
-                    <ColumnDefinition Width="215" MinWidth="215"/>
+                    <ColumnDefinition Width="275" MinWidth="275"/>
                 </Grid.ColumnDefinitions>
                 <!-- Left Pane -->
                 <Grid Grid.Column="0">

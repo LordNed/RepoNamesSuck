@@ -1,53 +1,86 @@
 ﻿using OpenTK;
 using System;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using WEditor;
 
 namespace WindEditor.UI
 {
     /// <summary>
-    /// Interaction logic for QuatAsVector.xaml
+    /// Interaction logic for QuaternionSingle.xaml
     /// </summary>
-    public partial class QuatAsVector : UserControl, INotifyPropertyChanged
+    public partial class QuaternionSingle : UserControl, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Quaternion Value
         {
-            get { return m_value; }
-            set
-            {
-                m_value = value;
-                m_eulerValue = ConvertQuatToVec(m_value);
-
-                OnPropertyChanged("Value");
-                OnPropertyChanged("ControlValues");
-            }
+            get { return (Quaternion)GetValue(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
         }
 
-        public Vector3 ControlValues
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(Quaternion), typeof(QuaternionSingle), new PropertyMetadata(Quaternion.Identity, new PropertyChangedCallback(OnValueChanged)));
+
+        private static void OnValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            get { return m_eulerValue;}
-            set
+            QuaternionSingle ctrl = sender as QuaternionSingle;
+            if (ctrl != null)
             {
-                m_eulerValue = value;
-                m_value = ConvertVecToQuat(m_eulerValue);
+                if (ctrl.PropertyChanged == null)
+                    return;
 
-                OnPropertyChanged("Value");
-                OnPropertyChanged("ControlValues");
+                ctrl.m_eulerAngles = ConvertQuatToVec(ctrl.Value);
+                ctrl.PropertyChanged(sender, new PropertyChangedEventArgs("X"));
+                ctrl.PropertyChanged(sender, new PropertyChangedEventArgs("Y"));
+                ctrl.PropertyChanged(sender, new PropertyChangedEventArgs("Z"));
             }
         }
 
-        private Quaternion m_value;
-        private Vector3 m_eulerValue;
+        public float X
+        {
+            get { return m_eulerAngles.X; }
+            set
+            {
+                m_eulerAngles = new Vector3(value, m_eulerAngles.Y, m_eulerAngles.Z);
+                Value = ConvertVecToQuat(m_eulerAngles);
+                OnPropertyChanged("X");
+            }
+        }
 
-        public QuatAsVector()
+        public float Y
+        {
+            get { return m_eulerAngles.Y; }
+            set
+            {
+                m_eulerAngles = new Vector3(m_eulerAngles.X, value, m_eulerAngles.Z);
+                Value = ConvertVecToQuat(m_eulerAngles);
+
+                OnPropertyChanged("Y");
+            }
+        }
+
+        public float Z
+        {
+            get { return m_eulerAngles.Z; }
+            set
+            {
+                m_eulerAngles = new Vector3(m_eulerAngles.X, m_eulerAngles.Y, value);
+                Value = ConvertVecToQuat(m_eulerAngles);
+
+                OnPropertyChanged("Z");
+            }
+        }
+
+        private Vector3 m_eulerAngles;
+
+        public QuaternionSingle()
         {
             InitializeComponent();
+            (this.Content as FrameworkElement).DataContext = this;
         }
 
-        private Vector3 ConvertQuatToVec(Quaternion quat)
+        private static Vector3 ConvertQuatToVec(Quaternion quat)
         {
             Vector3 eulerAngles = new Vector3();
 
@@ -84,7 +117,7 @@ namespace WindEditor.UI
             return eulerAngles;
         }
 
-        private Quaternion ConvertVecToQuat(Vector3 eulerAngles)
+        private static Quaternion ConvertVecToQuat(Vector3 eulerAngles)
         {
             Quaternion xAxis = Quaternion.FromAxisAngle(new Vector3(1, 0, 0), eulerAngles.X * MathE.Deg2Rad);
             Quaternion yAxis = Quaternion.FromAxisAngle(new Vector3(0, 1, 0), eulerAngles.Y * MathE.Deg2Rad);

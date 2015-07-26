@@ -104,12 +104,17 @@
     </ApplicationDefinition>
     <Compile Include="Common\Color32Converter.cs" />
     <Compile Include="Common\Color24Converter.cs" />
-    <Compile Include="Common\Controls\QuatAsVector.xaml.cs">
-      <DependentUpon>QuatAsVector.xaml</DependentUpon>
+    <Compile Include="Common\Controls\Vector2Single.xaml.cs">
+      <DependentUpon>Vector2Single.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Controls\QuaternionSingle.xaml.cs">
+      <DependentUpon>QuaternionSingle.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Controls\Vector3Single.xaml.cs">
+      <DependentUpon>Vector3Single.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\IListItemConverter.cs" />
     <Compile Include="Common\InspectorTemplateSelector.cs" />
-    <Compile Include="Common\QuaternionConverter.cs" />
     <Compile Include="Common\Int32BitFieldConverter.cs" />
     <Compile Include="Common\MapEntityConverter.cs" />
     <Compile Include="Common\MultiSelectorBehaviours.cs" />
@@ -142,9 +147,17 @@
     <Compile Include="View\SceneView.xaml.cs">
       <DependentUpon>SceneView.xaml</DependentUpon>
     </Compile>
-    <Page Include="Common\Controls\QuatAsVector.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Common\Controls\Vector2Single.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\Controls\QuaternionSingle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\Controls\Vector3Single.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\InspectorTemplates.xaml">
       <SubType>Designer</SubType>

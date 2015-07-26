@@ -8,7 +8,6 @@
     <!-- Convert integers to 4-digit separated strings and back. -->
     <local:Int32BitFieldConverter x:Key="ItemInt32BitFieldConverter"/>
     <!-- Convert Quaternions to Euler Angles for display and then back. -->
-    <local:QuaternionConverter x:Key="ItemQuaternionConverter"/>
 
     <!-- BYTE TEMPLATE -->
     <DataTemplate x:Key="byteTemplate">
