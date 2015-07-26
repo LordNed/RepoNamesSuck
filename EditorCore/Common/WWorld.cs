@@ -7,6 +7,7 @@ using WEditor.Maps;
 using WEditor.Rendering;
 using WEditor.WindWaker;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace WEditor
 {
@@ -36,7 +37,7 @@ namespace WEditor
         }
 
         public Map Map { get; set; }
-        public BindingList<MapEntity> SelectedEntities { get; set; }
+        public ObservableCollection<MapEntity> SelectedEntities { get; set; }
 
         /// <summary> Used to calculate the delta time of the Tick loop. </summary>
         private Stopwatch m_dtStopwatch;
@@ -59,7 +60,7 @@ namespace WEditor
 
             m_gizmos = new DebugDrawing();
             m_renderSystem = new RenderSystem(this);
-            SelectedEntities = new BindingList<MapEntity>();
+            SelectedEntities = new ObservableCollection<MapEntity>();
         }
 
         public void InitializeSystem()
