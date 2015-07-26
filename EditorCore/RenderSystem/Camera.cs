@@ -99,7 +99,7 @@ namespace WEditor.Rendering
         {
             get
             {
-                Matrix4 rhView = Matrix4.LookAt(Transform.Position, Transform.Position + Transform.Forward, Vector3.UnitY);
+                Matrix4 rhView = Matrix4.LookAt(Transform.Position, Transform.Position - Transform.Forward, Vector3.UnitY);
                 return rhView;
             }
         }
@@ -121,7 +121,7 @@ namespace WEditor.Rendering
 
         private void CalculateProjectionMatrix()
         {
-            m_projectionMatrix = Matrix4.CreateScale(-1f, 1f, 1f) * Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FieldOfView), AspectRatio, NearClipPlane, FarClipPlane);
+            m_projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FieldOfView), AspectRatio, NearClipPlane, FarClipPlane);
         }
 
         private void CalculatePixelRect()

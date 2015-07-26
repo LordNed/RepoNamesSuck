@@ -16,11 +16,11 @@ namespace WEditor
             Vector3 moveDir = Vector3.Zero;
             if (Input.GetKey(System.Windows.Input.Key.W))
             {
-                moveDir += Vector3.UnitZ;
+                moveDir -= Vector3.UnitZ;
             }
             if (Input.GetKey(System.Windows.Input.Key.S))
             {
-                moveDir -= Vector3.UnitZ;
+                moveDir += Vector3.UnitZ;
             }
             if (Input.GetKey(System.Windows.Input.Key.D))
             {
@@ -73,14 +73,14 @@ namespace WEditor
 
         private void Rotate(float deltaTime, float x, float y)
         {
-            Camera.Transform.Rotate(Vector3.UnitY, x * deltaTime * MouseSensitivity);
-            Camera.Transform.Rotate(Camera.Transform.Right, y * deltaTime * MouseSensitivity);
+            Camera.Transform.Rotate(Vector3.UnitY, -x * deltaTime * MouseSensitivity);
+            Camera.Transform.Rotate(Camera.Transform.Right, -y * deltaTime * MouseSensitivity);
 
             // Clamp them from looking over the top point.
             Vector3 up = Vector3.Cross(Camera.Transform.Forward, Camera.Transform.Right);
             if (Vector3.Dot(up, Vector3.UnitY) < 0.01f)
             {
-                Camera.Transform.Rotate(Camera.Transform.Right, -y * deltaTime * MouseSensitivity);
+                Camera.Transform.Rotate(Camera.Transform.Right, y * deltaTime * MouseSensitivity);
             }
         }
     }

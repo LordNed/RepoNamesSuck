@@ -60,6 +60,7 @@ namespace WEditor.Rendering
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.PrimitiveRestart);
             GL.CullFace(CullFaceMode.Back);
+            GL.FrontFace(FrontFaceDirection.Cw);
             GL.Enable(EnableCap.CullFace);
             GL.PrimitiveRestartIndex(0xFFFF);
             GL.DepthMask(true);
@@ -225,7 +226,6 @@ namespace WEditor.Rendering
                     
                     while (bone != null)
                     {
-                        // Also tried adding a Matrix4.CreateScale which should scale the whole thing?
                         cumulativeTransform = cumulativeTransform * Matrix4.CreateScale(bone.Scale) * Matrix4.CreateFromQuaternion(bone.Rotation) * Matrix4.CreateTranslation(bone.Translation);
                         bone = bone.Parent;
                     }
