@@ -20,7 +20,6 @@ namespace WindEditor.UI
         public DataTemplate Color32Template { get; set; }
         public DataTemplate Vector3ByteTemplate { get; set; }
         public DataTemplate Int32BitField { get; set; }
-        public DataTemplate TransformTemplate { get; set; }
 
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
