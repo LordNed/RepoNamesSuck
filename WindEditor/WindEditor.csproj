@@ -7,7 +7,7 @@
     <ProjectGuid>{41E9A3FB-E7A5-479C-BD56-59D6C26319A6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WEditor.UI</RootNamespace>
+    <RootNamespace>WindEditor.UI</RootNamespace>
     <AssemblyName>WindEditor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -113,6 +113,7 @@
     <Compile Include="Common\Controls\Vector3Single.xaml.cs">
       <DependentUpon>Vector3Single.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\CSVStringToArray.cs" />
     <Compile Include="Common\IListItemConverter.cs" />
     <Compile Include="Common\InspectorTemplateSelector.cs" />
     <Compile Include="Common\Int32BitFieldConverter.cs" />
