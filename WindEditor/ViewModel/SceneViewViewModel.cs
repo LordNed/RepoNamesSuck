@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WEditor;
-using WEditor.FileSystem;
+﻿using System.ComponentModel;
 using WEditor.WindWaker;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.ViewModel
 {
     public class SceneViewViewModel : INotifyPropertyChanged
     {

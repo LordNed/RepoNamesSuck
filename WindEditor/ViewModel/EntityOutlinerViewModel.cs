@@ -3,7 +3,7 @@ using System.ComponentModel;
 using WEditor;
 using WEditor.Maps;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.ViewModel
 {
     public class EntityOutlinerViewModel : INotifyPropertyChanged
     {

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Windows.Data;
 using WEditor.Maps;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.Converters
 {
     public class MapEntityConverter : IValueConverter
     {

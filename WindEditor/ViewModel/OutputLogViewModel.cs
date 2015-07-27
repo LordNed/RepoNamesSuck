@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Text;
 using WEditor;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.ViewModel
 {
     public class OutputLogViewModel : INotifyPropertyChanged
     {

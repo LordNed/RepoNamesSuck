@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.Controls
 {
     /// <summary>
     /// Interaction logic for Vector3Single.xaml

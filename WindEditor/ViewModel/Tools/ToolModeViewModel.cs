@@ -1,5 +1,5 @@
 ﻿
-namespace WindEditor.UI
+namespace WindEditor.UI.ViewModel
 {
     public class ToolModeViewModel
     {

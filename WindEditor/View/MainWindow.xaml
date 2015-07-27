@@ -1,7 +1,11 @@
-﻿<Window xmlns:View="clr-namespace:WEditor.UI.View"  x:Class="WindEditor.MainWindow"
+﻿<Window x:Class="WindEditor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:self="clr-namespace:WindEditor.UI"
+        xmlns:common="clr-namespace:WindEditor.UI"
+        xmlns:viewModel="clr-namespace:WindEditor.UI.ViewModel"
+        xmlns:view="clr-namespace:WindEditor.UI.View"
+        xmlns:controls="clr-namespace:WindEditor.UI.Controls"
+        xmlns:converters="clr-namespace:WindEditor.UI.Converters"
         Closing="Window_Closing"
         Title="{Binding WindowTitle}" Height="720" Width="1280" ResizeMode="CanResizeWithGrip" Icon="/WindEditor;component/Resources/ApplicationIcon.ico">
     <Window.InputBindings>
@@ -53,13 +57,13 @@
                         </Grid.RowDefinitions>
 
                         <!-- Top Pane -->
-                        <View:ToolModeView Grid.Row="0" DataContext="{Binding ToolModeView}"/>
+                        <view:ToolModeView Grid.Row="0" DataContext="{Binding ToolModeView}"/>
 
                         <!-- First Splitter -->
                         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
 
                         <!-- Middle Pane -->
-                        <View:SceneView Grid.Row="2" DataContext="{Binding SceneView}"/>
+                        <view:SceneView Grid.Row="2" DataContext="{Binding SceneView}"/>
 
                         <!-- Second Splitter -->
                         <GridSplitter Grid.Row="3" Height="5" HorizontalAlignment="Stretch"/>
@@ -106,7 +110,7 @@
 
                     <!-- Bottom Footer (Message Log) -->
                     <Grid Grid.Row="2">
-                        <View:OutputLog Width="Auto" Height="Auto" DataContext="{Binding OutputLog}"/>
+                        <view:OutputLog Width="Auto" Height="Auto" DataContext="{Binding OutputLog}"/>
                     </Grid>
 
                 </Grid>
@@ -120,9 +124,9 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                         
-                    <View:EntityOutliner Grid.Row="0" DataContext="{Binding EntityOutliner}" Margin="0"/>
+                    <view:EntityOutliner Grid.Row="0" DataContext="{Binding EntityOutliner}" Margin="0"/>
                     <GridSplitter Grid.Row="1"/>
-                    <View:Inspector Grid.Row="2" Width="Auto" Height="Auto" DataContext="{Binding InspectorView}" Margin="0"/>
+                    <view:Inspector Grid.Row="2" Width="Auto" Height="Auto" DataContext="{Binding InspectorView}" Margin="0"/>
                 </Grid>
 
             </Grid>

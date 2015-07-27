@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using WEditor;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.Converters
 {
     public class Color32Converter : IValueConverter
     {

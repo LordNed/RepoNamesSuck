@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using WEditor;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.Controls
 {
     /// <summary>
     /// Interaction logic for QuaternionSingle.xaml

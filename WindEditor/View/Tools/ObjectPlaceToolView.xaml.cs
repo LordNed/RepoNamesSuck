@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using Xceed.Wpf.Toolkit;
 
-namespace WEditor.UI.View
+namespace WindEditor.UI.View
 {
     /// <summary>
     /// Interaction logic for ModesPlaceView.xaml

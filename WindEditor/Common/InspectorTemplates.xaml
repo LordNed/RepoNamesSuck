@@ -1,12 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
-                    xmlns:local="clr-namespace:WindEditor.UI">
+                    xmlns:common="clr-namespace:WindEditor.UI"
+                    xmlns:viewModel="clr-namespace:WindEditor.UI.ViewModel"
+                    xmlns:view="clr-namespace:WindEditor.UI.View"
+                    xmlns:controls="clr-namespace:WindEditor.UI.Controls"
+                    xmlns:converters="clr-namespace:WindEditor.UI.Converters">
     <!-- Convert WEditor Color24/Color32 to WPF Colors -->
-    <local:Color24Converter x:Key="ItemColor24Converter"/>
-    <local:Color32Converter x:Key="ItemColor32Converter"/>
+    <converters:Color24Converter x:Key="ItemColor24Converter"/>
+    <converters:Color32Converter x:Key="ItemColor32Converter"/>
     <!-- Convert integers to 4-digit separated strings and back. -->
-    <local:Int32BitFieldConverter x:Key="ItemInt32BitFieldConverter"/>
+    <converters:Int32BitFieldConverter x:Key="ItemInt32BitFieldConverter"/>
     <!-- Convert Quaternions to Euler Angles for display and then back. -->
 
     <!-- BYTE TEMPLATE -->
@@ -222,7 +226,7 @@
         </Grid>
     </DataTemplate>
 
-    <local:InspectorTemplateSelector
+    <common:InspectorTemplateSelector
             ByteTemplate="{StaticResource byteTemplate}"
             ShortTemplate="{StaticResource shortTemplate}"
             IntTemplate="{StaticResource intTemplate}"

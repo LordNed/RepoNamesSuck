@@ -3,8 +3,8 @@ using OpenTK.Graphics;
 using System;
 using System.Windows;
 using System.Windows.Input;
-using WEditor.UI.View;
-using WindEditor.UI;
+using WindEditor.UI.View;
+using WindEditor.UI.ViewModel;
 
 namespace WindEditor
 {

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="WEditor.UI.View.Inspector"
+﻿<UserControl x:Class="WindEditor.UI.View.Inspector"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,10 +6,14 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              xmlns:wmaps="clr-namespace:WEditor.Maps;assembly=EditorCore"
              xmlns:self="clr-namespace:WindEditor.UI"
+             xmlns:common="clr-namespace:WindEditor.UI"
+             xmlns:viewModel="clr-namespace:WindEditor.UI.ViewModel"
+             xmlns:view="clr-namespace:WindEditor.UI.View"
+             xmlns:controls="clr-namespace:WindEditor.UI.Controls"
+             xmlns:converters="clr-namespace:WindEditor.UI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
-             xmlns:local="clr-namespace:WindEditor.UI">
+             xmlns:wpfToolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit">
     <UserControl.Resources>
         <!-- Pre-populate the Layer Combobox with Enum Values -->
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type system:Enum}" x:Key="MapLayerValues">
@@ -17,7 +21,7 @@
                 <x:Type TypeName="wmaps:MapLayer"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
-        <self:MapEntityConverter x:Key="mapEntityConverter"/>
+        <converters:MapEntityConverter x:Key="mapEntityConverter"/>
     </UserControl.Resources>
     <Grid>
         <!-- Scrollview to hold all contents (who should have fixed sizes so no nestled scrollviews) -->
@@ -63,16 +67,16 @@
                         
                         <!-- Position Vector3 Control -->
                         <TextBlock Text="Position" Grid.Column="0" Grid.Row="0"/>
-                        <self:Vector3Single Grid.Column="1" Grid.Row="0" Value="{Binding LocalPosition, Mode=TwoWay}"/>
+                        <controls:Vector3Single Grid.Column="1" Grid.Row="0" Value="{Binding LocalPosition, Mode=TwoWay}"/>
 
                         <!-- Rotation Quat to Vector3 Control -->
                         <TextBlock Grid.Column="0" Grid.Row="1" Text="Rotation"/>
-                        <self:QuaternionSingle Grid.Column="1" Grid.Row="1" Value="{Binding LocalRotation, Mode=TwoWay}"/>
+                        <controls:QuaternionSingle Grid.Column="1" Grid.Row="1" Value="{Binding LocalRotation, Mode=TwoWay}"/>
                         
                         
                         <!-- Scale Vector3 Control -->
                         <TextBlock Grid.Column="0" Grid.Row="2" Text="Scale"/>
-                        <self:Vector3Single Grid.Column="1" Grid.Row="2" Value="{Binding LocalScale, Mode=TwoWay}"/>
+                        <controls:Vector3Single Grid.Column="1" Grid.Row="2" Value="{Binding LocalScale, Mode=TwoWay}"/>
                     </Grid>
                 </GroupBox>
                                

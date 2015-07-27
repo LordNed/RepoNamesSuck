@@ -2,7 +2,7 @@
 using System.Text;
 using System.Windows.Data;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.Converters
 {
     public class Int32BitFieldConverter : IValueConverter
     {

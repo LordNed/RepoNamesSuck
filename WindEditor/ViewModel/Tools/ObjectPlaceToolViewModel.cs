@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WEditor;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.ViewModel
 {
     public sealed class TabItem
     {

@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using WEditor;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using OpenTK;
+using System;
 using System.ComponentModel;
-using WEditor.WindWaker;
-using WEditor.Maps;
-using SelectedItemsBindingDemo;
+using System.Windows;
 using System.Windows.Forms.Integration;
+using System.Windows.Input;
+using WEditor;
+using WEditor.Maps;
+using WEditor.WindWaker;
 
-namespace WindEditor.UI
+namespace WindEditor.UI.ViewModel
 {
     /// <summary>
     /// This is constructed automatically by the MainWindow view and is bound to the MainWindow's data context.
