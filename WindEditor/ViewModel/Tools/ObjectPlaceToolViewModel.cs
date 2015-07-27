@@ -9,52 +9,31 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WEditor;
+using WEditor.WindWaker.Entities;
 
 namespace WindEditor.UI.ViewModel
 {
     public sealed class TabItem
     {
         public string Header { get; set; }
-        public List<ObjectCategoryEntry> Content { get; set; }
+        public List<ObjectUIListEntry> Content { get; set; }
 
         public TabItem()
         {
-            Content = new List<ObjectCategoryEntry>();
+            Content = new List<ObjectUIListEntry>();
         }
     }
-
     [System.Serializable]
-    public sealed class ObjectCategoryEntry
+    public sealed class ObjectUIListEntry : MapObjectSpawnDescriptor
     {
-        public string FourCC { get; set; }
-        public string Category { get; set; }
-        public string TechnicalName { get; set; }
-        public string DisplayName { get; set; }
-
-        [JsonConverter(typeof(CSVStringToArray))]
-        public string[] Keywords { get; set; }
-        public string IconPath { get; set; }
-
         public ImageSource DisplayImage
         {
             get { return m_imageSource; }
             set { m_imageSource = value; }
         }
 
-
         [NonSerialized]
         private ImageSource m_imageSource;
-
-        public ObjectCategoryEntry()
-        {
-            Keywords = new string[0];
-            DisplayImage = null;
-        }
-
-        public override string ToString()
-        {
-            return DisplayName;
-        }
     }
 
     public class ObjectPlaceToolViewModel : INotifyPropertyChanged
@@ -65,11 +44,11 @@ namespace WindEditor.UI.ViewModel
         public CollectionViewSource FullList { get; private set; }
         public bool IsSearching
         {
-            get { return SearchFilterText.Length > 0;}
+            get { return SearchFilterText.Length > 0; }
         }
         public bool CanPlaceObject
         {
-            get { return !IsSearching;}
+            get { return !IsSearching; }
         }
 
         public string SearchFilterText
@@ -115,67 +94,67 @@ namespace WindEditor.UI.ViewModel
 
             try
             {
-                var categoryData = JsonConvert.DeserializeObject<List<ObjectCategoryEntry>>(fileContents);
+                var categoryData = JsonConvert.DeserializeObject<List<ObjectUIListEntry>>(fileContents);
 
 
-            // Sort them by category
-            var objByCategory = new Dictionary<string, List<ObjectCategoryEntry>>();
-            for(int i = 0; i < categoryData.Count; i++)
-            {
-                if(!objByCategory.ContainsKey(categoryData[i].Category))
-                    objByCategory[categoryData[i].Category] = new List<ObjectCategoryEntry>();
-
-                objByCategory[categoryData[i].Category].Add(categoryData[i]);
-            }
-
-            var fullEntryList = new List<ObjectCategoryEntry>();
-            var tabList = new List<TabItem>();
-
-            // Create tabs for each unique category
-            foreach(var kvp in objByCategory)
-            {
-                TabItem tab = new TabItem();
-                tab.Header = kvp.Key;
-
-                foreach(var entry in kvp.Value)
+                // Sort them by category
+                var objByCategory = new Dictionary<string, List<ObjectUIListEntry>>();
+                for (int i = 0; i < categoryData.Count; i++)
                 {
-                    // Create a new BitmapImage to represent the icon - caching the icon on load so that it doesn't
-                    // have atomic focus on the file and lock others from using the same icon.
-                    using(FileStream fs = new FileStream(entry.IconPath, FileMode.Open))
-                    {
-                        BitmapImage entryIcon = new BitmapImage();
-                        entryIcon.BeginInit();
-                        entryIcon.CacheOption = BitmapCacheOption.OnLoad;
-                        entryIcon.StreamSource = fs;
-                        entryIcon.EndInit();
+                    if (!objByCategory.ContainsKey(categoryData[i].Category))
+                        objByCategory[categoryData[i].Category] = new List<ObjectUIListEntry>();
 
-                        entry.DisplayImage = entryIcon;
-                        tab.Content.Add(entry);
-                        fullEntryList.Add(entry);
-                    }
+                    objByCategory[categoryData[i].Category].Add(categoryData[i]);
                 }
 
-                tabList.Add(tab);
-            }
+                var fullEntryList = new List<ObjectUIListEntry>();
+                var tabList = new List<TabItem>();
 
-            // Use the flat-list of our entries and assign it as the source of the CollectionViewSource so we can filter it.
-            FullList.Source = fullEntryList;
+                // Create tabs for each unique category
+                foreach (var kvp in objByCategory)
+                {
+                    TabItem tab = new TabItem();
+                    tab.Header = kvp.Key;
 
-            // Sort the Tabs by header, A-Z (but put "Uncategorized" last)
-            tabList.Sort(delegate(TabItem a, TabItem b) { return a.Header.CompareTo(b.Header); });
-            TabItem uncatTab = tabList.Find(x => x.Header == "Uncategorized");
-            if (uncatTab != null)
-            {
-                tabList.Remove(uncatTab);
-                tabList.Add(uncatTab);
-            }
+                    foreach (var entry in kvp.Value)
+                    {
+                        // Create a new BitmapImage to represent the icon - caching the icon on load so that it doesn't
+                        // have atomic focus on the file and lock others from using the same icon.
+                        using (FileStream fs = new FileStream(entry.IconPath, FileMode.Open))
+                        {
+                            BitmapImage entryIcon = new BitmapImage();
+                            entryIcon.BeginInit();
+                            entryIcon.CacheOption = BitmapCacheOption.OnLoad;
+                            entryIcon.StreamSource = fs;
+                            entryIcon.EndInit();
 
-            for(int i = 0; i < tabList.Count; i++)
-            {
-                Tabs.Add(tabList[i]);
+                            entry.DisplayImage = entryIcon;
+                            tab.Content.Add(entry);
+                            fullEntryList.Add(entry);
+                        }
+                    }
+
+                    tabList.Add(tab);
+                }
+
+                // Use the flat-list of our entries and assign it as the source of the CollectionViewSource so we can filter it.
+                FullList.Source = fullEntryList;
+
+                // Sort the Tabs by header, A-Z (but put "Uncategorized" last)
+                tabList.Sort(delegate(TabItem a, TabItem b) { return a.Header.CompareTo(b.Header); });
+                TabItem uncatTab = tabList.Find(x => x.Header == "Uncategorized");
+                if (uncatTab != null)
+                {
+                    tabList.Remove(uncatTab);
+                    tabList.Add(uncatTab);
+                }
+
+                for (int i = 0; i < tabList.Count; i++)
+                {
+                    Tabs.Add(tabList[i]);
+                }
             }
-            }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 WLog.Error(LogCategory.EditorCore, null, "Caught Exception while loading Actor Object List: {0}", ex);
             }
@@ -189,17 +168,17 @@ namespace WindEditor.UI.ViewModel
 
         private void Filter(object sender, FilterEventArgs e)
         {
-            var src = e.Item as ObjectCategoryEntry;
+            var src = e.Item as ObjectUIListEntry;
             e.Accepted = false;
             if (src == null)
                 return;
 
             string searchTerm = SearchFilterText.ToLowerInvariant();
-            
+
             // See if the keywords array for the object contains the search term
             for (int i = 0; i < src.Keywords.Length; i++)
             {
-                if(src.Keywords[i].ToLowerInvariant().Contains(searchTerm))
+                if (src.Keywords[i].ToLowerInvariant().Contains(searchTerm))
                 {
                     e.Accepted = true;
                     return;
@@ -207,14 +186,21 @@ namespace WindEditor.UI.ViewModel
             }
 
             // See if the technical name contains the search term.
-            if(src.TechnicalName.ToLowerInvariant().Contains(searchTerm))
+            if (src.TechnicalName.ToLowerInvariant().Contains(searchTerm))
             {
                 e.Accepted = true;
                 return;
             }
 
             // And finally, see if the display name contains the search term.
-            if(src.DisplayName.ToLowerInvariant().Contains(searchTerm))
+            if (src.DisplayName.ToLowerInvariant().Contains(searchTerm))
+            {
+                e.Accepted = true;
+                return;
+            }
+
+            // See if the category it belongs to contains the search term.
+            if (src.Category.ToLowerInvariant().Contains(searchTerm))
             {
                 e.Accepted = true;
                 return;

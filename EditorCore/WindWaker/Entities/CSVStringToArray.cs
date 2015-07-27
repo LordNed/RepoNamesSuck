@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
-namespace WindEditor.UI
+namespace WEditor.WindWaker
 {
     public class CSVStringToArray : JsonConverter
     {
@@ -21,8 +22,16 @@ namespace WindEditor.UI
                 return null;
 
             string csvValue = reader.Value as string;
-            string[] array = csvValue.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
-            return array;
+            string [] rawKeywords = csvValue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            List<string> strArray = new List<string>();
+            for (int i = 0; i < rawKeywords.Length; i++)
+            {
+                if (rawKeywords[i].Trim().Length > 0)
+                    strArray.Add(rawKeywords[i].Trim());
+            }
+
+            return strArray.ToArray();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

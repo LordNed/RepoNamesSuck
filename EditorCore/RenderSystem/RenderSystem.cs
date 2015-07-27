@@ -230,7 +230,6 @@ namespace WEditor.Rendering
                         bone = bone.Parent;
                     }
 
-
                     boneTransforms[i] = cumulativeTransform;
                 }
 

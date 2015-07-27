@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using WEditor.WindWaker.Entities;
 using WindEditor.UI.View;
 using WindEditor.UI.ViewModel;
 
@@ -52,11 +53,11 @@ namespace WindEditor
             {
                 m_isDragDropHovering = false;
 
-                ObjectCategoryEntry dragData = m_dragDropData.GetData("actorSpawnData") as ObjectCategoryEntry;
+                MapObjectSpawnDescriptor dragData = m_dragDropData.GetData("actorSpawnData") as MapObjectSpawnDescriptor;
                 if (dragData == null)
                     return;
 
-                Console.WriteLine("Drag and Drop dropped object: {0}", dragData);
+                m_viewModel.OnDragAndDrop(dragData);
             }
         }
 

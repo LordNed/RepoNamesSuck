@@ -8,6 +8,7 @@ using WEditor.Rendering;
 using WEditor.WindWaker;
 using System.Linq;
 using System.Collections.ObjectModel;
+using WEditor.WindWaker.Entities;
 
 namespace WEditor
 {
@@ -334,5 +335,9 @@ namespace WEditor
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public void SpawnEntityInWorld(MapObjectSpawnDescriptor dragData)
+        {
+            WLog.Info(LogCategory.EditorCore, null, "Caught object to be spawned {0}", dragData);
+        }
     }
 }

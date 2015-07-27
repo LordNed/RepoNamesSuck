@@ -113,7 +113,6 @@
     <Compile Include="Common\Controls\Vector3Single.xaml.cs">
       <DependentUpon>Vector3Single.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\CSVStringToArray.cs" />
     <Compile Include="Common\IListItemConverter.cs" />
     <Compile Include="Common\InspectorTemplateSelector.cs" />
     <Compile Include="Common\Int32BitFieldConverter.cs" />
@@ -231,9 +230,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="WindWaker\Templates\ActorCategoryList.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

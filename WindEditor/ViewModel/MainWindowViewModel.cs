@@ -249,5 +249,10 @@ namespace WindEditor.UI.ViewModel
                 WindowTitle = string.Format("{0} - Wind Editor", m_editorCore.LoadedScene.Name);
             }
         }
+
+        internal void OnDragAndDrop(WEditor.WindWaker.Entities.MapObjectSpawnDescriptor dragData)
+        {
+            m_editorCore.GetWorldByName("main").SpawnEntityInWorld(dragData);
+        }
     }
 }
