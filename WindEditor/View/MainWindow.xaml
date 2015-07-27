@@ -96,7 +96,9 @@
 
                     <!-- Main Game Window -->
                     <Grid Grid.Row="0">
-                        <WindowsFormsHost x:Name="winFormsHost" Initialized="winFormsHost_Initialized" KeyDown="winFormsHost_KeyDown" KeyUp="winFormsHost_KeyUp" LayoutUpdated="winFormsHost_LayoutUpdated"/>
+                        <WindowsFormsHost x:Name="winFormsHost" Initialized="winFormsHost_Initialized" KeyDown="winFormsHost_KeyDown" KeyUp="winFormsHost_KeyUp" LayoutUpdated="winFormsHost_LayoutUpdated"
+                                          AllowDrop="True" Background="#FFFF00D1" />
+                                          
                     </Grid>
 
                     <!-- Splitter Handle -->

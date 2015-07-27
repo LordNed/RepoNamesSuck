@@ -60,6 +60,7 @@ namespace WindEditor.UI
             get { return new RelayCommand(x => m_editorCore.GetWorldByName("main").DeleteSelectedObjects(), x => m_editorCore.GetWorldByName("main").SelectedEntities.Count > 0); }
         }
 
+        /// <summary> The user has pressed Alt + F4, chosen Exit from the File menu, or clicked the close button. </summary>
         public ICommand OnRequestApplicationClose
         {
             get { return new RelayCommand(x => Application.Current.MainWindow.Close()); }
@@ -136,6 +137,8 @@ namespace WindEditor.UI
 
                 delta.X = MathE.Clamp(delta.X, 0, m_control.Width);
                 delta.Y = MathE.Clamp(delta.Y, 0, m_control.Height);
+
+                ((MainWindow)Application.Current.MainWindow).Tick();
 
                 m_editorCore.GetWorldByName("main").Input.SetMousePosition(delta);
                 m_editorCore.Tick();

@@ -31,7 +31,7 @@
                         <ListBox ItemsSource="{Binding Content}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <self:ObjectPlaceEntryView/>
+                                    <self:ObjectPlaceEntryView MouseLeftButtonDown="TabControl_MouseLeftButtonDown"/>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>

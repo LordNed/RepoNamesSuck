@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using Xceed.Wpf.Toolkit;
 
 namespace WEditor.UI.View
@@ -17,6 +18,12 @@ namespace WEditor.UI.View
         {
             var control = (TabControl)sender;
             control.SelectedIndex = 0;
+        }
+
+        private void TabControl_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            DataObject data = new DataObject("actorSpawnData", ((FrameworkElement)sender).DataContext);
+            DragDrop.DoDragDrop((DependencyObject)e.Source, data, DragDropEffects.Copy);
         }
     }
 }

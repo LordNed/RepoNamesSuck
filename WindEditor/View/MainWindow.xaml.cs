@@ -16,6 +16,10 @@ namespace WindEditor
         private MainWindowViewModel m_viewModel;
         private GLControl m_glControl;
 
+        private bool m_isDragDropHovering;
+        private System.Windows.Forms.IDataObject m_dragDropData;
+
+
         public MainWindow()
         {
             m_viewModel = new MainWindowViewModel();
@@ -32,9 +36,39 @@ namespace WindEditor
             m_glControl.MouseUp += m_glControl_MouseUp;
             m_glControl.MouseWheel += m_glControl_MouseWheel;
             m_glControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            m_glControl.AllowDrop = true;
+            m_glControl.DragEnter += m_glControl_DragEnter;
+            m_glControl.DragLeave += m_glControl_DragLeave;
+            m_glControl.BackColor = System.Drawing.Color.Black;
             m_viewModel.OnGraphicsContextInitialized(m_glControl, winFormsHost);
 
             winFormsHost.Child = m_glControl;
+            winFormsHost.AllowDrop = true;
+        }
+
+        public void Tick()
+        {
+            if (Mouse.LeftButton == MouseButtonState.Released && m_isDragDropHovering)
+            {
+                m_isDragDropHovering = false;
+
+                ObjectCategoryEntry dragData = m_dragDropData.GetData("actorSpawnData") as ObjectCategoryEntry;
+                if (dragData == null)
+                    return;
+
+                Console.WriteLine("Drag and Drop dropped object: {0}", dragData);
+            }
+        }
+
+        void m_glControl_DragLeave(object sender, EventArgs e)
+        {
+            m_isDragDropHovering = false;
+        }
+
+        void m_glControl_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
+        {
+            m_isDragDropHovering = true;
+            m_dragDropData = e.Data;
         }
 
         void m_glControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)

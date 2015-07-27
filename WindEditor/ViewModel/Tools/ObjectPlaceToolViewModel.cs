@@ -23,16 +23,27 @@ namespace WindEditor.UI
         }
     }
 
+    [System.Serializable]
     public sealed class ObjectCategoryEntry
     {
         public string FourCC { get; set; }
         public string Category { get; set; }
         public string TechnicalName { get; set; }
         public string DisplayName { get; set; }
+
         [JsonConverter(typeof(CSVStringToArray))]
         public string[] Keywords { get; set; }
         public string IconPath { get; set; }
-        public ImageSource DisplayImage { get; set; }
+
+        public ImageSource DisplayImage
+        {
+            get { return m_imageSource; }
+            set { m_imageSource = value; }
+        }
+
+
+        [NonSerialized]
+        private ImageSource m_imageSource;
 
         public ObjectCategoryEntry()
         {
