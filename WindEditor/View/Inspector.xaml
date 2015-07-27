@@ -23,6 +23,20 @@
         <!-- Scrollview to hold all contents (who should have fixed sizes so no nestled scrollviews) -->
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel Orientation="Vertical">
+                <!-- Entity Name -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="Name" Grid.Column="0" Margin="0,3,5,0" Padding="0, 0, 45, 0"/>
+                    <TextBlock DataContext="{Binding SelectedEntity}" Text="{Binding}" Grid.Column="1">
+                        <TextBlock.Background>
+                            <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+                        </TextBlock.Background>
+                    </TextBlock>
+                </Grid>
                 <!-- Entity Layer -->
                 <Grid>
                     <Grid.ColumnDefinitions>
