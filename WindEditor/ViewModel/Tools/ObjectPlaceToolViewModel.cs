@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using WEditor;
 
 namespace WindEditor.UI
 {
@@ -29,6 +29,7 @@ namespace WindEditor.UI
         public string Category { get; set; }
         public string TechnicalName { get; set; }
         public string DisplayName { get; set; }
+        [JsonConverter(typeof(CSVStringToArray))]
         public string[] Keywords { get; set; }
         public string IconPath { get; set; }
         public ImageSource DisplayImage { get; set; }
@@ -101,7 +102,10 @@ namespace WindEditor.UI
 
             string fileContents = File.ReadAllText(filePath);
 
-            var categoryData = JsonConvert.DeserializeObject<List<ObjectCategoryEntry>>(fileContents);
+            try
+            {
+                var categoryData = JsonConvert.DeserializeObject<List<ObjectCategoryEntry>>(fileContents);
+
 
             // Sort them by category
             var objByCategory = new Dictionary<string, List<ObjectCategoryEntry>>();
@@ -158,6 +162,11 @@ namespace WindEditor.UI
             for(int i = 0; i < tabList.Count; i++)
             {
                 Tabs.Add(tabList[i]);
+            }
+            }
+            catch(Exception ex)
+            {
+                WLog.Error(LogCategory.EditorCore, null, "Caught Exception while loading Actor Object List: {0}", ex);
             }
         }
 
