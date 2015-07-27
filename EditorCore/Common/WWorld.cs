@@ -39,6 +39,7 @@ namespace WEditor
 
         public Map Map { get; set; }
         public ObservableCollection<MapEntity> SelectedEntities { get; set; }
+        public Scene SelectedScene { get; set; }
 
         /// <summary> Used to calculate the delta time of the Tick loop. </summary>
         private Stopwatch m_dtStopwatch;
@@ -337,7 +338,7 @@ namespace WEditor
 
         public void SpawnEntityInWorld(MapObjectSpawnDescriptor dragData)
         {
-            WLog.Info(LogCategory.EditorCore, null, "Caught object to be spawned {0}", dragData);
+            WLog.Info(LogCategory.EditorCore, null, "Caught object to be spawned {0} in scene: {1}", dragData, SelectedScene);
         }
     }
 }

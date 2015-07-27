@@ -89,6 +89,16 @@ namespace WindEditor.UI.ViewModel
             }
         }
 
+        public Scene SelectedScene
+        {
+            get { return m_editorCore.GetWorldByName("main").SelectedScene; }
+            set
+            { 
+                m_editorCore.GetWorldByName("main").SelectedScene = value;
+                OnPropertyChanged("SelectedScene");
+            }
+        }
+
         private EditorCore m_editorCore;
         private System.Windows.Forms.Timer m_intervalTimer;
         private GLControl m_control;
@@ -256,3 +266,4 @@ namespace WindEditor.UI.ViewModel
         }
     }
 }
+ 

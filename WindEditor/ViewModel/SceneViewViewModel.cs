@@ -17,6 +17,16 @@ namespace WindEditor.UI.ViewModel
             }
         }
 
+        public Scene SelectedScene
+        {
+            get { return m_mainView.SelectedScene; }
+            set
+            {
+                m_mainView.SelectedScene = value;
+                OnPropertyChanged("SelectedScene");
+            }
+        }
+
         private BindingList<Scene> m_archiveList;
         private MainWindowViewModel m_mainView;
 
@@ -35,6 +45,9 @@ namespace WindEditor.UI.ViewModel
             for (int i = 0; i < map.Rooms.Count; i++)
                 ArchiveList.Add(map.Rooms[i]);
             ArchiveList.Add(map.Stage);
+
+            if (map.Rooms.Count > 0)
+                SelectedScene = map.Rooms[0];
         }
 
         internal void OnSceneViewSelectObject(object newObject)

@@ -16,7 +16,7 @@
     </UserControl.Resources>
     <Grid>
         <GroupBox Header="Scene View" Margin="2,0">
-            <ListBox SelectionChanged="ListBox_SelectionChanged" ItemsSource="{Binding ArchiveList}" HorizontalContentAlignment="Stretch">
+            <ListBox SelectionChanged="ListBox_SelectionChanged" ItemsSource="{Binding ArchiveList}" SelectedItem="{Binding SelectedScene}" HorizontalContentAlignment="Stretch">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
