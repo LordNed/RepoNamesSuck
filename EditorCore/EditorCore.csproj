@@ -95,6 +95,7 @@
     <Compile Include="RenderSystem\Texture2D.cs" />
     <Compile Include="RenderSystem\VertexDescription.cs" />
     <Compile Include="WindWaker\Entities\CSVStringToArray.cs" />
+    <Compile Include="WindWaker\Entities\MapObjectDataDescriptor.cs" />
     <Compile Include="WindWaker\Entities\MapObjectSpawnDescriptor.cs" />
     <Compile Include="WindWaker\Loaders\J3DLoader.cs" />
     <Compile Include="WindWaker\Loaders\J3D\EVP1.cs" />
@@ -127,6 +128,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\ActorCategoryList.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="WindWaker\Templates\ActorData\test_actor.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="WindWaker\Templates\ActorData\default_actor.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="WindWaker\Templates\EntityData\2D Minimap - Unused Tag.json">

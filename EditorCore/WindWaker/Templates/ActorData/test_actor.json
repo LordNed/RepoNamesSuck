@@ -1,0 +1,26 @@
+{
+	"FourCC" : "ACTR",
+	"TechnicalName" : "ootubo",
+	"DataParameters" :
+	[
+		{"Name" : "Param 1", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},
+		{"Name" : "Param 2", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},
+		{"Name" : "Param 3", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},
+		{"Name" : "Param 4", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0}
+	],
+	
+	"VisualParameters" :
+	{
+		"DefaultModel" : {"ArchiveName" : "Objects/Ootubo.arc", "FileName" : "test.bdl"},
+		"DefaultMaterial" : {},
+		"DisplayOverrides" :
+		{
+			"DataParamName" : "Param 1", "ConditionFlags" :
+			[
+				{"Value" : 0, "Model" : {"ArchiveName" : "Objects/SomeArc.arc", "FileName" : "test.bdl"}, "Material" : {"ArchiveName" : "Objects/SomeOtherArc.arc", "FileName" : "test.bmt"}},
+				{"Value" : 1, "Model" : {"ArchiveName" : "Objects/SomeArc.arc", "FileName" : "test.bdl"}, "Material" : {"ArchiveName" : "Objects/SomeOtherArc.arc", "FileName" : "test.bmt"}},
+				{"Value" : 2, "Model" : {"ArchiveName" : "Objects/SomeArc.arc", "FileName" : "test.bdl"}, "Material" : {"ArchiveName" : "Objects/SomeOtherArc.arc", "FileName" : "test.bmt"}}
+			]
+		}
+	}
+}

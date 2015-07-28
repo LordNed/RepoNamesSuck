@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using WEditor.WindWaker;
+using WEditor.WindWaker.Entities;
 using WEditor.WindWaker.Loaders;
 
 namespace WEditor
@@ -36,8 +38,17 @@ namespace WEditor
             m_editorWorlds.Add(m_mainWorld);
 
             m_mainWorld.InitializeSystem();
+            LoadObjectTemplates();
 
             WLog.Info(LogCategory.EditorCore, null, "Initialized.");
+        }
+
+        private void LoadObjectTemplates()
+        {
+            string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            executionPath += "/WindWaker/Templates/ActorData/";
+
+            var execPath = JsonConvert.DeserializeObject<MapObjectDataDescriptor>(System.IO.File.ReadAllText(executionPath + "test_actor.json"));
         }
 
         public void Shutdown()
