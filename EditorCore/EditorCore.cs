@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using WEditor.WindWaker;
-using WEditor.WindWaker.Entities;
 using WEditor.WindWaker.Loaders;
 
 namespace WEditor
@@ -11,13 +8,7 @@ namespace WEditor
     public class EditorCore : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary> Used to print all log messages to the Console for now. </summary>
-        private StandardOutLogger m_stdOutLogger;
-
-        private BindingList<WWorld> m_editorWorlds;
-        private WWorld m_mainWorld;
-
+        
         public Map LoadedScene
         {
             get { return m_loadedScene; }
@@ -28,27 +19,39 @@ namespace WEditor
             }
         }
 
+        public TemplateManager Templates { get; private set; }
+
         private Map m_loadedScene;
+        private StandardOutLogger m_stdOutLogger;
+
+        private BindingList<WWorld> m_editorWorlds;
+        private WWorld m_mainWorld;
 
         public EditorCore()
         {
+            WLog.Info(LogCategory.EditorCore, null, "Initializing Editor Core...");
             m_stdOutLogger = new StandardOutLogger();
             m_editorWorlds = new BindingList<WWorld>();
+            Templates = new TemplateManager();
+
             m_mainWorld = new WWorld("main");
             m_editorWorlds.Add(m_mainWorld);
 
             m_mainWorld.InitializeSystem();
-            LoadObjectTemplates();
+            LoadEditorTemplates();
 
-            WLog.Info(LogCategory.EditorCore, null, "Initialized.");
+            WLog.Info(LogCategory.EditorCore, null, "Editor Core Initialized.");
         }
 
-        private void LoadObjectTemplates()
+        private void LoadEditorTemplates()
         {
             string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            executionPath += "/WindWaker/Templates/ActorData/";
+            WLog.Info(LogCategory.EditorCore, null, "Loading JSON templates from {0}.", executionPath);
 
-            var execPath = JsonConvert.DeserializeObject<MapObjectDataDescriptor>(System.IO.File.ReadAllText(executionPath + "test_actor.json"));
+            string entityDescriptorFolder = executionPath + "/WindWaker/Templates/MapEntityData/";
+            string objectDescriptorFolder = executionPath + "/WindWaker/Templates/ObjectData/";
+
+            Templates.LoadTemplates(entityDescriptorFolder, objectDescriptorFolder);
         }
 
         public void Shutdown()

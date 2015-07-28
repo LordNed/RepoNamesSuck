@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using WEditor.Maps;
+using WEditor.WindWaker.Maps;
 
 namespace WEditor.WindWaker.Loaders
 {

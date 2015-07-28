@@ -1,6 +1,6 @@
 {
 	"FourCC" : "ACTR",
-	"TechnicalName" : "",
+	"TechnicalName" : "DEFAULT_TEMPLATE",
 	"DataParameters" :
 	[
 		{"Name" : "Param 1", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},

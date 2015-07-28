@@ -94,6 +94,7 @@
     <Compile Include="RenderSystem\TEVShaderGenerator.cs" />
     <Compile Include="RenderSystem\Texture2D.cs" />
     <Compile Include="RenderSystem\VertexDescription.cs" />
+    <Compile Include="WindWaker\DataDescriptorField.cs" />
     <Compile Include="WindWaker\Entities\CSVStringToArray.cs" />
     <Compile Include="WindWaker\Entities\MapObjectDataDescriptor.cs" />
     <Compile Include="WindWaker\Entities\MapObjectSpawnDescriptor.cs" />
@@ -109,9 +110,11 @@
     <Compile Include="WindWaker\Loaders\MapLoader.cs" />
     <Compile Include="WindWaker\Map.cs" />
     <Compile Include="WindWaker\ItemJsonTemplate.cs" />
+    <Compile Include="WindWaker\MapEntityDataDescriptor.cs" />
     <Compile Include="WindWaker\Room.cs" />
     <Compile Include="WindWaker\Scene.cs" />
     <Compile Include="WindWaker\Stage.cs" />
+    <Compile Include="WindWaker\TemplateManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -130,121 +133,121 @@
     <None Include="WindWaker\Templates\ActorCategoryList.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\ActorData\test_actor.json">
+    <None Include="WindWaker\Templates\ObjectData\test_actor.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\ActorData\default_actor.json">
+    <None Include="WindWaker\Templates\ObjectData\default_actor.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\2D Minimap - Unused Tag.json">
+    <None Include="WindWaker\Templates\MapEntityData\2D Minimap - Unused Tag.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\TGSC.json">
+    <None Include="WindWaker\Templates\MapEntityData\TGSC.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\TGOB.json">
+    <None Include="WindWaker\Templates\MapEntityData\TGOB.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Actor.json">
+    <None Include="WindWaker\Templates\MapEntityData\Actor.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\LBNK.json">
+    <None Include="WindWaker\Templates\MapEntityData\LBNK.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Camera Type v2.json">
+    <None Include="WindWaker\Templates\MapEntityData\Camera Type v2.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Camera Point v2.json">
+    <None Include="WindWaker\Templates\MapEntityData\Camera Point v2.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Camera Point v1.json">
+    <None Include="WindWaker\Templates\MapEntityData\Camera Point v1.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Camera Type v1.json">
+    <None Include="WindWaker\Templates\MapEntityData\Camera Type v1.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Dungeon Map Floor.json">
+    <None Include="WindWaker\Templates\MapEntityData\Dungeon Map Floor.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Dungeon Map.json">
+    <None Include="WindWaker\Templates\MapEntityData\Dungeon Map.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Light Vector.json">
+    <None Include="WindWaker\Templates\MapEntityData\Light Vector.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Dynamic Light.json">
+    <None Include="WindWaker\Templates\MapEntityData\Dynamic Light.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Environment Palette.json">
+    <None Include="WindWaker\Templates\MapEntityData\Environment Palette.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Environment Lighting Preset.json">
+    <None Include="WindWaker\Templates\MapEntityData\Environment Lighting Preset.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Environment Skybox Colors.json">
+    <None Include="WindWaker\Templates\MapEntityData\Environment Skybox Colors.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Environment Time Light Preset.json">
+    <None Include="WindWaker\Templates\MapEntityData\Environment Time Light Preset.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Event.json">
+    <None Include="WindWaker\Templates\MapEntityData\Event.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\MECO.json">
+    <None Include="WindWaker\Templates\MapEntityData\MECO.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\MEMA.json">
+    <None Include="WindWaker\Templates\MapEntityData\MEMA.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\2D Minimap.json">
+    <None Include="WindWaker\Templates\MapEntityData\2D Minimap.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Player Spawn.json">
+    <None Include="WindWaker\Templates\MapEntityData\Player Spawn.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\ExitInfo.json">
+    <None Include="WindWaker\Templates\MapEntityData\ExitInfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Room Transform.json">
+    <None Include="WindWaker\Templates\MapEntityData\Room Transform.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\RoomProperties.json">
+    <None Include="WindWaker\Templates\MapEntityData\RoomProperties.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\DOOR.json">
+    <None Include="WindWaker\Templates\MapEntityData\DOOR.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Scaleable Object.json">
+    <None Include="WindWaker\Templates\MapEntityData\Scaleable Object.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Ship Spawn.json">
+    <None Include="WindWaker\Templates\MapEntityData\Ship Spawn.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Sound.json">
+    <None Include="WindWaker\Templates\MapEntityData\Sound.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Stage Properties.json">
+    <None Include="WindWaker\Templates\MapEntityData\Stage Properties.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\RTBL.json">
+    <None Include="WindWaker\Templates\MapEntityData\RTBL.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\TGDR.json">
+    <None Include="WindWaker\Templates\MapEntityData\TGDR.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Treasure Chest.json">
+    <None Include="WindWaker\Templates\MapEntityData\Treasure Chest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Waypoint Point v2.json">
+    <None Include="WindWaker\Templates\MapEntityData\Waypoint Point v2.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Waypoint Path v2.json">
+    <None Include="WindWaker\Templates\MapEntityData\Waypoint Path v2.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Waypoint Path v1.json">
+    <None Include="WindWaker\Templates\MapEntityData\Waypoint Path v1.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="WindWaker\Templates\EntityData\Waypoint Point v1.json">
+    <None Include="WindWaker\Templates\MapEntityData\Waypoint Point v1.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

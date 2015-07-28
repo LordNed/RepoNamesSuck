@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using WEditor.Maps;
 
-namespace WEditor.WindWaker
+namespace WEditor.WindWaker.Maps
 {
+    [System.Obsolete]
     public class ItemJsonTemplate
     {
+        [System.Obsolete]
         public class Property
         {
             public string Name;
@@ -17,7 +20,7 @@ namespace WEditor.WindWaker
             /// <summary> Used if Type is set to "objectReference" </summary>
             public string ReferenceType;
 
-            /// <summary> Used if Type is set to a fixed length type variable. </summary>
+            /// <summary> Used if <see cref="FieldType"/> is set to a type that supports a fixed length variable. </summary>
             public int Length;
 
             /// <summary> Used if ReferenceType is set to "FourCC" </summary>
@@ -36,7 +39,7 @@ namespace WEditor.WindWaker
         public List<Property> Properties;
 
         /// <summary>Only used if this references another template instead of defining a unique set of properties. </summary>
-        [JsonProperty("Template")]
+        [JsonProperty("Template")][System.Obsolete]
         public string Template;
 
         public override string ToString()
