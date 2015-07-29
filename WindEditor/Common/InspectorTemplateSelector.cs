@@ -67,6 +67,8 @@ namespace WindEditor.UI
                     return Vector3ByteTemplate;
                 case PropertyType.Int32BitField:
                     return Int32BitField;
+                case PropertyType.Bits:
+                    return ByteTemplate;
 
                 case PropertyType.None:
                 default:

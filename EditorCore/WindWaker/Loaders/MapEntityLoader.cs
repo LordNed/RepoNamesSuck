@@ -234,7 +234,7 @@ namespace WEditor.WindWaker.Loaders
                         break;
 
                     case PropertyType.Bits:
-                        value = (int)reader.ReadBits(templateProperty.Length);
+                        value = (byte)reader.ReadBits(templateProperty.Length);
                         break;
                 }
 
