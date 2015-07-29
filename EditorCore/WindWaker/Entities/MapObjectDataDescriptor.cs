@@ -8,18 +8,10 @@
             public string FileName;
         }
 
-        public class ArgumentParameter
-        {
-            public string Name;
-            public string Type;
-            public int Length;
-            public byte DefaultValue;
-        }
-
         public class DataOverride
         {
             public string ParameterName;
-            public ArgumentParameter[] Values;
+            public DataDescriptorField[] Values;
         }
 
         public class DisplayOverride

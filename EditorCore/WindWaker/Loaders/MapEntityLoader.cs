@@ -244,14 +244,29 @@ namespace WEditor.WindWaker.Loaders
                 // while iterating through it. However, the Name field always comes before any of the fields we'd want to modify, we're going to
                 // do an in-place replacement of the fields (since Fields.Count will increase) and then we get free loading of the complex templates
                 // without later post-processing them.
-                if(templateProperty.FieldName == "Name")
+                if (templateProperty.FieldName == "Name")
                 {
                     // See if our template list has a complex version of this file, otherwise grab the default.
                     MapObjectDataDescriptor complexDescriptor = m_editorCore.Templates.MapObjectDataDescriptors.Find(x => x.FourCC == chunkFourCC && x.TechnicalName == templateProperty.FieldName);
                     if (complexDescriptor == null)
                         complexDescriptor = m_editorCore.Templates.DefaultMapObjectDataDescriptor;
 
-                    foreach(if(complexDescriptor.DataOverrides)
+                    // Determine which field we need to remove, and then insert in the other fields (in order) where it used to be.
+                    foreach (var fieldToReplace in complexDescriptor.DataOverrides)
+                    {
+                        for (int k = 0; k < template.Fields.Count; k++)
+                        {
+                            if (template.Fields[k].FieldName == fieldToReplace.ParameterName)
+                            {
+                                // Remove the old field.
+                                template.Fields.RemoveAt(k);
+
+                                // Now insert the new fields starting at the location of the one we just replaced.
+                                template.Fields.InsertRange(k, fieldToReplace.Values);
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 Property instanceProp = new Property(templateProperty.FieldName, type, value);
@@ -267,7 +282,7 @@ namespace WEditor.WindWaker.Loaders
             {
                 foreach (var entity in kvp.Value)
                 {
-                    ItemJsonTemplate origTemplate = m_templates.Find(x => string.Compare(x.FourCC, entity.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    MapEntityDataDescriptor origTemplate = m_editorCore.Templates.MapEntityDataDescriptors.Find(x => string.Compare(x.FourCC, entity.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
                     if (origTemplate == null)
                     {
                         WLog.Warning(LogCategory.EntityLoading, null, "Failed to find template for entity {0}, not attempting to post-process.", entity);
@@ -276,7 +291,7 @@ namespace WEditor.WindWaker.Loaders
 
                     foreach (Property property in entity.Fields.Properties)
                     {
-                        ItemJsonTemplate.Property origTemplateProperty = origTemplate.Properties.Find(x => string.Compare(x.Name, property.Name, StringComparison.InvariantCultureIgnoreCase) == 0);
+                        var origTemplateProperty = origTemplate.Fields.Find(x => x.FieldName == property.Name);
                         if (origTemplateProperty == null)
                         {
                             WLog.Warning(LogCategory.EntityLoading, null, "Failed to find property {0} on template {1} for entity {2}, not attempting to post-process.", property.Name, origTemplate.FourCC, entity);
@@ -285,16 +300,16 @@ namespace WEditor.WindWaker.Loaders
 
                         // We cheated earlier and stored the various reference-type ones as their index values. That means the type of the object doesn't actually
                         // reflect the Type field. Thus, we now need to go back, patch up the references, and set them to be their proper type. Yeah!
-                        switch (origTemplateProperty.Type)
+                        switch (origTemplateProperty.FieldType)
                         {
-                            case "objectReference":
-                            case "objectReferenceShort":
+                            case PropertyType.ObjectReference:
+                            case PropertyType.ObjectReferenceShort:
                                 {
                                     int objIndex = (int)property.Value;
                                     property.Value = ResolveEntityReference(entity.FourCC, origTemplateProperty, objIndex, kvp.Key);
                                 }
                                 break;
-                            case "objectReferenceArray":
+                            case PropertyType.ObjectReferenceArray:
                                 {
                                     BindingList<object> indexes = (BindingList<object>)property.Value;
                                     BindingList<object> resolvedRefs = new BindingList<object>();
@@ -312,11 +327,11 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private object ResolveEntityReference(string askingChunkFourCC, ItemJsonTemplate.Property templateProperty, int index, Scene scene)
+        private object ResolveEntityReference(string askingChunkFourCC, DataDescriptorField templateProperty, int index, Scene scene)
         {
             switch (templateProperty.ReferenceType)
             {
-                case "Room":
+                case ReferenceTypes.Room:
                     // Some things will specify a Room index of 255 for "This isn't Used", so we're going to special-case handle that.
                     if (index == 0xFF)
                         return null;
@@ -327,11 +342,11 @@ namespace WEditor.WindWaker.Loaders
                     }
                     else
                     {
-                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for room but index is out of range. (Property Name: {1}, Index: {2})", askingChunkFourCC, templateProperty.Name, index);
+                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for room but index is out of range. (Property Name: {1}, Index: {2})", askingChunkFourCC, templateProperty.FieldName, index);
                     }
                     return null;
 
-                case "FourCC":
+                case ReferenceTypes.FourCC:
                     // Get an (ordered) list of all chunks of that type.
                     List<RawMapEntity> potentialRefs = new List<RawMapEntity>();
                     foreach (var entity in m_entityData[scene])
@@ -348,7 +363,7 @@ namespace WEditor.WindWaker.Loaders
                     }
                     else
                     {
-                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for property {1} but index ({2}) is out of range.", askingChunkFourCC, templateProperty.Name, index);
+                        WLog.Warning(LogCategory.EntityLoading, null, "Chunk {0} requested reference for property {1} but index ({2}) is out of range.", askingChunkFourCC, templateProperty.FieldName, index);
                     }
                     return null;
             }
@@ -400,3 +415,4 @@ namespace WEditor.WindWaker.Loaders
         }
     }
 }
+    

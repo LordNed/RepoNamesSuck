@@ -12,7 +12,7 @@ namespace WEditor.WindWaker.Loaders
 {
     public class MapLoader
     {
-        public Map CreateFromDirectory(WWorld world, string folderPath)
+        public Map CreateFromDirectory(WWorld world, EditorCore editorCore, string folderPath)
         {
             if (world == null)
                 throw new ArgumentNullException("world", "No world to load map into specified.");
@@ -94,7 +94,7 @@ namespace WEditor.WindWaker.Loaders
             newMap.ProjectFilePath = System.IO.Path.GetDirectoryName(folderPath);
 
             var sceneMap = CreateScenesFromArchives(newMap, archiveFolderMap);
-            LoadEntities(newMap, sceneMap, world);
+            LoadEntities(newMap, editorCore, sceneMap, world);
             LoadModels(sceneMap);
 
             return newMap;
@@ -155,9 +155,9 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private void LoadEntities(Map newMap, Dictionary<Scene, VirtualFilesystemDirectory> archiveMap, WWorld world)
+        private void LoadEntities(Map newMap, EditorCore core, Dictionary<Scene, VirtualFilesystemDirectory> archiveMap, WWorld world)
         {
-            MapEntityLoader entityLoader = new MapEntityLoader(newMap);
+            MapEntityLoader entityLoader = new MapEntityLoader(core, newMap);
 
             // For each room/scene, find the associated dzr/dzs file and load its
             // contents into the entityLoader.

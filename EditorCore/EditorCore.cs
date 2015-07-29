@@ -97,11 +97,11 @@ namespace WEditor
             MapLoader mapLoader = new MapLoader();
             Map newMap = null;
 #if DEBUG
-            newMap = mapLoader.CreateFromDirectory(m_mainWorld, folderPath);
+            newMap = mapLoader.CreateFromDirectory(m_mainWorld, this, folderPath);
 #else
             try
             {
-                newMap = mapLoader.CreateFromDirectory(m_mainWorld, folderPath);
+                newMap = mapLoader.CreateFromDirectory(m_mainWorld, this, folderPath);
             }
             catch(Exception ex)
             {
