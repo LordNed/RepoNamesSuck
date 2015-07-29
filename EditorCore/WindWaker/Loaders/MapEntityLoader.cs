@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using WEditor.Maps;
+using WEditor.Maps.Entities;
 using WEditor.WindWaker.Maps;
 
 namespace WEditor.WindWaker.Loaders
@@ -81,7 +82,7 @@ namespace WEditor.WindWaker.Loaders
                 ChunkHeader chunk = chunks[i];
 
                 // Find the appropriate JSON template that describes this chunk.
-                ItemJsonTemplate template = m_templates.Find(x => string.Compare(x.FourCC, chunk.FourCC, StringComparison.InvariantCultureIgnoreCase) == 0);
+                MapEntityDataDescriptor template = m_editorCore.Templates.MapEntityDataDescriptors.Find(x => x.FourCC == chunk.FourCC);
 
                 if (template == null)
                 {
@@ -94,6 +95,7 @@ namespace WEditor.WindWaker.Loaders
                 for (int k = 0; k < chunk.ElementCount; k++)
                 {
                     RawMapEntity entityInstance = LoadMapEntityFromStream(chunk.FourCC, reader, template);
+
                     entityInstance.Layer = chunk.Layer;
                     mapEntities.Add(entityInstance);
                 }
@@ -102,86 +104,75 @@ namespace WEditor.WindWaker.Loaders
             m_entityData[parentScene] = mapEntities;
         }
 
-        private RawMapEntity LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template)
+        private RawMapEntity LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, MapEntityDataDescriptor template)
         {
             RawMapEntity obj = new RawMapEntity();
             obj.Fields = new PropertyCollection();
             obj.FourCC = chunkFourCC;
 
             // We're going to examine the Template's properties and load based on the current template type.
-            for (int i = 0; i < template.Properties.Count; i++)
+            for (int i = 0; i < template.Fields.Count; i++)
             {
-                ItemJsonTemplate.Property templateProperty = template.Properties[i];
-                string propertyName = templateProperty.Name;
-                PropertyType type = PropertyType.None;
+                var templateProperty = template.Fields[i];
+                string propertyName = templateProperty.FieldName;
+                PropertyType type = templateProperty.FieldType;
                 object value = null;
 
-                switch (templateProperty.Type)
+                switch (type)
                 {
-                    case "fixedLengthString":
-                        type = PropertyType.String;
+                    case PropertyType.FixedLengthString:
                         value = reader.ReadString(templateProperty.Length).Trim(new[] { '\0' });
                         break;
 
-                    case "string":
-                        type = PropertyType.String;
+                    case PropertyType.String:
                         value = reader.ReadStringUntil('\0');
                         break;
 
-                    case "byte":
-                        type = PropertyType.Byte;
+                    case PropertyType.Byte:
                         value = reader.ReadByte();
                         break;
 
-                    case "short":
-                        type = PropertyType.Short;
+                    case PropertyType.Short:
                         value = reader.ReadInt16();
                         break;
 
-                    case "int":
-                        type = PropertyType.Int32;
+                    case PropertyType.Int32BitField:
+                    case PropertyType.Int32:
                         value = reader.ReadInt32();
                         break;
 
-                    case "float":
-                        type = PropertyType.Float;
+                    case PropertyType.Float:
                         value = reader.ReadSingle();
                         break;
 
-                    case "vector3":
-                        type = PropertyType.Vector3;
+                    case PropertyType.Vector3:
                         value = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
                         break;
 
-                    case "vector2":
-                        type = PropertyType.Vector2;
+                    case PropertyType.Vector2:
                         value = new Vector2(reader.ReadSingle(), reader.ReadSingle());
                         break;
 
-                    case "enum":
-                        type = PropertyType.Enum;
+                    case PropertyType.Enum:
                         byte enumIndexBytes = reader.ReadByte(); // ToDo: Resolve to actual Enum later.
                         value = enumIndexBytes;
                         break;
 
-                    case "objectReference":
+                    case PropertyType.ObjectReference:
                         // When we first resolve them, we're going to keep the value as the reference byte, 
                         // and then when they are post-processed they'll be turned into a proper type.
-                        type = PropertyType.ObjectReference;
                         value = (int)reader.ReadByte();
                         break;
 
-                    case "objectReferenceShort":
+                    case PropertyType.ObjectReferenceShort:
                         // When we first resolve them, we're going to keep the value as the reference byte, 
                         // and then when they are post-processed they'll be turned into a proper type.
-                        type = PropertyType.ObjectReference;
                         value = (int)reader.ReadUInt16();
                         break;
 
-                    case "objectReferenceArray":
+                    case PropertyType.ObjectReferenceArray:
                         // When we first resolve them, we're going to keep the value as the reference byte, 
                         // and then when they are post-processed they'll be turned into a proper type.
-                        type = PropertyType.ObjectReference;
                         var refList = new BindingList<object>();
                         for (int refArray = 0; refArray < templateProperty.Length; refArray++)
                         {
@@ -190,9 +181,8 @@ namespace WEditor.WindWaker.Loaders
                         value = refList;
                         break;
 
-                    case "xyRotation":
+                    case PropertyType.XYRotation:
                         {
-                            type = PropertyType.XYRotation;
                             Vector3 eulerAngles = new Vector3();
                             for (int f = 0; f < 2; f++)
                                 eulerAngles[f] = (reader.ReadInt16() * (180 / 32786f));
@@ -206,9 +196,8 @@ namespace WEditor.WindWaker.Loaders
                         }
                         break;
 
-                    case "xyzRotation":
+                    case PropertyType.XYZRotation:
                         {
-                            type = PropertyType.XYZRotation;
                             Vector3 eulerAngles = new Vector3();
                             for (int f = 0; f < 3; f++)
                                 eulerAngles[f] = (reader.ReadInt16() * (180 / 32786f));
@@ -222,9 +211,8 @@ namespace WEditor.WindWaker.Loaders
                             value = finalRot;
                         }
                         break;
-                    case "yRotation":
+                    case PropertyType.YRotation:
                         {
-                            type = PropertyType.XYZRotation;
                             float yRotation = reader.ReadInt16() * (180 / 32786f);
 
                             Quaternion yAxis = Quaternion.FromAxisAngle(new Vector3(0, 1, 0), yRotation * MathE.Deg2Rad);
@@ -232,33 +220,41 @@ namespace WEditor.WindWaker.Loaders
                         }
                         break;
 
-                    case "color32":
-                        type = PropertyType.Color32;
+                    case PropertyType.Color32:
                         value = new Color32(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                         break;
 
-                    case "color24":
-                        type = PropertyType.Color24;
+                    case PropertyType.Color24:
                         value = new Color24(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                         break;
 
-                    case "vector3byte":
+                    case PropertyType.Vector3Byte:
                         type = PropertyType.Vector3Byte;
                         value = new Vector3(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                         break;
 
-                    case "int32BitField":
-                        type = PropertyType.Int32BitField;
-                        value = reader.ReadInt32();
-                        break;
-
-                    case "bits":
-                        type = PropertyType.Int32;
+                    case PropertyType.Bits:
                         value = (int)reader.ReadBits(templateProperty.Length);
                         break;
                 }
 
-                Property instanceProp = new Property(templateProperty.Name, type, value);
+                // This... this could get dicy. If the template we just read was a "Name" then we now have the technical name (and value)
+                // of the object. We can then search for the MapObjectDataDescriptor that matches the technical name, and then edit the
+                // remaining fields. However, this gets somewhat dicey, because we're modifying the length of the Fields array for templates
+                // while iterating through it. However, the Name field always comes before any of the fields we'd want to modify, we're going to
+                // do an in-place replacement of the fields (since Fields.Count will increase) and then we get free loading of the complex templates
+                // without later post-processing them.
+                if(templateProperty.FieldName == "Name")
+                {
+                    // See if our template list has a complex version of this file, otherwise grab the default.
+                    MapObjectDataDescriptor complexDescriptor = m_editorCore.Templates.MapObjectDataDescriptors.Find(x => x.FourCC == chunkFourCC && x.TechnicalName == templateProperty.FieldName);
+                    if (complexDescriptor == null)
+                        complexDescriptor = m_editorCore.Templates.DefaultMapObjectDataDescriptor;
+
+                    foreach(if(complexDescriptor.DataOverrides)
+                }
+
+                Property instanceProp = new Property(templateProperty.FieldName, type, value);
                 obj.Fields.Properties.Add(instanceProp);
             }
 

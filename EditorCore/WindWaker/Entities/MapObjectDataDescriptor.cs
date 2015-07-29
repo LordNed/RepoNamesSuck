@@ -16,6 +16,12 @@
             public byte DefaultValue;
         }
 
+        public class DataOverride
+        {
+            public string ParameterName;
+            public ArgumentParameter[] Values;
+        }
+
         public class DisplayOverride
         {
             public string DataParamName;
@@ -39,7 +45,7 @@
 
         public string FourCC;
         public string TechnicalName;
-        public ArgumentParameter[] DataParameters;
+        public DataOverride[] DataOverrides;
         public DisplayParameter VisualParameters;
     }
 }

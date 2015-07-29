@@ -1,12 +1,15 @@
 {
 	"FourCC" : "ACTR",
 	"TechnicalName" : "DEFAULT_TEMPLATE",
-	"DataParameters" :
+	"DataOverrides" :
 	[
-		{"Name" : "Param 1", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},
-		{"Name" : "Param 2", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},
-		{"Name" : "Param 3", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},
-		{"Name" : "Param 4", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0}
+		{
+			"ParameterName" : "Parameters", "Values" : [
+			{"Name" : "Param 1", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},
+			{"Name" : "Param 2", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},
+			{"Name" : "Param 3", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0},
+			{"Name" : "Param 4", "Type" : "bits" , "Length" : 8, "DefaultValue" : 0}]
+		}
 	],
 	
 	"VisualParameters" :

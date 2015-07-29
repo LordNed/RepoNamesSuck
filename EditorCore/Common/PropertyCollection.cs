@@ -11,6 +11,7 @@ namespace WEditor.Maps
         Int32,
         Float,
         Bool,
+        FixedLengthString,
         String,
         Vector2,
         Vector3,
@@ -22,7 +23,11 @@ namespace WEditor.Maps
         Color32,
         Vector3Byte,
         Int32BitField,
-        Quaternion
+        Quaternion,
+        ObjectReferenceShort,
+        ObjectReferenceArray,
+        YRotation,
+        Bits
     }
 
     public class Property
