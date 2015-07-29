@@ -21,7 +21,6 @@ namespace WEditor.WindWaker.Loaders
             /// <summary> Offset from the start of the file to the chunk data. </summary>
             public int ChunkOffset;
 
-
             /// <summary>
             // Used to fix up ACTR, TRES, and SCOB which can support up to 12 layers (+base)
             // this is resolved at chunk load time and then stored in the chunk and passed
@@ -42,14 +41,14 @@ namespace WEditor.WindWaker.Loaders
             public PropertyCollection Fields;
         }
 
-        private List<ItemJsonTemplate> m_templates;
         private Dictionary<Scene, List<RawMapEntity>> m_entityData;
         private Map m_map;
+        private EditorCore m_editorCore;
 
-        public MapEntityLoader(Map parentMap)
+        public MapEntityLoader(EditorCore core, Map parentMap)
         {
-            LoadItemTemplates();
             m_entityData = new Dictionary<Scene, List<RawMapEntity>>();
+            m_editorCore = core;
             m_map = parentMap;
         }
 
@@ -101,33 +100,6 @@ namespace WEditor.WindWaker.Loaders
             }
 
             m_entityData[parentScene] = mapEntities;
-        }
-
-        private void LoadItemTemplates()
-        {
-            string executionPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            executionPath += "/WindWaker/Templates/EntityData/";
-
-            DirectoryInfo dI = new DirectoryInfo(executionPath);
-            m_templates = new List<ItemJsonTemplate>();
-
-            foreach (var file in dI.GetFiles())
-            {
-                var template = JsonConvert.DeserializeObject<ItemJsonTemplate>(File.ReadAllText(file.FullName));
-                m_templates.Add(template);
-            }
-
-            // Now that all templates have been loaded, resolve any templates that refer to other templates.
-            foreach (var template in m_templates)
-            {
-                if (!string.IsNullOrEmpty(template.Template))
-                {
-                    // If the template isn't null, we're going to replace its properties with another entities properties
-                    // so that we don't end up duplicating template code.
-                    var otherTemplate = m_templates.Find(x => string.Compare(x.FourCC, template.Template, StringComparison.InvariantCultureIgnoreCase) == 0);
-                    template.Properties = new List<ItemJsonTemplate.Property>(otherTemplate.Properties);
-                }
-            }
         }
 
         private RawMapEntity LoadMapEntityFromStream(string chunkFourCC, EndianBinaryReader reader, ItemJsonTemplate template)

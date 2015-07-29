@@ -5,7 +5,7 @@ namespace WEditor.Maps
     public class MapEntityDataDescriptor
     {
         public string FourCC;
-        public List<FieldParameter> Fields;
+        public List<DataDescriptorField> Fields;
 
         public override string ToString()
         {

@@ -9,7 +9,7 @@ namespace WEditor.Maps
         FourCC
     }
 
-    public class FieldParameter
+    public class DataDescriptorField
     {
         [JsonProperty("Name")]
         public string FieldName;
@@ -23,7 +23,7 @@ namespace WEditor.Maps
         /// <summary> Used if <see cref="FieldType"/> is set to a type that supports a fixed length variable. </summary>
         public int Length;
 
-        /// <summary> Used if Type is set to "enum" </summary>
+        /// <summary> Used if <see cref=" FieldType"/> is set to Enum" </summary>
         public string EnumType;
 
         /// <summary> Used if Type is set to "objectReference" </summary>
