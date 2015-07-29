@@ -1,10 +1,10 @@
 ﻿{
 	"FourCC" : "DMAP",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Map Size X", "Type" : "float"},
-		{"Name" : "Map Size Y", "Type" : "float"},
-		{"Name" : "Map Scale Inverse", "Type" : "float"},
-		{"Name" : "Unknown 1", "Type" : "float"}
+		{"Name" : "Map Size X", "Type" : "Float"},
+		{"Name" : "Map Size Y", "Type" : "Float"},
+		{"Name" : "Map Scale Inverse", "Type" : "Float"},
+		{"Name" : "Unknown 1", "Type" : "Float"}
 	]
 }

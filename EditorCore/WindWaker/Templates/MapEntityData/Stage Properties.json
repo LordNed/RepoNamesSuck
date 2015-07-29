@@ -1,19 +1,19 @@
 ﻿{
 	"FourCC" : "STAG",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Z Depth Min", "Type" : "float"},
-		{"Name" : "Z Depth Max", "Type" : "float"},
-		{"Name" : "Map Type", "Type" : "enum", "EnumType" : "MapDungeonTypes"},
-		{"Name" : "Unknown Bits 1", "Type" : "bits", "Length" : 5},
-		{"Name" : "Particle Package Index?", "Type" : "bits", "Length" : 8},
-		{"Name" : "Unknown Bits 2", "Type" : "bits", "Length" : 3},
-		{"Name" : "Unknown Bits 3", "Type" : "bits", "Length" : 13},
-		{"Name" : "Unknown Bits 4", "Type" : "bits", "Length" : 11},
-		{"Name" : "EnvR Color Init", "Type" : "bits", "Length" : 8},
-		{"Name" : "Set Sch Bit 1", "Type" : "bits", "Length" : 8},
-		{"Name" : "Unknown Bits 5", "Type" : "bits", "Length" : 8},
-		{"Name" : "Set Sch Bit 2", "Type" : "bits", "Length" : 8},
-		{"Name" : "View Setup Info", "Type" : "bits", "Length" : 16}
+		{"Name" : "Z Depth Min", "Type" : "Float"},
+		{"Name" : "Z Depth Max", "Type" : "Float"},
+		{"Name" : "Map Type", "Type" : "Enum", "EnumType" : "MapDungeonTypes"},
+		{"Name" : "Unknown Bits 1", "Type" : "Bits", "Length" : 5},
+		{"Name" : "Particle Package Index?", "Type" : "Bits", "Length" : 8},
+		{"Name" : "Unknown Bits 2", "Type" : "Bits", "Length" : 3},
+		{"Name" : "Unknown Bits 3", "Type" : "Bits", "Length" : 13},
+		{"Name" : "Unknown Bits 4", "Type" : "Bits", "Length" : 11},
+		{"Name" : "EnvR Color Init", "Type" : "Bits", "Length" : 8},
+		{"Name" : "Set Sch Bit 1", "Type" : "Bits", "Length" : 8},
+		{"Name" : "Unknown Bits 5", "Type" : "Bits", "Length" : 8},
+		{"Name" : "Set Sch Bit 2", "Type" : "Bits", "Length" : 8},
+		{"Name" : "View Setup Info", "Type" : "Bits", "Length" : 16}
 	]
 }

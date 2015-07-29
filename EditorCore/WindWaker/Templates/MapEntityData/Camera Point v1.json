@@ -1,9 +1,9 @@
 ﻿{
 	"FourCC" : "AROB",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Position", "Type" : "vector3"},
-		{"Name" : "Rotation", "Type" : "xyzRotation"},
-		{"Name" : "Padding", "Type" : "short"},
+		{"Name" : "Position", "Type" : "Vector3"},
+		{"Name" : "Rotation", "Type" : "XYZRotation"},
+		{"Name" : "Padding", "Type" : "Short"},
 	]
 }

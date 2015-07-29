@@ -1,11 +1,11 @@
 ﻿{
 	"FourCC" : "CAMR",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Camera Type", "Type" : "fixedLengthString" , "Length" : 16},
-		{"Name" : "Camera Point", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "AROB"},
-		{"Name" : "Padding 1", "Type" : "byte"},
-		{"Name" : "Padding 2", "Type" : "byte"},
-		{"Name" : "Padding 3", "Type" : "byte"},
+		{"Name" : "Camera Type", "Type" : "FixedLengthString" , "Length" : 16},
+		{"Name" : "Camera Point", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "AROB"},
+		{"Name" : "Padding 1", "Type" : "Byte"},
+		{"Name" : "Padding 2", "Type" : "Byte"},
+		{"Name" : "Padding 3", "Type" : "Byte"},
 	]
 }

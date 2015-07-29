@@ -1,16 +1,16 @@
 ﻿{
 	"FourCC" : "FILI",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Song of Passing Enabled", "Type" : "bits", "Length" : 2},
-		{"Name" : "Skipped Bit 1", "Type" : "bits", "Length" : 1},
-		{"Name" : "Unknown 1", "Type" : "bits", "Length" : 8},
-		{"Name" : "Weather?", "Type" : "bits", "Length" : 1},
-		{"Name" : "Wind's Requiem Disabled", "Type" : "bits", "Length" : 2},
-		{"Name" : "Skipped Bits 2", "Type" : "bits", "Length" : 3},
-		{"Name" : "Draw Depth", "Type" : "bits", "Length" : 8},
-		{"Name" : "Padding", "Type" : "bits", "Length" : 7},
+		{"Name" : "Song of Passing Enabled", "Type" : "Bits", "Length" : 2},
+		{"Name" : "Skipped Bit 1", "Type" : "Bits", "Length" : 1},
+		{"Name" : "Unknown 1", "Type" : "Bits", "Length" : 8},
+		{"Name" : "Weather?", "Type" : "Bits", "Length" : 1},
+		{"Name" : "Wind's Requiem Disabled", "Type" : "Bits", "Length" : 2},
+		{"Name" : "Skipped Bits 2", "Type" : "Bits", "Length" : 3},
+		{"Name" : "Draw Depth", "Type" : "Bits", "Length" : 8},
+		{"Name" : "Padding", "Type" : "Bits", "Length" : 7},
 
-		{"Name" : "Skybox Y Height", "Type" : "float"}
+		{"Name" : "Skybox Y Height", "Type" : "Float"}
 	]
 }

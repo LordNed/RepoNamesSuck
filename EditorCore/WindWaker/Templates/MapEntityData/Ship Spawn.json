@@ -1,10 +1,10 @@
 ﻿{
 	"FourCC" : "SHIP",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Position", "Type" : "vector3"},
-		{"Name" : "Rotation", "Type" : "yRotation"},
-		{"Name" : "Ship Id", "Type" : "byte"},
-		{"Name" : "Unknown 1", "Type" : "byte"}
+		{"Name" : "Position", "Type" : "Vector3"},
+		{"Name" : "Rotation", "Type" : "YRotation"},
+		{"Name" : "Ship Id", "Type" : "Byte"},
+		{"Name" : "Unknown 1", "Type" : "Byte"}
 	]
 }

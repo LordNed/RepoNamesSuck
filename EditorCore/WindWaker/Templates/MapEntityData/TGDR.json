@@ -1,17 +1,17 @@
 ﻿{
 	"FourCC" : "TGDR",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Name", "Type" : "fixedLengthString" , "Length" : 8},
-		{"Name" : "Params", "Type" : "int32BitField"},
-		{"Name" : "Position", "Type" : "vector3"},
-		{"Name" : "RoomLoadingParams", "Type" : "short"},
-		{"Name" : "Rotation", "Type" : "yRotation"},
-		{"Name" : "Arg 1", "Type" : "byte"},
-		{"Name" : "ShipId", "Type" : "byte"},
-		{"Name" : "Unknown 2", "Type" : "byte"},
-		{"Name" : "Unknown 3", "Type" : "byte"},
-		{"Name" : "Scale", "Type" : "vector3byte"},
-		{"Name" : "Unknown 4", "Type" : "byte"}
+		{"Name" : "Name", "Type" : "FixedLengthString" , "Length" : 8},
+		{"Name" : "Params", "Type" : "Int32BitField"},
+		{"Name" : "Position", "Type" : "Vector3"},
+		{"Name" : "RoomLoadingParams", "Type" : "Short"},
+		{"Name" : "Rotation", "Type" : "YRotation"},
+		{"Name" : "Arg 1", "Type" : "Byte"},
+		{"Name" : "ShipId", "Type" : "Byte"},
+		{"Name" : "Unknown 2", "Type" : "Byte"},
+		{"Name" : "Unknown 3", "Type" : "Byte"},
+		{"Name" : "Scale", "Type" : "Vector3Byte"},
+		{"Name" : "Unknown 4", "Type" : "Byte"}
 	]
 }

@@ -1,12 +1,12 @@
 ﻿{
 	"FourCC" : "TRES",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Name", "Type" : "fixedLengthString" , "Length" : 8},
-		{"Name" : "Params", "Type" : "int32BitField"},
-		{"Name" : "Position", "Type" : "vector3"},
-		{"Name" : "Room", "Type" : "objectReferenceShort", "ReferenceType" : "Room"},
-		{"Name" : "Rotation", "Type" : "yRotation"},
-		{"Name" : "Params 2", "Type" : "int32BitField"},
+		{"Name" : "Name", "Type" : "FixedLengthString" , "Length" : 8},
+		{"Name" : "Params", "Type" : "Int32BitField"},
+		{"Name" : "Position", "Type" : "Vector3"},
+		{"Name" : "Room", "Type" : "ObjectReferenceShort", "ReferenceType" : "Room"},
+		{"Name" : "Rotation", "Type" : "YRotation"},
+		{"Name" : "Params 2", "Type" : "Int32BitField"},
 	]
 }

@@ -1,18 +1,18 @@
 ﻿{
 	"FourCC" : "Colo",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Dawn A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Morning A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Noon A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Afternoon A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Dusk A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Night A", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Dawn B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Morning B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Noon B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Afternoon B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Dusk B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
-		{"Name" : "Night B", "Type" : "objectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Dawn A", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Morning A", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Noon A", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Afternoon A", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Dusk A", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Night A", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Dawn B", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Morning B", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Noon B", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Afternoon B", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Dusk B", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
+		{"Name" : "Night B", "Type" : "ObjectReference", "ReferenceType" : "FourCC", "ReferenceFourCCType" : "Pale"},
 	]
 }

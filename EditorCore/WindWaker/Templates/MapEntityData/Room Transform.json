@@ -1,10 +1,10 @@
 ﻿{
 	"FourCC" : "MULT",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Translation", "Type" : "vector2"},
-		{"Name" : "Rotation", "Type" : "yRotation"},
-		{"Name" : "Room", "Type" : "objectReference", "ReferenceType" : "Room"},
-		{"Name" : "Wave Height Addition (?)", "Type" : "byte"}
+		{"Name" : "Translation", "Type" : "Vector2"},
+		{"Name" : "Rotation", "Type" : "YRotation"},
+		{"Name" : "Room", "Type" : "ObjectReference", "ReferenceType" : "Room"},
+		{"Name" : "Wave Height Addition (?)", "Type" : "Byte"}
 	]
 }

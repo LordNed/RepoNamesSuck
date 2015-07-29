@@ -1,12 +1,12 @@
 ﻿{
 	"FourCC" : "ACTR",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Name", "Type" : "fixedLengthString", "Length" : 8},
-		{"Name" : "Parameters", "Type" : "int"},
-		{"Name" : "Position", "Type" : "vector3"},
-		{"Name" : "Rotation", "Type" : "xyRotation"},
-		{"Name" : "Flag To Set", "Type" : "short"},
-		{"Name" : "Enemy Number", "Type" : "short"},
+		{"Name" : "Name", "Type" : "FixedLengthString", "Length" : 8},
+		{"Name" : "Parameters", "Type" : "Int32"},
+		{"Name" : "Position", "Type" : "Vector3"},
+		{"Name" : "Rotation", "Type" : "XYRotation"},
+		{"Name" : "Flag To Set", "Type" : "Short"},
+		{"Name" : "Enemy Number", "Type" : "Short"},
 	]
 }

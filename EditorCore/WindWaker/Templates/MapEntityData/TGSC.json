@@ -1,12 +1,12 @@
 ﻿{
 	"FourCC" : "TGSC",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Name", "Type" : "fixedLengthString" , "Length" : 8},
-		{"Name" : "Params 1", "Type" : "int32BitField"},
-		{"Name" : "Position", "Type" : "vector3"},
-		{"Name" : "RoomLoadingParams", "Type" : "short"},
-		{"Name" : "Rotation", "Type" : "xyzRotation"},
-		{"Name" : "Params 2", "Type" : "int32BitField"}
+		{"Name" : "Name", "Type" : "FixedLengthString" , "Length" : 8},
+		{"Name" : "Params 1", "Type" : "Int32BitField"},
+		{"Name" : "Position", "Type" : "Vector3"},
+		{"Name" : "RoomLoadingParams", "Type" : "Short"},
+		{"Name" : "Rotation", "Type" : "XYZRotation"},
+		{"Name" : "Params 2", "Type" : "Int32BitField"}
 	]
 }

@@ -1,7 +1,7 @@
 ﻿{
 	"FourCC" : "LBNK",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Unknown", "Type" : "byte"}
+		{"Name" : "Unknown", "Type" : "Byte"}
 	]
 }

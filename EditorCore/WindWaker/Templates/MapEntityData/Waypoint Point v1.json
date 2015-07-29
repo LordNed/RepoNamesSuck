@@ -1,8 +1,8 @@
 ﻿{
 	"FourCC" : "PPNT",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Unknown 1", "Type" : "int"},
-		{"Name" : "Position", "Type" : "vector3"},
+		{"Name" : "Unknown 1", "Type" : "Int32"},
+		{"Name" : "Position", "Type" : "Vector3"},
 	]
 }

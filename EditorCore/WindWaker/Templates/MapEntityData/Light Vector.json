@@ -1,9 +1,9 @@
 ﻿{
 	"FourCC" : "LGTV",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Position", "Type" : "vector3"},
-		{"Name" : "Radius", "Type" : "vector3"},
-		{"Name" : "Color", "Type" : "color32"}
+		{"Name" : "Position", "Type" : "Vector3"},
+		{"Name" : "Radius", "Type" : "Vector3"},
+		{"Name" : "Color", "Type" : "Color32"}
 	]
 }

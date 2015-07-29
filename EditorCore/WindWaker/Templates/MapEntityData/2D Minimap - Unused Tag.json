@@ -1,17 +1,17 @@
 ﻿{
 	"FourCC" : "2Dma",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Full Map Image Scale", "Type" : "vector2"},
-		{"Name" : "Full Map Space Scale", "Type" : "vector2"},
-		{"Name" : "Full Map Translation", "Type" : "vector2"},
-		{"Name" : "Zoomed Map Scrolling 1", "Type" : "vector2"},
-		{"Name" : "Zoomed Map Scrolling 2", "Type" : "vector2"},
-		{"Name" : "Zoomed Map Translation", "Type" : "vector2"},
-		{"Name" : "Zoomed Map Scale", "Type" : "float"},
-		{"Name" : "Unknown", "Type" : "byte"},
-		{"Name" : "Map Image Index", "Type" : "byte"},
-		{"Name" : "Unknown 2", "Type" : "byte"},
-		{"Name" : "Padding", "Type" : "byte"}
+		{"Name" : "Full Map Image Scale", "Type" : "Vector2"},
+		{"Name" : "Full Map Space Scale", "Type" : "Vector2"},
+		{"Name" : "Full Map Translation", "Type" : "Vector2"},
+		{"Name" : "Zoomed Map Scrolling 1", "Type" : "Vector2"},
+		{"Name" : "Zoomed Map Scrolling 2", "Type" : "Vector2"},
+		{"Name" : "Zoomed Map Translation", "Type" : "Vector2"},
+		{"Name" : "Zoomed Map Scale", "Type" : "Float"},
+		{"Name" : "Unknown", "Type" : "Byte"},
+		{"Name" : "Map Image Index", "Type" : "Byte"},
+		{"Name" : "Unknown 2", "Type" : "Byte"},
+		{"Name" : "Padding", "Type" : "Byte"}
 	]
 }

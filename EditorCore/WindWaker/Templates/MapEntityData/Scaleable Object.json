@@ -1,18 +1,18 @@
 ﻿{
 	"FourCC" : "SCOB",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Name", "Type" : "fixedLengthString", "Length" : 8},
-		{"Name" : "Parameter 1", "Type" : "byte"},
-		{"Name" : "Parameter 2", "Type" : "byte"},
-		{"Name" : "Parameter 3", "Type" : "byte"},
-		{"Name" : "Parameter 4", "Type" : "byte"},
-		{"Name" : "Position", "Type" : "vector3"},
-		{"Name" : "Auxiliary Parameter", "Type" : "short"},
-		{"Name" : "Rotation", "Type" : "yRotation"},
-		{"Name" : "Unknown 1", "Type" : "short"},
-		{"Name" : "Unknown 2", "Type" : "short"},
-		{"Name" : "Scale", "Type" : "vector3byte"},
-		{"Name" : "Padding", "Type" : "byte"}
+		{"Name" : "Name", "Type" : "FixedLengthString", "Length" : 8},
+		{"Name" : "Parameter 1", "Type" : "Byte"},
+		{"Name" : "Parameter 2", "Type" : "Byte"},
+		{"Name" : "Parameter 3", "Type" : "Byte"},
+		{"Name" : "Parameter 4", "Type" : "Byte"},
+		{"Name" : "Position", "Type" : "Vector3"},
+		{"Name" : "Auxiliary Parameter", "Type" : "Short"},
+		{"Name" : "Rotation", "Type" : "YRotation"},
+		{"Name" : "Unknown 1", "Type" : "Short"},
+		{"Name" : "Unknown 2", "Type" : "Short"},
+		{"Name" : "Scale", "Type" : "Vector3Byte"},
+		{"Name" : "Padding", "Type" : "Byte"}
 	]
 }

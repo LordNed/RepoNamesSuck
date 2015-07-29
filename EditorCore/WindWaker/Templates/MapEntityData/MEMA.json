@@ -1,7 +1,7 @@
 ﻿{
 	"FourCC" : "MEMA",
-	"Properties" :
+	"Fields" :
 	[
-		{"Name" : "Size (in bytes)", "Type" : "int"}
+		{"Name" : "Size (in bytes)", "Type" : "Int32"}
 	]
 }
