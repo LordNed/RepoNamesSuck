@@ -34,7 +34,7 @@ namespace WEditor
             m_editorWorlds = new BindingList<WWorld>();
             Templates = new TemplateManager();
 
-            m_mainWorld = new WWorld("main");
+            m_mainWorld = new WWorld("main", this);
             m_editorWorlds.Add(m_mainWorld);
 
             m_mainWorld.InitializeSystem();

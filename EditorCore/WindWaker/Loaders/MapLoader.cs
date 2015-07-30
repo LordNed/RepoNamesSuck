@@ -208,7 +208,7 @@ namespace WEditor.WindWaker.Loaders
             }
         }
 
-        private static void PostProcessStage(Stage stage, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        public static void PostProcessStage(Stage stage, List<MapEntityLoader.RawMapEntity> rawEntityData)
         {
             // Process objects which belong to both Stage and Rooms.
             PostProcessSharedEntities(stage, rawEntityData);
@@ -235,7 +235,7 @@ namespace WEditor.WindWaker.Loaders
             // STAG
         }
 
-        private static void PostProcessRoom(Room room, List<MapEntityLoader.RawMapEntity> rawEntityData)
+        public static void PostProcessRoom(Room room, List<MapEntityLoader.RawMapEntity> rawEntityData)
         {
             // Process objects which belong to both Stage and Rooms.
             PostProcessSharedEntities(room, rawEntityData);

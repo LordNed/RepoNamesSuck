@@ -9,6 +9,7 @@ using WEditor.WindWaker;
 using System.Linq;
 using System.Collections.ObjectModel;
 using WEditor.WindWaker.Entities;
+using WEditor.WindWaker.Loaders;
 
 namespace WEditor
 {
@@ -52,10 +53,13 @@ namespace WEditor
 
         private Input m_input;
         private string m_worldName;
+        private EditorCore m_editorCore;
 
-        public WWorld(string worldName)
+        public WWorld(string worldName, EditorCore editorCore)
         {
             m_worldName = worldName;
+            m_editorCore = editorCore;
+
             m_componentList = new List<WComponent>();
             m_dtStopwatch = new Stopwatch();
             m_input = new Input();
@@ -339,6 +343,23 @@ namespace WEditor
         public void SpawnEntityInWorld(MapObjectSpawnDescriptor dragData)
         {
             WLog.Info(LogCategory.EditorCore, null, "Caught object to be spawned {0} in scene: {1}", dragData, SelectedScene);
+
+            // Meh.
+            MapEntityLoader loader = new MapEntityLoader(m_editorCore, Map);
+
+            // We can skip post-processing the entities via MapEntityLoader b/c that just does reference fixups, and
+            // because this is a new entity there's no references so no point in trying to fix them up.
+            var newEnt = loader.CreateEntity(dragData);
+
+            if (SelectedScene is Stage)
+                MapLoader.PostProcessStage((Stage)SelectedScene, new List<MapEntityLoader.RawMapEntity>(new[] { newEnt }));
+
+            if(SelectedScene is Room)
+                MapLoader.PostProcessRoom((Room)SelectedScene, new List<MapEntityLoader.RawMapEntity>(new[] { newEnt }));
+
+            // meh more hacks.
+            foreach (var ent in SelectedScene.Entities)
+                ent.World = this;
         }
     }
 }

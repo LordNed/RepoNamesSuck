@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using WEditor.Maps;
 using WEditor.Maps.Entities;
+using WEditor.WindWaker.Entities;
 using WEditor.WindWaker.Maps;
 
 namespace WEditor.WindWaker.Loaders
@@ -413,6 +414,122 @@ namespace WEditor.WindWaker.Loaders
         {
             return m_entityData;
         }
+
+        public RawMapEntity CreateEntity(MapObjectSpawnDescriptor fromDescriptor)
+        {
+            MapEntityDataDescriptor template = m_editorCore.Templates.MapEntityDataDescriptors.Find(x => x.FourCC == fromDescriptor.FourCC);
+
+            RawMapEntity obj = new RawMapEntity();
+            obj.FourCC = fromDescriptor.FourCC;
+            obj.Fields = new PropertyCollection();
+
+            // stupid copy paste
+
+            // See if our template list has a complex version of this file, otherwise grab the default.
+            MapObjectDataDescriptor complexDescriptor = m_editorCore.Templates.MapObjectDataDescriptors.Find(x => x.FourCC == fromDescriptor.FourCC && x.TechnicalName == fromDescriptor.TechnicalName);
+            if (complexDescriptor == null)
+                complexDescriptor = m_editorCore.Templates.DefaultMapObjectDataDescriptor;
+
+            // Determine which field we need to remove, and then insert in the other fields (in order) where it used to be.
+            foreach (var fieldToReplace in complexDescriptor.DataOverrides)
+            {
+                for (int k = 0; k < template.Fields.Count; k++)
+                {
+                    if (template.Fields[k].FieldName == fieldToReplace.ParameterName)
+                    {
+                        // Remove the old field.
+                        template.Fields.RemoveAt(k);
+
+                        // Now insert the new fields starting at the location of the one we just replaced.
+                        template.Fields.InsertRange(k, fieldToReplace.Values);
+                        break;
+                    }
+                }
+            }
+
+            // Finally initialize the fields using default values.
+            for (int i = 0; i < template.Fields.Count; i++)
+            {
+                var templateProperty = template.Fields[i];
+                string propertyName = templateProperty.FieldName;
+                PropertyType type = templateProperty.FieldType;
+                object value = GetDefaultValue(templateProperty);
+
+                if (propertyName == "Name")
+                    value = fromDescriptor.TechnicalName;
+
+                obj.Fields.Properties.Add(new Property(propertyName, type, value));
+            }
+
+            return obj;
+        }
+
+        private object GetDefaultValue(DataDescriptorField templateProperty)
+        {
+            if(templateProperty.DefaultValue == null)
+            {
+                switch (templateProperty.FieldType)
+                {
+                    case PropertyType.Byte: return (byte)0;
+                    case PropertyType.Short: return (short)0;
+                    case PropertyType.Int32: return (int)0;
+                    case PropertyType.Float: return (float)0;
+                    case PropertyType.Bool: return (bool)false;
+                    case PropertyType.FixedLengthString: return (string)"";
+                    case PropertyType.String: return (string)"";
+                    case PropertyType.Vector2: return Vector2.Zero;
+                    case PropertyType.Vector3: return Vector3.Zero;
+                    case PropertyType.Color24: return new Color24(0, 0, 0);
+                    case PropertyType.Color32: return new Color32(0, 0, 0, 0);
+                    case PropertyType.Int32BitField: return (int)0;
+                    case PropertyType.Bits:
+                    case PropertyType.ObjectReferenceArray:
+                    case PropertyType.Quaternion:
+                    case PropertyType.Vector3Byte:
+                    case PropertyType.ObjectReferenceShort:
+                    case PropertyType.ObjectReference:
+                    case PropertyType.XYZRotation:
+                    case PropertyType.XYRotation:
+                    case PropertyType.YRotation:
+                    case PropertyType.Enum:
+                    case PropertyType.None:
+                    default:
+                        return null;
+                }
+            }
+
+
+
+            switch (templateProperty.FieldType)
+            {
+                case PropertyType.Byte: return (byte)templateProperty.DefaultValue;
+                case PropertyType.Short: return (short)templateProperty.DefaultValue;
+                case PropertyType.Int32: return (int)templateProperty.DefaultValue;
+                case PropertyType.Float: return (float)templateProperty.DefaultValue;
+                case PropertyType.Bool: return (bool)templateProperty.DefaultValue;
+                case PropertyType.FixedLengthString: return (string)templateProperty.DefaultValue;
+                case PropertyType.String: return (string)templateProperty.DefaultValue;
+                case PropertyType.Vector2: return (Vector2)templateProperty.DefaultValue;
+                case PropertyType.Vector3: return (Vector3)templateProperty.DefaultValue;
+                case PropertyType.Color24: return (Color24)templateProperty.DefaultValue;
+                case PropertyType.Color32: return (Color32)templateProperty.DefaultValue;
+                case PropertyType.Int32BitField: return (int)templateProperty.DefaultValue;
+                case PropertyType.Bits:
+                case PropertyType.ObjectReferenceArray:
+                case PropertyType.Quaternion:
+                case PropertyType.Vector3Byte:
+                case PropertyType.ObjectReferenceShort:
+                case PropertyType.ObjectReference:
+                case PropertyType.XYZRotation:
+                case PropertyType.XYRotation:
+                case PropertyType.YRotation:
+                case PropertyType.Enum: 
+                case PropertyType.None:
+                default:
+                    return (object)templateProperty.DefaultValue;
+            }
+        }
+
     }
 }
     

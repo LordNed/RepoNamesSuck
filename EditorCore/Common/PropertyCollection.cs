@@ -102,6 +102,9 @@ namespace WEditor.Maps
                 return default(T);
             }
 
+            if (prop.Value == null)
+                return default(T);
+
             return (T)prop.Value;
         }
 

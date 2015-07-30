@@ -17,6 +17,9 @@ namespace WEditor.Maps
         [JsonProperty("Type")]
         public PropertyType FieldType;
 
+        /// <summary> The default value of this field on a newly created object. </summary>
+        public object DefaultValue;
+
         /// <summary> A description which can be used to describe this field's usage in the editor. </summary>
         public string Description;
 
