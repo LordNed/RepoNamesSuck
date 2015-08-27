@@ -1,6 +1,8 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using System;
+using System.Globalization;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using WEditor.WindWaker.Entities;
@@ -23,6 +25,9 @@ namespace WindEditor
 
         public MainWindow()
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
             m_viewModel = new MainWindowViewModel();
             InitializeComponent();
             DataContext = m_viewModel;
