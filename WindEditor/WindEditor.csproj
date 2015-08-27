@@ -64,7 +64,7 @@
       <HintPath>..\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl">
-      <HintPath>..\..\..\Visual Studio 2015\Projects\TestEditorInterface\TestViewport\bin\Debug\OpenTK.GLControl.dll</HintPath>
+      <HintPath>..\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
