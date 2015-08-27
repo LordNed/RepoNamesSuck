@@ -539,13 +539,13 @@ namespace WEditor.Rendering
                 case GXColorChannelId.Alpha1: return "Color1.aaaa";
                 case GXColorChannelId.Color0A0: return "Color0.rgba";
                 case GXColorChannelId.Color1A1: return "Color1.rgba";
-                case GXColorChannelId.ColorZero: return "0.rrrr";
+                case GXColorChannelId.ColorZero: return "vec4(0f, 0f, 0f, 0f)";
                 case GXColorChannelId.AlphaBump:
                 case GXColorChannelId.AlphaBumpN:
                 case GXColorChannelId.ColorNull:
                 default:
                     WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unsupported ChannelId: {0}", orderInfo.ChannelId);
-                    return "vec4(0.0, 1.0, 0.0, 1.0)";
+                    return "vec4(0f, 1f, 0f, 1f)";
             }
         }
 
@@ -606,13 +606,13 @@ namespace WEditor.Rendering
                 case GXCombineColorInput.TexAlpha: return GetTexTapString(texMapping) + ".aaa";
                 case GXCombineColorInput.RasColor: return GetVertColorString(texMapping) + ".rgb";
                 case GXCombineColorInput.RasAlpha: return GetVertColorString(texMapping) + ".aaa";
-                case GXCombineColorInput.One: return "1.0f.rrr";
-                case GXCombineColorInput.Half: return "0.5f.rrr";
+                case GXCombineColorInput.One: return "vec3(1f, 1f, 1f)";
+                case GXCombineColorInput.Half: return "vec3(0.5f, 0.5f, 0.5f)";
                 case GXCombineColorInput.Konst: return GetKonstColorString(konst) + ".rgb";
-                case GXCombineColorInput.Zero: return "0.0f.rrr";
+                case GXCombineColorInput.Zero: return "vec3(0f, 0f, 0f)";
                 default:
                     WLog.Warning(LogCategory.TEVShaderGenerator, null, "Unknown Color Input type: {0}", inputType);
-                    return "0.0f.rrr";
+                    return "vec3(0f, 0f, 0f)";
             }
         }
 
@@ -672,14 +672,14 @@ namespace WEditor.Rendering
         {
             switch (konst)
             {
-                case GXKonstColorSel.KCSel_1: return "1.0.rrrr";
-                case GXKonstColorSel.KCSel_7_8: return "0.875.rrrr";
-                case GXKonstColorSel.KCSel_3_4: return "0.75.rrrr";
-                case GXKonstColorSel.KCSel_5_8: return "0.625.rrrr";
-                case GXKonstColorSel.KCSel_1_2: return "0.5.rrrr";
-                case GXKonstColorSel.KCSel_3_8: return "0.375.rrrr";
-                case GXKonstColorSel.KCSel_1_4: return "0.25.rrrr";
-                case GXKonstColorSel.KCSel_1_8: return "0.125.rrrr";
+                case GXKonstColorSel.KCSel_1: return "vec4(1f, 1f, 1f, 1f)";
+                case GXKonstColorSel.KCSel_7_8: return "vec4(0.875f, 0.875f, 0.875f, 0.875f)";
+                case GXKonstColorSel.KCSel_3_4: return "vec4(0.75f, 0.75f, 0.75f, 0.75f)";
+                case GXKonstColorSel.KCSel_5_8: return "vec4(0.625f, 0.625f, 0.625f, 0.625f)";
+                case GXKonstColorSel.KCSel_1_2: return "vec4(0.5f, 0.5f, 0.5f, 0.5f)";
+                case GXKonstColorSel.KCSel_3_8: return "vec4(0.375f, 0.375f, 0.375f, 0.375f)";
+                case GXKonstColorSel.KCSel_1_4: return "vec4(0.25f, 0.25f, 0.25f, 0.25f)";
+                case GXKonstColorSel.KCSel_1_8: return "vec4(0.125f, 0.125f, 0.125f, 0.125f)";
                 case GXKonstColorSel.KCSel_K0: return "konst0.rgba";
                 case GXKonstColorSel.KCSel_K1: return "konst1.rgba";
                 case GXKonstColorSel.KCSel_K2: return "konst2.rgba";
